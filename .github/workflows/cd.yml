@@ -139,7 +139,6 @@ jobs:
         uses: appleboy/ssh-action@v1
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-          IMAGE_TAG: sha-${{ github.sha }}
           GH_ACTOR: ${{ github.actor }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_OWNER: ${{ github.repository_owner }}
@@ -148,7 +147,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          envs: DEPLOY_PATH,IMAGE_TAG,GH_ACTOR,GH_TOKEN,GH_OWNER
+          envs: DEPLOY_PATH,GH_ACTOR,GH_TOKEN,GH_OWNER
           script: |
             set -e
 
@@ -158,7 +157,8 @@ jobs:
 
             echo "$GH_TOKEN" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
 
-            export IMAGE_TAG=$(echo "$IMAGE_TAG" | cut -c1-14)
+            # Pakai tag "main" — selalu ada setelah build-push dari branch main
+            export IMAGE_TAG=main
             export GITHUB_REPOSITORY="$GH_OWNER"
 
             docker compose -f docker-compose.prod.yml pull frontend backend
