@@ -137,36 +137,35 @@ jobs:
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          IMAGE_TAG: sha-${{ github.sha }}
+          GH_ACTOR: ${{ github.actor }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_OWNER: ${{ github.repository_owner }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
+          port: 22
+          envs: DEPLOY_PATH,IMAGE_TAG,GH_ACTOR,GH_TOKEN,GH_OWNER
           script: |
             set -e
 
-            # Masuk ke direktori project di VPS
-            cd ${{ secrets.DEPLOY_PATH }}
+            cd "$DEPLOY_PATH"
 
-            # Pull docker-compose.prod.yml terbaru dari repo
             git pull origin master
 
-            # Login ke GHCR dari VPS
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
-              -u ${{ github.actor }} --password-stdin
+            echo "$GH_TOKEN" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
 
-            # Set IMAGE_TAG ke SHA commit terbaru
-            export IMAGE_TAG=sha-$(echo "${{ github.sha }}" | cut -c1-7)
-            export GITHUB_REPOSITORY=${{ github.repository }}
+            export IMAGE_TAG=$(echo "$IMAGE_TAG" | cut -c1-14)
+            export GITHUB_REPOSITORY="$GH_OWNER"
 
-            # Pull image baru
             docker compose -f docker-compose.prod.yml pull frontend backend
 
-            # Rolling restart (zero-downtime untuk stateless services)
             docker compose -f docker-compose.prod.yml up -d \
               --no-deps \
               --remove-orphans \
               frontend backend
 
-            # Hapus image lama yang tidak terpakai
             docker image prune -f
