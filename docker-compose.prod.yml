@@ -11,6 +11,27 @@
 
 services:
 
+  # ─── PostgreSQL ─────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: habit_postgres
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"   # hanya localhost VPS, tidak ke publik
+    environment:
+      POSTGRES_DB: ${DB_NAME:-keluarga}
+      POSTGRES_USER: ${DB_USER:-keluarga_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-keluarga_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-net
+
   # ─── Redis ──────────────────────────────────────────────
   redis:
     image: redis:7-alpine
@@ -58,7 +79,7 @@ services:
     environment:
       APP_ENV: production
       APP_PORT: 8080
-      DB_HOST: ${DB_HOST}
+      DB_HOST: postgres
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
@@ -86,11 +107,34 @@ services:
       VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:admin@keluarga.dev}
       NOTIFICATION_TIME: ${NOTIFICATION_TIME:-0 4 * * *}
     depends_on:
+      postgres:
+        condition: service_healthy
       redis:
         condition: service_healthy
     networks:
       - backend-net
       - frontend-net
+
+  # ─── Seed (jalankan sekali, lalu exit) ──────────────────
+  # Jalankan manual: docker compose -f docker-compose.prod.yml run --rm seed
+  seed:
+    image: ghcr.io/${GITHUB_REPOSITORY}/habit-backend:${IMAGE_TAG:-main}
+    container_name: habit_seed
+    entrypoint: ["./seed"]
+    environment:
+      DB_HOST: postgres
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-keluarga}
+      DB_USER: ${DB_USER:-keluarga_user}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_SSL_MODE: ${DB_SSL_MODE:-disable}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend-net
+    profiles:
+      - seed
 
   # ─── Frontend (Next.js) ─────────────────────────────────
   frontend:
@@ -109,6 +153,7 @@ services:
       - frontend-net
 
 volumes:
+  postgres-data:
   redis-data:
   minio-data:
 

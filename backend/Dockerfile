@@ -9,7 +9,10 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -ldflags="-s -w" \
-    -o bin/server ./cmd/main.go
+    -o bin/server ./cmd/main.go && \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -ldflags="-s -w" \
+    -o bin/seed ./cmd/seed/main.go
 
 # ─── Run Stage ────────────────────────────────────────────
 FROM alpine:3.19
@@ -19,6 +22,7 @@ ENV TZ=Asia/Jakarta
 
 WORKDIR /app
 COPY --from=builder /app/bin/server .
+COPY --from=builder /app/bin/seed .
 
 # .env TIDAK dicopy ke image — semua env dibaca dari env_file / secrets di runtime
 EXPOSE 8080

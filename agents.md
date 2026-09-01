@@ -203,7 +203,7 @@ PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -c "
 |---|---|
 | **Halaman Register** — belum diupdate seperti login (masih pakai Card lama) | Sedang |
 | Unit test backend (auth service, task service) | Sedang |
-| Setup database lokal + jalankan seed | Perlu konfirmasi user |
+| Seed data production DB di VPS | Perlu dikerjakan |
 
 ### ⚡ Next Steps (langsung dikerjakan saat mulai sesi baru)
 1. Setup GitHub repo + tambahkan secrets (lihat `docs/deployment.md` section 2)
