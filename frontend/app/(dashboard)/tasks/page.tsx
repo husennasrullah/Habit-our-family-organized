@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TaskCard } from "@/components/tasks/TaskCard";
+// import { TaskCard } from "@/components/tasks/TaskCard";
 import { TaskModal, type TaskFormValues } from "@/components/tasks/TaskModal";
 import { Leaderboard } from "@/components/tasks/Leaderboard";
 import { cn } from "@/lib/utils";
@@ -49,7 +49,7 @@ function getCategoryStyle(title: string) {
 export default function TasksPage() {
   const [modalOpen, setModalOpen]       = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [completingId, setCompletingId] = useState<string | null>(null);
+  const [_completingId, setCompletingId] = useState<string | null>(null);
 
   const user     = useAuthStore((s) => s.user);
   const familyId = user?.family_id;
@@ -84,7 +84,7 @@ export default function TasksPage() {
   const handleAdd  = useCallback(() => { setSelectedTask(null); setModalOpen(true); }, []);
   const handleEdit = useCallback((task: Task) => { setSelectedTask(task); setModalOpen(true); }, []);
 
-  const handleComplete = useCallback(async (task: Task) => {
+  const handleComplete = useCallback(async (task: Task) => { // eslint-disable-line @typescript-eslint/no-unused-vars
     setCompletingId(task.id);
     try {
       await completeTask.mutateAsync(task.id);

@@ -58,7 +58,7 @@ export default function DashboardPage() {
   const user  = useAuthStore((s) => s.user);
   const now   = new Date();
   const hour  = now.getHours();
-  const greeting =
+  const _greeting =
     hour < 11 ? "Selamat pagi" : hour < 15 ? "Selamat siang" : hour < 19 ? "Selamat sore" : "Selamat malam";
 
   // Data

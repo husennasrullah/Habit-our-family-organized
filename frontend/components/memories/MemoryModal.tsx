@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { X, Trash2, Loader2, ImagePlus, Heart } from "lucide-react";
+import { X, Trash2, Loader2, ImagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -78,7 +78,7 @@ export function MemoryModal({
     await onSave(values, pendingFiles);
   };
 
-  const handleUploadPending = async (memoryId: string) => {
+  const handleUploadPending = async (memoryId: string) => { // eslint-disable-line @typescript-eslint/no-unused-vars
     if (!pendingFiles.length) return;
     try {
       await uploadPhotos.mutateAsync({ memoryId, files: pendingFiles });

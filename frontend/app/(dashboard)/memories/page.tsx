@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Plus, BookHeart, Heart } from "lucide-react";
+import { Plus, Heart } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { MemoryCard } from "@/components/memories/MemoryCard";

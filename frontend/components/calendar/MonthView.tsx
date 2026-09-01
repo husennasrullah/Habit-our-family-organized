@@ -1,7 +1,6 @@
 "use client";
 
-import { format, isSameDay, isSameMonth, isToday } from "date-fns";
-import { id as dateLocale } from "date-fns/locale";
+import { format, isSameMonth, isToday } from "date-fns";
 import { cn } from "@/lib/utils";
 import { getMonthGrid, getEventsForDay } from "@/lib/calendarUtils";
 import { EventBadge } from "./EventBadge";

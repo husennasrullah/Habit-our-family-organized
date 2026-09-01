@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Plus, Check, Trash2, ShoppingCart, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+// import { cn } from "@/lib/utils";
 import {
   useShoppingItems,
   useCreateShoppingItem,
