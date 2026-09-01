@@ -2,7 +2,6 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { ThemeProvider } from "next-themes";
 import { useState, useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
@@ -24,24 +23,27 @@ function AuthSync() {
   useEffect(() => {
     if (!isAuthenticated || !accessToken) return;
 
+    // Coba refresh untuk mendapatkan token baru (sekaligus memperpanjang cookie)
+    // Kirim refresh_token di body sebagai fallback saat cross-origin (ngrok dev)
     const storedRefresh = typeof window !== "undefined"
       ? localStorage.getItem("refresh_token")
       : null;
-
-    // Tidak perlu withCredentials — refresh_token dikirim via body
     axios
       .post(
         `${BASE_URL}/auth/refresh`,
         storedRefresh ? { refresh_token: storedRefresh } : {},
+        { withCredentials: true }
       )
       .then(({ data }) => {
         const newToken: string = data.data.access_token;
         setAccessToken(newToken);
       })
       .catch(() => {
+        // Refresh gagal → token benar-benar expired → logout
         clearAuth();
         router.push("/login");
       });
+    // Hanya jalankan sekali saat komponen mount (hydrate pertama kali)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -62,14 +64,12 @@ export function Providers({ children }: { children: ReactNode }) {
   );
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <QueryClientProvider client={queryClient}>
-        <AuthSync />
-        {children}
-        {process.env.NODE_ENV === "development" && (
-          <ReactQueryDevtools initialIsOpen={false} />
-        )}
-      </QueryClientProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthSync />
+      {children}
+      {process.env.NODE_ENV === "development" && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
+    </QueryClientProvider>
   );
 }
