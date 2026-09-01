@@ -130,7 +130,7 @@ jobs:
 
     environment:
       name: production
-      url: ${{ secrets.FRONTEND_URL }}
+      url: https://habit.senlabs.web.id
 
     steps:
       - uses: actions/checkout@v4
