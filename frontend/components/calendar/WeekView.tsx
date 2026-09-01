@@ -1,6 +1,7 @@
 "use client";
 
 import { format, isToday, parseISO } from "date-fns";
+import { id as dateLocale } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { getWeekDays, getEventsForDay, getColor } from "@/lib/calendarUtils";
 import type { CalendarEvent } from "@/types";
