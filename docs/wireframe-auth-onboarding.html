@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keluarga App — Wireframe: Auth & Onboarding</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#f0fdfa;color:#292524;padding:24px}
+  h1{font-size:22px;font-weight:700;color:#0f766e;margin-bottom:4px}
+  .subtitle{font-size:13px;color:#78716c;margin-bottom:32px}
+  .section-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0d9488;margin-bottom:12px;margin-top:36px}
+  .screens-row{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:375px;min-height:720px;background:#fff;border-radius:36px;border:2px solid #e7e5e4;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08);flex-shrink:0}
+  .phone-label{font-size:11px;font-weight:700;color:#78716c;text-align:center;margin-bottom:8px;letter-spacing:.05em;text-transform:uppercase}
+  .status-bar{background:#14b8a6;padding:12px 20px 8px;display:flex;justify-content:space-between;align-items:center}
+  .status-bar span{color:#fff;font-size:11px;font-weight:600}
+  /* ---- AUTH SCREENS ---- */
+  .auth-hero{background:linear-gradient(160deg,#14b8a6 0%,#0d9488 100%);padding:40px 24px 32px;text-align:center}
+  .app-logo{width:56px;height:56px;background:#fff;border-radius:16px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px}
+  .app-name{color:#fff;font-size:24px;font-weight:800;letter-spacing:-.5px}
+  .app-tagline{color:#ccfbf1;font-size:13px;margin-top:4px}
+  .auth-body{padding:24px}
+  .auth-title{font-size:20px;font-weight:700;color:#1c1917;margin-bottom:4px}
+  .auth-sub{font-size:13px;color:#78716c;margin-bottom:20px}
+  .form-group{margin-bottom:14px}
+  .form-label{font-size:12px;font-weight:600;color:#44403c;margin-bottom:4px;display:block}
+  .form-input{width:100%;padding:11px 14px;border:1.5px solid #d6d3d1;border-radius:12px;font-size:14px;color:#292524;background:#fafaf9}
+  .form-input.focused{border-color:#14b8a6;background:#fff}
+  .btn-primary{width:100%;padding:13px;background:#14b8a6;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
+  .btn-google{width:100%;padding:12px;background:#fff;color:#44403c;border:1.5px solid #e7e5e4;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+  .google-icon{width:18px;height:18px;background:#f5f5f4;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#ea4335}
+  .divider{display:flex;align-items:center;gap:10px;margin:14px 0}
+  .divider-line{flex:1;height:1px;background:#e7e5e4}
+  .divider-text{font-size:12px;color:#a8a29e;font-weight:500}
+  .auth-footer{text-align:center;font-size:13px;color:#78716c;margin-top:16px}
+  .auth-footer a{color:#0d9488;font-weight:600}
+  /* ---- ONBOARDING ---- */
+  .ob-hero{background:#f0fdfa;padding:32px 24px 20px;text-align:center}
+  .ob-icon{font-size:48px;margin-bottom:12px}
+  .ob-title{font-size:22px;font-weight:800;color:#1c1917;margin-bottom:6px}
+  .ob-sub{font-size:14px;color:#78716c;line-height:1.6}
+  .ob-body{padding:20px 24px}
+  .ob-card{border:1.5px solid #e7e5e4;border-radius:16px;padding:18px;margin-bottom:14px;cursor:pointer;background:#fff}
+  .ob-card.active{border-color:#14b8a6;background:#f0fdfa}
+  .ob-card-header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .ob-card-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .ob-card-icon.teal{background:#ccfbf1}
+  .ob-card-icon.indigo{background:#e0e7ff}
+  .ob-card-title{font-size:15px;font-weight:700;color:#1c1917}
+  .ob-card-desc{font-size:13px;color:#78716c;line-height:1.5}
+  .invite-input-wrap{margin-top:14px}
+  .invite-input{width:100%;padding:13px 14px;border:1.5px solid #14b8a6;border-radius:12px;font-size:18px;font-weight:700;letter-spacing:.15em;text-align:center;color:#0f766e;background:#f0fdfa}
+  .invite-hint{font-size:12px;color:#a8a29e;text-align:center;margin-top:6px}
+  /* ---- FAMILY SETUP ---- */
+  .member-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .chip{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+  .chip-avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+  .role-badge{font-size:10px;padding:2px 7px;border-radius:6px;font-weight:600}
+</style>
+</head>
+<body>
+
+<h1>🏠 Keluarga — Wireframe Auth & Onboarding</h1>
+<p class="subtitle">Task 0.2 · Design System v1.0 · Mobile-first (375px)</p>
+
+<!-- LOGIN -->
+<div class="section-label">1. Halaman Login</div>
+<div class="screens-row">
+  <div>
+    <div class="phone-label">Login — Email/Password</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="auth-hero">
+        <div class="app-logo">🏠</div>
+        <div class="app-name">Keluarga</div>
+        <div class="app-tagline">Semua cerita keluarga, dalam satu tempat</div>
+      </div>
+      <div class="auth-body">
+        <div class="auth-title">Selamat datang kembali</div>
+        <div class="auth-sub">Masuk ke akun kamu</div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <div class="form-input focused">budi@email.com</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="form-input">••••••••</div>
+        </div>
+        <div style="text-align:right;margin-bottom:16px"><a style="font-size:12px;color:#0d9488;font-weight:600">Lupa password?</a></div>
+        <button class="btn-primary">Masuk</button>
+        <div class="divider"><div class="divider-line"></div><div class="divider-text">atau</div><div class="divider-line"></div></div>
+        <button class="btn-google">
+          <div class="google-icon">G</div>
+          Lanjutkan dengan Google
+        </button>
+        <div class="auth-footer">Belum punya akun? <a>Daftar</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTER -->
+  <div>
+    <div class="phone-label">Register — Akun Baru</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="auth-hero">
+        <div class="app-logo">🏠</div>
+        <div class="app-name">Keluarga</div>
+        <div class="app-tagline">Mulai perjalanan keluargamu</div>
+      </div>
+      <div class="auth-body">
+        <div class="auth-title">Buat akun baru</div>
+        <div class="auth-sub">Gratis, tanpa kartu kredit</div>
+        <div class="form-group">
+          <label class="form-label">Nama Lengkap</label>
+          <div class="form-input focused">Budi Santoso</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <div class="form-input">budi@email.com</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="form-input">••••••••</div>
+        </div>
+        <button class="btn-primary">Buat Akun</button>
+        <div class="divider"><div class="divider-line"></div><div class="divider-text">atau</div><div class="divider-line"></div></div>
+        <button class="btn-google">
+          <div class="google-icon">G</div>
+          Daftar dengan Google
+        </button>
+        <div class="auth-footer">Sudah punya akun? <a>Masuk</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="section-label">2. Onboarding — Pilih Keluarga</div>
+<div class="screens-row">
+  <div>
+    <div class="phone-label">Onboarding — Pilih Aksi</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="ob-hero">
+        <div class="ob-icon">👨‍👩‍👧‍👦</div>
+        <div class="ob-title">Hai, Budi! 👋</div>
+        <div class="ob-sub">Atur keluarga kamu atau bergabung<br>dengan keluarga yang sudah ada</div>
+      </div>
+      <div class="ob-body">
+        <div class="ob-card active">
+          <div class="ob-card-header">
+            <div class="ob-card-icon teal">🏠</div>
+            <div>
+              <div class="ob-card-title">Buat Keluarga Baru</div>
+            </div>
+          </div>
+          <div class="ob-card-desc">Kamu akan jadi admin dan bisa mengundang anggota keluarga lainnya</div>
+        </div>
+        <div class="ob-card">
+          <div class="ob-card-header">
+            <div class="ob-card-icon indigo">🔗</div>
+            <div>
+              <div class="ob-card-title">Gabung Keluarga</div>
+            </div>
+          </div>
+          <div class="ob-card-desc">Masukkan kode undangan yang diberikan oleh admin keluarga</div>
+          <div class="invite-input-wrap">
+            <div class="invite-input">BUDI-X7K2</div>
+            <div class="invite-hint">Minta kode dari admin keluargamu</div>
+          </div>
+        </div>
+        <button class="btn-primary" style="margin-top:8px">Lanjutkan →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUAT KELUARGA -->
+  <div>
+    <div class="phone-label">Onboarding — Buat Keluarga</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div style="padding:20px 24px 0">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+          <div style="width:32px;height:32px;border-radius:50%;background:#f0fdfa;border:2px solid #14b8a6;display:flex;align-items:center;justify-content:center;font-size:14px">←</div>
+          <div style="font-size:17px;font-weight:700;color:#1c1917">Buat Keluarga Baru</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
+          <div style="width:56px;height:56px;border-radius:16px;background:#f0fdfa;border:2px dashed #14b8a6;display:flex;align-items:center;justify-content:center;font-size:24px">📷</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:#1c1917">Foto Keluarga</div>
+            <div style="font-size:12px;color:#78716c">Opsional</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nama Keluarga</label>
+          <div class="form-input focused">Keluarga Budi</div>
+        </div>
+        <div style="margin-bottom:16px">
+          <div class="form-label" style="display:block;margin-bottom:8px">Kode Undangan (otomatis)</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="flex:1;padding:11px 14px;background:#f0fdfa;border:1.5px solid #99f6e4;border-radius:12px;font-size:16px;font-weight:700;color:#0d9488;letter-spacing:.15em">BUDI-X7K2</div>
+            <div style="padding:11px 14px;background:#14b8a6;border-radius:12px;font-size:13px;font-weight:600;color:#fff">Salin</div>
+          </div>
+          <div style="font-size:12px;color:#78716c;margin-top:6px">Share kode ini ke anggota keluarga</div>
+        </div>
+        <div style="margin-bottom:16px">
+          <div class="form-label" style="display:block;margin-bottom:8px">Anggota (tambah setelah buat)</div>
+          <div class="member-chips">
+            <div class="chip" style="background:#e0f2fe;color:#0284c7">
+              <div class="chip-avatar" style="background:#0ea5e9">B</div>
+              Budi
+              <span class="role-badge" style="background:#0ea5e9;color:#fff">Admin</span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#a8a29e">Anggota lain bisa join via kode undangan</div>
+        </div>
+        <button class="btn-primary">Buat Keluarga 🎉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVITE SUCCESS -->
+  <div>
+    <div class="phone-label">Onboarding — Join Berhasil</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div style="padding:60px 24px;text-align:center">
+        <div style="font-size:64px;margin-bottom:16px">🎉</div>
+        <div style="font-size:22px;font-weight:800;color:#1c1917;margin-bottom:8px">Berhasil Bergabung!</div>
+        <div style="font-size:14px;color:#78716c;margin-bottom:32px;line-height:1.6">Kamu sekarang bagian dari<br><strong style="color:#0d9488">Keluarga Budi</strong></div>
+        <div style="background:#f0fdfa;border:1.5px solid #99f6e4;border-radius:16px;padding:16px;margin-bottom:24px;text-align:left">
+          <div style="font-size:12px;font-weight:700;color:#0d9488;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Anggota Keluarga</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:36px;height:36px;border-radius:50%;background:#0ea5e9;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">B</div>
+              <div><div style="font-size:14px;font-weight:600">Budi Santoso</div><div style="font-size:12px;color:#78716c">Admin</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:36px;height:36px;border-radius:50%;background:#f43f5e;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">S</div>
+              <div><div style="font-size:14px;font-weight:600">Siti Rahayu</div><div style="font-size:12px;color:#78716c">Member (Kamu)</div></div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary">Mulai Eksplorasi →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:48px;padding-top:16px;border-top:1px solid #e7e5e4;text-align:center;font-size:12px;color:#a8a29e">
+  Made with IBM Bob · Family Hub Wireframe v1.0 · Task 0.2
+</div>
+
+</body>
+</html>

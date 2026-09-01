@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── PWA safe-area utilities ──────────────────────────────────────────────── */
+@layer utilities {
+  /* Bottom padding untuk notch / home indicator di iPhone */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  /* Agar konten tidak tertutup bottom nav */
+  .mb-bottom-nav {
+    margin-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 20 6% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 20 6% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 6% 10%;
+
+    --primary: 174 72% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 239 68% 65%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 30 5% 96%;
+    --muted-foreground: 25 5% 45%;
+
+    --accent: 43 96% 56%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 5% 90%;
+    --input: 30 5% 82%;
+    --ring: 174 72% 40%;
+
+    --radius: 0.625rem;
+
+    --font-jakarta: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  .dark {
+    --background: 20 6% 10%;
+    --foreground: 30 10% 95%;
+
+    --card: 20 6% 13%;
+    --card-foreground: 30 10% 95%;
+
+    --popover: 20 6% 13%;
+    --popover-foreground: 30 10% 95%;
+
+    --primary: 174 72% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 239 68% 65%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 20 6% 18%;
+    --muted-foreground: 25 5% 60%;
+
+    --accent: 43 96% 56%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 20 6% 22%;
+    --input: 20 6% 22%;
+    --ring: 174 72% 40%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-[#F4F6F8] dark:bg-neutral-950 text-neutral-800 dark:text-neutral-100 font-sans antialiased;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-neutral-900 dark:text-neutral-50;
+  }
+
+  /* Card putih bersih di atas bg */
+  .card {
+    @apply bg-white dark:bg-neutral-900 rounded-xl border border-neutral-100 dark:border-neutral-800 shadow-sm;
+  }
+}

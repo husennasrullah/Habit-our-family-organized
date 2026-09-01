@@ -1,0 +1,497 @@
+
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Keluarga App — Wireframe: Dashboard &amp; Modules</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;background:#f0fdfa;color:#292524;padding:24px}
+  h1{font-size:22px;font-weight:700;color:#0f766e;margin-bottom:4px}
+  .subtitle{font-size:13px;color:#78716c;margin-bottom:32px}
+  .section-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0d9488;margin-bottom:12px;margin-top:40px;padding-bottom:8px;border-bottom:2px solid #ccfbf1}
+  .screens-row{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:375px;background:#fff;border-radius:36px;border:2px solid #e7e5e4;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08);flex-shrink:0}
+  .phone-label{font-size:11px;font-weight:700;color:#78716c;text-align:center;margin-bottom:8px;letter-spacing:.05em;text-transform:uppercase}
+  .sb{background:#14b8a6;padding:10px 20px 8px;display:flex;justify-content:space-between;align-items:center}
+  .sb span{color:#fff;font-size:11px;font-weight:600}
+  .topbar{padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f5f5f4}
+  .topbar-title{font-size:18px;font-weight:700;color:#1c1917}
+  .bottom-nav{background:#fff;border-top:1px solid #f0f0ef;display:flex;padding:8px 0 12px}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+  .nav-label{font-size:10px;font-weight:600;color:#a8a29e}
+  .nav-item.active .nav-label{color:#14b8a6}
+  .nav-active-dot{width:4px;height:4px;border-radius:50%;background:#14b8a6;margin:0 auto}
+  .nav-icon{font-size:9px;font-weight:700;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:4px}
+  .nav-icon.home{background:#ccfbf1;color:#0d9488}
+  .nav-icon.cal{background:#e0f2fe;color:#0369a1}
+  .nav-icon.task{background:#dcfce7;color:#15803d}
+  .nav-icon.money{background:#fef3c7;color:#d97706}
+  .nav-icon.more{background:#f5f5f4;color:#78716c}
+  .widget{background:#fff;border:1px solid #e7e5e4;border-radius:16px;padding:14px 16px;margin-bottom:12px}
+  .widget-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .widget-title{font-size:13px;font-weight:700;color:#44403c}
+  .widget-more{font-size:11px;color:#14b8a6;font-weight:600}
+  .event-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f5f5f4}
+  .event-row:last-child{border-bottom:none}
+  .event-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .event-info{flex:1}
+  .event-name{font-size:13px;font-weight:600;color:#1c1917}
+  .event-time{font-size:11px;color:#78716c}
+  .event-badge{font-size:10px;padding:3px 8px;border-radius:8px;font-weight:600}
+  .task-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f5f5f4}
+  .task-row:last-child{border-bottom:none}
+  .task-check{width:20px;height:20px;border-radius:6px;border:2px solid #e7e5e4;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .task-check.done{background:#14b8a6;border-color:#14b8a6;color:#fff}
+  .task-name{flex:1;font-size:13px;font-weight:500;color:#1c1917}
+  .task-pts{font-size:11px;font-weight:700;color:#f59e0b}
+  .budget-bar-wrap{margin-bottom:10px}
+  .budget-label-row{display:flex;justify-content:space-between;margin-bottom:4px}
+  .budget-label{font-size:12px;color:#44403c;font-weight:600}
+  .budget-val{font-size:12px;color:#78716c}
+  .bar-bg{height:6px;border-radius:99px;background:#f5f5f4;overflow:hidden}
+  .bar-fill{height:100%;border-radius:99px;background:#14b8a6}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+  .cal-day-name{font-size:10px;font-weight:600;color:#a8a29e;padding:4px 0}
+  .cal-day{font-size:12px;font-weight:500;color:#44403c;padding:5px 0;border-radius:8px}
+  .cal-day.today{background:#14b8a6;color:#fff;font-weight:700}
+  .cal-dot{width:4px;height:4px;border-radius:50%;margin:1px auto 0}
+  .mem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+  .mem-photo{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+  .badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px}
+  .badge-teal{background:#ccfbf1;color:#0d9488}
+  .badge-amber{background:#fef3c7;color:#d97706}
+  .badge-red{background:#fee2e2;color:#dc2626}
+  .badge-green{background:#dcfce7;color:#16a34a}
+  .badge-indigo{background:#e0e7ff;color:#4f46e5}
+  .growth-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f5f5f4}
+  .growth-row:last-child{border-bottom:none}
+  .growth-icon{width:36px;height:36px;border-radius:10px;background:#f0fdfa;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#0d9488;flex-shrink:0}
+  .growth-info{flex:1}
+  .growth-label{font-size:13px;font-weight:600;color:#1c1917}
+  .growth-val{font-size:12px;color:#78716c}
+  .vaccine-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f5f5f4}
+  .vaccine-row:last-child{border-bottom:none}
+  .v-status{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .doc-card{background:#fafaf9;border:1px solid #e7e5e4;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+  .doc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+  .doc-info{flex:1}
+  .doc-name{font-size:13px;font-weight:600;color:#1c1917}
+  .doc-meta{font-size:11px;color:#78716c}
+  .lb-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f5f5f4}
+  .lb-row:last-child{border-bottom:none}
+  .lb-rank{font-size:14px;width:24px;text-align:center;font-weight:700}
+  .lb-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+  .lb-name{flex:1;font-size:13px;font-weight:600;color:#1c1917}
+  .lb-pts{font-size:13px;font-weight:700;color:#f59e0b}
+  .pill{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+  .pill-active{background:#14b8a6;color:#fff}
+  .pill-inactive{background:#f5f5f4;color:#78716c}
+</style>
+</head>
+<body>
+
+<h1>Keluarga — Wireframe Dashboard &amp; Semua Modul</h1>
+<p class="subtitle">Task 0.2 · Design System v1.0 · Mobile-first (375px) · Data dummy: Keluarga Budi</p>
+
+
+<div class="section-label">1. Home Dashboard</div>
+<div class="screens-row">
+  <div>
+    <div class="phone-label">Dashboard — Utama</div>
+    <div class="phone">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div style="padding:16px 20px 0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div>
+            <div style="font-size:13px;color:#78716c">Selamat pagi</div>
+            <div style="font-size:20px;font-weight:800;color:#1c1917">Hai, Budi!</div>
+          </div>
+          <div style="display:flex">
+            <div style="width:36px;height:36px;border-radius:50%;background:#0ea5e9;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">B</div>
+            <div style="width:36px;height:36px;border-radius:50%;background:#f43f5e;border:2px solid #fff;margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">S</div>
+            <div style="width:36px;height:36px;border-radius:50%;background:#8b5cf6;border:2px solid #fff;margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">A</div>
+          </div>
+        </div>
+        <div class="widget">
+          <div class="widget-header"><div class="widget-title">Hari ini</div><div class="widget-more">Lihat semua</div></div>
+          <div class="event-row"><div class="event-dot" style="background:#0ea5e9"></div><div class="event-info"><div class="event-name">Antar Ara ke sekolah</div><div class="event-time">07:00 · Budi</div></div></div>
+          <div class="event-row"><div class="event-dot" style="background:#f43f5e"></div><div class="event-info"><div class="event-name">Meeting online Siti</div><div class="event-time">10:00 · Siti</div></div></div>
+          <div class="event-row"><div class="event-dot" style="background:#f59e0b"></div><div class="event-info"><div class="event-name">Les piano Bimo</div><div class="event-time">16:00 · Bimo</div></div></div>
+        </div>
+        <div class="widget">
+          <div class="widget-header"><div class="widget-title">Tugas Hari Ini</div><div class="widget-more">2 tersisa</div></div>
+          <div class="task-row"><div class="task-check done">✓</div><div class="task-name" style="text-decoration:line-through;color:#a8a29e">Beli susu</div><div class="task-pts">+5 ★</div></div>
+          <div class="task-row"><div class="task-check"></div><div class="task-name">Cuci piring malam</div><div class="task-pts">+3 ★</div></div>
+          <div class="task-row"><div class="task-check"></div><div class="task-name">PR matematika Ara</div><div class="task-pts">+10 ★</div></div>
+        </div>
+        <div class="widget">
+          <div class="widget-header"><div class="widget-title">Budget Januari</div><div class="widget-more">Detail</div></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+            <div><div style="font-size:11px;color:#78716c">Terpakai</div><div style="font-size:17px;font-weight:700;color:#1c1917">Rp 4,2jt</div></div>
+            <div style="text-align:right"><div style="font-size:11px;color:#78716c">Budget</div><div style="font-size:17px;font-weight:700;color:#78716c">Rp 8jt</div></div>
+          </div>
+          <div class="bar-bg"><div class="bar-fill" style="width:52%"></div></div>
+          <div style="font-size:11px;color:#78716c;margin-top:6px">52% dari budget bulanan</div>
+        </div>
+        <div class="widget">
+          <div class="widget-header"><div class="widget-title">Belanja Minggu Ini</div><div class="widget-more">Lihat</div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span class="badge badge-teal">Telur ✓</span>
+            <span class="badge" style="background:#f5f5f4;color:#78716c">Beras</span>
+            <span class="badge" style="background:#f5f5f4;color:#78716c">Minyak goreng</span>
+            <span class="badge" style="background:#f5f5f4;color:#78716c">Sabun mandi</span>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item active"><div class="nav-icon home">HM</div><div class="nav-label" style="color:#14b8a6">Beranda</div><div class="nav-active-dot"></div></div>
+        <div class="nav-item"><div class="nav-icon cal">KL</div><div class="nav-label">Kalender</div></div>
+        <div class="nav-item"><div class="nav-icon task">TG</div><div class="nav-label">Tugas</div></div>
+        <div class="nav-item"><div class="nav-icon money">BG</div><div class="nav-label">Keuangan</div></div>
+        <div class="nav-item"><div class="nav-icon more">···</div><div class="nav-label">Lainnya</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section-label">2. Kalender</div>
+<div class="screens-row">
+  <div>
+    <div class="phone-label">Kalender — Bulanan</div>
+    <div class="phone">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="topbar"><div class="topbar-title">Januari 2025</div><div style="font-size:13px;color:#14b8a6;font-weight:600">+ Tambah</div></div>
+      <div style="padding:12px 16px">
+        <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+          <div class="pill pill-active">Semua</div>
+          <div class="pill" style="background:#e0f2fe;color:#0284c7;display:flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600"><span style="width:8px;height:8px;border-radius:50%;background:#0ea5e9;display:inline-block"></span>Budi</div>
+          <div class="pill" style="background:#ffe4e6;color:#e11d48;display:flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600"><span style="width:8px;height:8px;border-radius:50%;background:#f43f5e;display:inline-block"></span>Siti</div>
+          <div class="pill" style="background:#ede9fe;color:#7c3aed;display:flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600"><span style="width:8px;height:8px;border-radius:50%;background:#8b5cf6;display:inline-block"></span>Ara</div>
+        </div>
+        <div class="cal-grid" style="margin-bottom:14px">
+          <div class="cal-day-name">Min</div><div class="cal-day-name">Sen</div><div class="cal-day-name">Sel</div><div class="cal-day-name">Rab</div><div class="cal-day-name">Kam</div><div class="cal-day-name">Jum</div><div class="cal-day-name">Sab</div>
+          <div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day">1</div><div class="cal-day">2<div class="cal-dot" style="background:#0ea5e9"></div></div><div class="cal-day">3</div><div class="cal-day">4</div>
+          <div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day">7<div class="cal-dot" style="background:#f43f5e"></div></div><div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day">10<div class="cal-dot" style="background:#8b5cf6"></div></div><div class="cal-day">11</div>
+          <div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day today">15</div><div class="cal-day">16<div class="cal-dot" style="background:#f59e0b"></div></div><div class="cal-day">17</div><div class="cal-day">18</div>
+          <div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day">22<div class="cal-dot" style="background:#0ea5e9"></div></div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div>
+          <div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div><div class="cal-day"></div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#44403c;margin-bottom:10px">15 Januari</div>
+        <div class="event-row"><div class="event-dot" style="background:#0ea5e9"></div><div class="event-info"><div class="event-name">Antar Ara ke sekolah</div><div class="event-time">07:00 – 08:00</div></div><span class="badge badge-teal">Sekolah</span></div>
+        <div class="event-row"><div class="event-dot" style="background:#f43f5e"></div><div class="event-info"><div class="event-name">Meeting project Siti</div><div class="event-time">10:00 – 12:00</div></div><span class="badge" style="background:#ffe4e6;color:#e11d48">Kerja</span></div>
+        <div class="event-row"><div class="event-dot" style="background:#f59e0b"></div><div class="event-info"><div class="event-name">Les piano Bimo</div><div class="event-time">16:00 – 17:30</div></div><span class="badge badge-amber">Aktifitas</span></div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><div class="nav-icon home">HM</div><div class="nav-label">Beranda</div></div>
+        <div class="nav-item active"><div class="nav-icon cal">KL</div><div class="nav-label" style="color:#14b8a6">Kalender</div><div class="nav-active-dot"></div></div>
+        <div class="nav-item"><div class="nav-icon task">TG</div><div class="nav-label">Tugas</div></div>
+        <div class="nav-item"><div class="nav-icon money">BG</div><div class="nav-label">Keuangan</div></div>
+        <div class="nav-item"><div class="nav-icon more">···</div><div class="nav-label">Lainnya</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section-label">3. Tugas &amp; Chore Manager</div>
+<div class="screens-row">
+  <div>
+    <div class="phone-label">Tasks — Daftar Tugas</div>
+    <div class="phone">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="topbar"><div class="topbar-title">Tugas Keluarga</div><span style="font-size:13px;color:#14b8a6;font-weight:600">+ Baru</span></div>
+      <div style="padding:12px 16px">
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <div class="pill pill-active">Semua</div>
+          <div class="pill pill-inactive">Saya</div>
+          <div class="pill pill-inactive">Selesai</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#78716c;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Hari Ini</div>
+        <div class="widget" style="padding:10px 14px">
+          <div class="task-row"><div class="task-check done">✓</div><div class="task-name" style="text-decoration:line-through;color:#a8a29e">Beli susu &amp; roti</div><div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:24px;border-radius:50%;background:#0ea5e9;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">B</div><div class="task-pts">+5★</div></div></div>
+          <div class="task-row"><div class="task-check"></div><div class="task-name">Cuci piring malam</div><div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:24px;border-radius:50%;background:#f43f5e;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">S</div><div class="task-pts">+3★</div></div></div>
+          <div class="task-row"><div class="task-check"></div><div class="task-name">PR matematika</div><div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:24px;border-radius:50%;background:#8b5cf6;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">A</div><div class="task-pts">+10★</div></div></div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#78716c;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Besok</div>
+        <div class="widget" style="padding:10px 14px">
+          <div class="task-row"><div class="task-check"></div><div class="task-name">Bayar listrik online</div><div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:24px;border-radius:50%;background:#0ea5e9;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">B</div><div class="task-pts">+5★</div></div></div>
+          <div class="task-row"><div class="task-check"></div><div class="task-name">Beres-beres kamar</div><div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:24px;border-radius:50%;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">M</div><div class="task-pts">+8★</div></div></div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#78716c;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Leaderboard Minggu Ini</div>
+        <div class="widget" style="padding:10px 14px">
+          <div class="lb-row"><div class="lb-rank" style="color:#f59e0b">1</div><div class="lb-avatar" style="background:#8b5cf6">A</div><div class="lb-name">Ara</div><div class="lb-pts">85 ★</div></div>
+          <div class="lb-row"><div class="lb-rank" style="color:#a8a29e">2</div><div class="lb-avatar" style="background:#f43f5e">S</div><div class="lb-name">Siti</div><div class="lb-pts">72 ★</div></div>
+          <div class="lb-row"><div class="lb-rank" style="color:#b45309">3</div><div class="lb-avatar" style="background:#0ea5e9">B</div><div class="lb-name">Budi</div><div class="lb-pts">60 ★</div></div>
+          <div class="lb-row"><div class="lb-rank" style="color:#78716c">4</div><div class="lb-avatar" style="background:#f59e0b">M</div><div class="lb-name">Bimo</div><div class="lb-pts">45 ★</div></div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><div class="nav-icon home">HM</div><div class="nav-label">Beranda</div></div>
+        <div class="nav-item"><div class="nav-icon cal">KL</div><div class="nav-label">Kalender</div></div>
+        <div class="nav-item active"><div class="nav-icon task">TG</div><div class="nav-label" style="color:#14b8a6">Tugas</div><div class="nav-active-dot"></div></div>
+        <div class="nav-item"><div class="nav-icon money">BG</div><div class="nav-label">Keuangan</div></div>
+        <div class="nav-item"><div class="nav-icon more">···</div><div class="nav-label">Lainnya</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section-label">4. Keuangan &amp; Budget</div>
+<div class="screens-row">
+  <div>
+    <div class="phone-label">Budget — Ringkasan</div>
+    <div class="phone">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="topbar"><div class="topbar-title">Keuangan</div><span style="font-size:13px;color:#14b8a6;font-weight:600">+ Catat</span></div>
+      <div style="padding:12px 16px">
+        <div style="background:linear-gradient(135deg,#14b8a6,#0d9488);border-radius:20px;padding:20px;color:#fff;margin-bottom:16px">
+          <div style="font-size:12px;opacity:.8;margin-bottom:4px">Total Pengeluaran Januari</div>
+          <div style="font-size:28px;font-weight:800">Rp 4.200.000</div>
+          <div style="display:flex;justify-content:space-between;margin-top:12px">
+            <div><div style="font-size:11px;opacity:.7">Budget</div><div style="font-size:15px;font-weight:700">Rp 8.000.000</div></div>
+            <div style="text-align:right"><div style="font-size:11px;opacity:.7">Sisa</div><div style="font-size:15px;font-weight:700">Rp 3.800.000</div></div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#78716c;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Per Kategori</div>
+        <div class="widget">
+          <div class="budget-bar-wrap"><div class="budget-label-row"><div class="budget-label">Makan &amp; Minum</div><div class="budget-val">Rp 1,8jt / Rp 3jt</div></div><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div></div>
+          <div class="budget-bar-wrap"><div class="budget-label-row"><div class="budget-label">Pendidikan</div><div class="budget-val">Rp 900rb / Rp 1,5jt</div></div><div class="bar-bg"><div class="bar-fill" style="width:60%;background:#6366f1"></div></div></div>
+          <div class="budget-bar-wrap"><div class="budget-label-row"><div class="budget-label">Transportasi</div><div class="budget-val">Rp 750rb / Rp 1jt</div></div><div class="bar-bg"><div class="bar-fill" style="width:75%;background:#f59e0b"></div></div></div>
+          <div class="budget-bar-wrap"><div class="budget-label-row"><div class="budget-label">Kesehatan</div><div class="budget-val">Rp 350rb / Rp 1jt</div></div><div class="bar-bg"><div class="bar-fill" style="width:35%;background:#22c55e"></div></div></div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#78716c;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Pengeluaran Terbaru</div>
+        <div class="widget" style="padding:10px 14px">
+          <div class="task-row"><div style="width:36px;height:36px;border-radius:10px;background:#f0fdfa;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0d9488;flex-shrink:0">MKN</div><div style="flex:1;margin-left:4px"><div class="task-name">Makan malam keluarga</div><div style="font-size:11px;color:#78716c">Hari ini · Budi</div></div><div style="font-size:14px;font-weight:700;color:#ef4444">-85rb</div></div>
+          <div class="task-row"><div style="width:36px;height:36px;border-radius:10px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#d97706;flex-shrink:0">BKU</div><div style="flex:1;margin-left:4px"><div class="task-name">Buku pelajaran Ara</div><div style="font-size:11px;color:#78716c">Kemarin · Siti</div></div><div style="font-size:14px;font-weight:700;color:#ef4444">-120rb</div></div>
+          <div class="task-row"><div style="width:36px;height:36px;border-radius:10px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0369a1;flex-shrink:0">BBM</div><div style="flex:1;margin-left:4px"><div class="task-name">Bensin</div><div style="font-size:11px;color:#78716c">2 hari lalu · Budi</div></div><div style="font-size:14px;font-weight:700;color:#ef4444">-70rb</div></div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><div class="nav-icon home">HM</div><div class="nav-label">Beranda</div></div>
+        <div class="nav-item"><div class="nav-icon cal">KL</div><div class="nav-label">Kalender</div></div>
+        <div class="nav-item"><div class="nav-icon task">TG</div><div class="nav-label">Tugas</div></div>
+        <div class="nav-item active"><div class="nav-icon money">BG</div><div class="nav-label" style="color:#14b8a6">Keuangan</div><div class="nav-active-dot"></div></div>
+        <div class="nav-item"><div class="nav-icon more">···</div><div class="nav-label">Lainnya</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section-label">5. Kenangan Keluarga</div>
+<div class="screens-row">
+  <div>
+    <div class="phone-label">Memories — Galeri</div>
+    <div class="phone">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="topbar"><div class="topbar-title">Kenangan</div><span style="font-size:13px;color:#14b8a6;font-weight:600">+ Tambah</span></div>
+      <div style="padding:12px 16px">
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <div class="pill pill-active">Semua</div>
+          <div class="pill pill-inactive">2025</div>
+          <div class="pill pill-inactive">2024</div>
+          <div class="pill" style="background:#fef3c7;color:#d97706;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600">Favorit</div>
+        </div>
+        <div class="widget" style="padding:12px">
+          <div class="mem-grid" style="margin-bottom:10px">
+            <div class="mem-photo" style="background:#ccfbf1;color:#0d9488">Pantai</div>
+            <div class="mem-photo" style="background:#e0f2fe;color:#0369a1">Laut</div>
+            <div class="mem-photo" style="background:#fef3c7;color:#d97706">Sunset</div>
+          </div>
+          <div style="font-size:15px;font-weight:700;color:#1c1917;margin-bottom:4px">Liburan Pantai Bali</div>
+          <div style="font-size:12px;color:#78716c;margin-bottom:8px">24–26 Des 2024 · 3 foto</div>
+          <div style="font-size:13px;color:#44403c;line-height:1.5">Liburan akhir tahun yang paling berkesan. Anak-anak senang sekali main pasir...</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+            <div style="display:flex">
+              <div style="width:24px;height:24px;border-radius:50%;background:#0ea5e9;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">B</div>
+              <div style="width:24px;height:24px;border-radius:50%;background:#f43f5e;border:2px solid #fff;margin-left:-6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">S</div>
+            </div>
+            <span style="font-size:13px;font-weight:700;color:#f43f5e">♥ Favorit</span>
+          </div>
+        </div>
+        <div class="widget" style="padding:12px">
+          <div class="mem-grid" style="margin-bottom:10px">
+            <div class="mem-photo" style="background:#ede9fe;color:#7c3aed">Kue</div>
+            <div class="mem-photo" style="background:#fce7f3;color:#db2777">Hadiah</div>
+            <div class="mem-photo" style="background:#fef3c7;color:#d97706">Pesta</div>
+          </div>
+          <div style="font-size:15px;font-weight:700;color:#1c1917;margin-bottom:4px">Ultah Ara ke-5</div>
+          <div style="font-size:12px;color:#78716c;margin-bottom:8px">10 Nov 2024 · 3 foto</div>
+          <div style="font-size:13px;color:#44403c;line-height:1.5">Ara sangat senang dapat hadiah boneka dan sepeda dari Ayah Bunda...</div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><div class="nav-icon home">HM</div><div class="nav-label">Beranda</div></div>
+        <div class="nav-item"><div class="nav-icon cal">KL</div><div class="nav-label">Kalender</div></div>
+        <div class="nav-item"><div class="nav-icon task">TG</div><div class="nav-label">Tugas</div></div>
+        <div class="nav-item"><div class="nav-icon money">BG</div><div class="nav-label">Keuangan</div></div>
+        <div class="nav-item active"><div class="nav-icon more">···</div><div class="nav-label" style="color:#14b8a6">Lainnya</div><div class="nav-active-dot"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section-label">6. Kids Tracker</div>
+<div class="screens-row">
+  <div>
+    <div class="phone-label">Kids — Profil Anak</div>
+    <div class="phone">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="topbar"><div class="topbar-title">Anak-anak</div><span style="font-size:13px;color:#14b8a6;font-weight:600">+ Tambah</span></div>
+      <div style="padding:12px 16px">
+        <div class="widget" style="display:flex;gap:14px;align-items:center">
+          <div style="width:56px;height:56px;border-radius:18px;background:#ede9fe;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#7c3aed;flex-shrink:0">ARA</div>
+          <div style="flex:1">
+            <div style="font-size:16px;font-weight:700;color:#1c1917">Ara Santoso</div>
+            <div style="font-size:12px;color:#78716c;margin-bottom:8px">5 tahun 2 bulan · Perempuan</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span class="badge badge-teal">BB: 18kg</span>
+              <span class="badge badge-indigo">TB: 107cm</span>
+              <span class="badge badge-amber">1 vaksin</span>
+            </div>
+          </div>
+          <div style="color:#a8a29e;font-size:18px">›</div>
+        </div>
+        <div class="widget" style="display:flex;gap:14px;align-items:center">
+          <div style="width:56px;height:56px;border-radius:18px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#d97706;flex-shrink:0">BIMO</div>
+          <div style="flex:1">
+            <div style="font-size:16px;font-weight:700;color:#1c1917">Bimo Santoso</div>
+            <div style="font-size:12px;color:#78716c;margin-bottom:8px">8 tahun 7 bulan · Laki-laki</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span class="badge badge-teal">BB: 27kg</span>
+              <span class="badge badge-indigo">TB: 128cm</span>
+              <span class="badge badge-green">Lengkap</span>
+            </div>
+          </div>
+          <div style="color:#a8a29e;font-size:18px">›</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#78716c;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Detail: Ara — Tab Tumbuh Kembang</div>
+        <div class="widget">
+          <div style="display:flex;gap:8px;margin-bottom:14px;border-bottom:1px solid #f5f5f4;padding-bottom:10px">
+            <div style="padding:5px 12px;border-radius:8px;background:#14b8a6;color:#fff;font-size:12px;font-weight:600">Pertumbuhan</div>
+            <div style="padding:5px 12px;border-radius:8px;color:#78716c;font-size:12px;font-weight:600">Vaksin</div>
+            <div style="padding:5px 12px;border-radius:8px;color:#78716c;font-size:12px;font-weight:600">Milestone</div>
+          </div>
+          <div class="growth-row"><div class="growth-icon">TB</div><div class="growth-info"><div class="growth-label">Tinggi Badan</div><div class="growth-val">107 cm · Normal (WHO)</div></div><span class="badge badge-green">Normal</span></div>
+          <div class="growth-row"><div class="growth-icon">BB</div><div class="growth-info"><div class="growth-label">Berat Badan</div><div class="growth-val">18 kg · Normal (WHO)</div></div><span class="badge badge-green">Normal</span></div>
+          <div class="growth-row"><div class="growth-icon">LK</div><div class="growth-info"><div class="growth-label">Lingkar Kepala</div><div class="growth-val">50 cm · Normal</div></div><span class="badge badge-green">Normal</span></div>
+          <div style="margin-top:10px;padding:10px;background:#f0fdfa;border-radius:10px;text-align:center;font-size:12px;color:#0d9488;font-weight:600">Grafik pertumbuhan vs kurva WHO tersedia</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#78716c;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Jadwal Vaksin Ara</div>
+        <div class="widget" style="padding:10px 14px">
+          <div class="vaccine-row"><div class="v-status" style="background:#22c55e"></div><div style="flex:1;margin-left:4px"><div style="font-size:13px;font-weight:600">Polio 4</div><div style="font-size:11px;color:#78716c">Diberikan 10 Mar 2024</div></div><span class="badge badge-green">Selesai</span></div>
+          <div class="vaccine-row"><div class="v-status" style="background:#f59e0b"></div><div style="flex:1;margin-left:4px"><div style="font-size:13px;font-weight:600">DPT Booster</div><div style="font-size:11px;color:#78716c">Jadwal: 20 Feb 2025</div></div><span class="badge badge-amber">Segera</span></div>
+          <div class="vaccine-row"><div class="v-status" style="background:#e7e5e4"></div><div style="flex:1;margin-left:4px"><div style="font-size:13px;font-weight:600">MMR Booster</div><div style="font-size:11px;color:#78716c">Jadwal: Jun 2026</div></div><span class="badge" style="background:#f5f5f4;color:#78716c">Terjadwal</span></div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><div class="nav-icon home">HM</div><div class="nav-label">Beranda</div></div>
+        <div class="nav-item"><div class="nav-icon cal">KL</div><div class="nav-label">Kalender</div></div>
+        <div class="nav-item"><div class="nav-icon task">TG</div><div class="nav-label">Tugas</div></div>
+        <div class="nav-item"><div class="nav-icon money">BG</div><div class="nav-label">Keuangan</div></div>
+        <div class="nav-item active"><div class="nav-icon more">···</div><div class="nav-label" style="color:#14b8a6">Lainnya</div><div class="nav-active-dot"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section-label">7. Dokumen Keluarga</div>
+<div class="screens-row">
+  <div>
+    <div class="phone-label">Documents — List</div>
+    <div class="phone">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="topbar"><div class="topbar-title">Dokumen</div><span style="font-size:13px;color:#14b8a6;font-weight:600">+ Upload</span></div>
+      <div style="padding:12px 16px">
+        <div style="background:#fafaf9;border:1px solid #e7e5e4;border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <span style="font-size:13px;font-weight:700;color:#a8a29e">Q</span>
+          <div style="font-size:14px;color:#a8a29e">Cari dokumen...</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <div class="pill pill-active">Semua</div>
+          <div class="pill pill-inactive">KTP/KK</div>
+          <div class="pill pill-inactive">Akta</div>
+          <div class="pill pill-inactive">Asuransi</div>
+          <div class="pill pill-inactive">BPJS</div>
+        </div>
+        <div class="doc-card"><div class="doc-icon" style="background:#e0f2fe;color:#0369a1">KTP</div><div class="doc-info"><div class="doc-name">KTP Budi Santoso</div><div class="doc-meta">KTP · 1.2 MB · 12 Jan 2025</div></div><span class="badge badge-red">Enkripsi</span></div>
+        <div class="doc-card"><div class="doc-icon" style="background:#dcfce7;color:#15803d">KK</div><div class="doc-info"><div class="doc-name">Kartu Keluarga</div><div class="doc-meta">KK · 2.1 MB · 12 Jan 2025</div></div><span class="badge badge-red">Enkripsi</span></div>
+        <div class="doc-card"><div class="doc-icon" style="background:#fef3c7;color:#d97706">AKT</div><div class="doc-info"><div class="doc-name">Akta Kelahiran Ara</div><div class="doc-meta">Akta · 0.8 MB · 5 Jan 2025</div></div><span class="badge badge-red">Enkripsi</span></div>
+        <div class="doc-card"><div class="doc-icon" style="background:#ede9fe;color:#7c3aed">BPS</div><div class="doc-info"><div class="doc-name">BPJS Kesehatan</div><div class="doc-meta">BPJS · 0.5 MB · 3 Jan 2025</div></div><span class="badge badge-teal">Publik</span></div>
+        <div class="doc-card"><div class="doc-icon" style="background:#fce7f3;color:#db2777">ASR</div><div class="doc-info"><div class="doc-name">Asuransi Jiwa 2025</div><div class="doc-meta">Asuransi · 3.4 MB · 1 Jan 2025</div></div><span class="badge badge-red">Enkripsi</span></div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><div class="nav-icon home">HM</div><div class="nav-label">Beranda</div></div>
+        <div class="nav-item"><div class="nav-icon cal">KL</div><div class="nav-label">Kalender</div></div>
+        <div class="nav-item"><div class="nav-icon task">TG</div><div class="nav-label">Tugas</div></div>
+        <div class="nav-item"><div class="nav-icon money">BG</div><div class="nav-label">Keuangan</div></div>
+        <div class="nav-item active"><div class="nav-icon more">···</div><div class="nav-label" style="color:#14b8a6">Lainnya</div><div class="nav-active-dot"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section-label">8. Settings &amp; Profil</div>
+<div class="screens-row">
+  <div>
+    <div class="phone-label">Settings — Profil &amp; Keluarga</div>
+    <div class="phone">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="topbar"><div class="topbar-title">Pengaturan</div></div>
+      <div style="padding:12px 16px">
+        <div style="display:flex;align-items:center;gap:14px;background:#f0fdfa;border:1px solid #99f6e4;border-radius:16px;padding:16px;margin-bottom:16px">
+          <div style="width:56px;height:56px;border-radius:50%;background:#0ea5e9;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0">BS</div>
+          <div style="flex:1">
+            <div style="font-size:16px;font-weight:700;color:#1c1917">Budi Santoso</div>
+            <div style="font-size:12px;color:#78716c">budi@email.com</div>
+            <div style="margin-top:6px;display:flex;gap:6px">
+              <span class="badge" style="background:#e0f2fe;color:#0284c7">Admin</span>
+              <span class="badge" style="background:#dcfce7;color:#16a34a">G Connected</span>
+            </div>
+          </div>
+          <div style="color:#14b8a6;font-size:13px;font-weight:600">Edit</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#78716c;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Keluarga Budi</div>
+        <div class="widget" style="padding:12px 14px">
+          <div style="font-size:13px;font-weight:600;color:#44403c;margin-bottom:10px">Anggota (4)</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:50%;background:#0ea5e9;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0">B</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Budi Santoso</div><div style="font-size:11px;color:#78716c">Admin · Kamu</div></div></div>
+            <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:50%;background:#f43f5e;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0">S</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Siti Rahayu</div><div style="font-size:11px;color:#78716c">Admin</div></div></div>
+            <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:50%;background:#8b5cf6;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0">A</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Ara Santoso</div><div style="font-size:11px;color:#78716c">Anak · 5 tahun</div></div></div>
+            <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:50%;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0">M</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Bimo Santoso</div><div style="font-size:11px;color:#78716c">Anak · 8 tahun</div></div></div>
+          </div>
+          <div style="margin-top:12px;padding:10px;background:#f0fdfa;border-radius:10px;display:flex;align-items:center;justify-content:space-between">
+            <div><div style="font-size:12px;font-weight:600;color:#0d9488">Kode Undangan</div><div style="font-size:15px;font-weight:800;color:#0d9488;letter-spacing:.1em">BUDI-X7K2</div></div>
+            <div style="padding:8px 14px;background:#14b8a6;border-radius:8px;font-size:12px;font-weight:700;color:#fff">Salin</div>
+          </div>
+        </div>
+        <div class="widget" style="padding:4px 0">
+          <div style="padding:14px 16px;display:flex;justify-content:space-between;border-bottom:1px solid #f5f5f4"><div style="font-size:14px;font-weight:500">Notifikasi</div><div style="color:#a8a29e">›</div></div>
+          <div style="padding:14px 16px;display:flex;justify-content:space-between;border-bottom:1px solid #f5f5f4"><div style="font-size:14px;font-weight:500">Mode Gelap</div><div style="width:40px;height:22px;border-radius:11px;background:#e7e5e4;position:relative"><div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div></div>
+          <div style="padding:14px 16px;display:flex;justify-content:space-between;border-bottom:1px solid #f5f5f4"><div style="font-size:14px;font-weight:500">Keamanan</div><div style="color:#a8a29e">›</div></div>
+          <div style="padding:14px 16px;display:flex;justify-content:space-between"><div style="font-size:14px;font-weight:500;color:#ef4444">Keluar</div></div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item"><div class="nav-icon home">HM</div><div class="nav-label">Beranda</div></div>
+        <div class="nav-item"><div class="nav-icon cal">KL</div><div class="nav-label">Kalender</div></div>
+        <div class="nav-item"><div class="nav-icon task">TG</div><div class="nav-label">Tugas</div></div>
+        <div class="nav-item"><div class="nav-icon money">BG</div><div class="nav-label">Keuangan</div></div>
+        <div class="nav-item active"><div class="nav-icon more">···</div><div class="nav-label" style="color:#14b8a6">Lainnya</div><div class="nav-active-dot"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:48px;padding-top:16px;border-top:1px solid #e7e5e4;text-align:center;font-size:12px;color:#a8a29e">
+  Made with IBM Bob · Family Hub Wireframe Dashboard &amp; Modules v1.0 · Task 0.2
+</div>
+
+</body>
+</html>

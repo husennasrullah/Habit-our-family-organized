@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="#14b8a6"/>
+  <!-- House shape -->
+  <path d="M256 120 L380 220 L380 390 L132 390 L132 220 Z" fill="white" opacity="0.15"/>
+  <!-- Roof -->
+  <path d="M256 110 L396 228 L376 228 L256 130 L136 228 L116 228 Z" fill="white"/>
+  <!-- Door -->
+  <rect x="226" y="300" width="60" height="90" rx="30" fill="white"/>
+  <!-- Windows -->
+  <rect x="160" y="255" width="50" height="50" rx="8" fill="white" opacity="0.9"/>
+  <rect x="302" y="255" width="50" height="50" rx="8" fill="white" opacity="0.9"/>
+  <!-- Heart -->
+  <path d="M256 210 C256 210 234 192 222 192 C210 192 200 202 200 214 C200 226 256 268 256 268 C256 268 312 226 312 214 C312 202 302 192 290 192 C278 192 256 210 256 210Z" fill="#f43f5e" opacity="0.9"/>
+</svg>
