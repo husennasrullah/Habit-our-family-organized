@@ -49,7 +49,8 @@ function getCategoryStyle(title: string) {
 export default function TasksPage() {
   const [modalOpen, setModalOpen]       = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [_completingId, setCompletingId] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [completingId, setCompletingId] = useState<string | null>(null);
 
   const user     = useAuthStore((s) => s.user);
   const familyId = user?.family_id;
@@ -84,7 +85,8 @@ export default function TasksPage() {
   const handleAdd  = useCallback(() => { setSelectedTask(null); setModalOpen(true); }, []);
   const handleEdit = useCallback((task: Task) => { setSelectedTask(task); setModalOpen(true); }, []);
 
-  const handleComplete = useCallback(async (task: Task) => { // eslint-disable-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleComplete = useCallback(async (task: Task) => {
     setCompletingId(task.id);
     try {
       await completeTask.mutateAsync(task.id);

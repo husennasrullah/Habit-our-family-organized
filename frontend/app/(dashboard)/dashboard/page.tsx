@@ -57,9 +57,6 @@ const CATEGORY_STYLE: Record<string, string> = {
 export default function DashboardPage() {
   const user  = useAuthStore((s) => s.user);
   const now   = new Date();
-  const hour  = now.getHours();
-  const _greeting =
-    hour < 11 ? "Selamat pagi" : hour < 15 ? "Selamat siang" : hour < 19 ? "Selamat sore" : "Selamat malam";
 
   // Data
   const { from, to }   = getApiDateRange(now, "week");

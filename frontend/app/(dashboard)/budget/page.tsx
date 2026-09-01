@@ -52,7 +52,8 @@ export default function BudgetPage() {
   const [budgetModal, setBudgetModal]       = useState(false);
   const [editCategory, setEditCategory]     = useState("");
   const [editBudgetAmt, setEditBudgetAmt]   = useState(0);
-  const [_editBudgetId, setEditBudgetId]     = useState<string | undefined>();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [editBudgetId, setEditBudgetId]     = useState<string | undefined>();
 
   const month = getMonth(currentDate) + 1;
   const year  = getYear(currentDate);
