@@ -1,0 +1,10 @@
+# Backend .dockerignore
+.env
+.env.*
+!.env.example
+.idea/
+.git/
+*.md
+migrations/
+bin/
+tmp/

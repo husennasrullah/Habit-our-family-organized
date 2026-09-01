@@ -2,6 +2,9 @@ import withPWA from "next-pwa";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Output standalone — dibutuhkan agar Docker image bisa jalan tanpa node_modules penuh
+  output: "standalone",
+
   // Izinkan ngrok dan domain eksternal lain saat development
   // Tambah domain ngrok kamu di sini jika berubah, atau pakai wildcard *.ngrok-free.app
   allowedDevOrigins: [

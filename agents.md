@@ -12,7 +12,7 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-09-01 (Logo user custom)
+> **Last updated:** 2026-09-02 (Fase 10 — Deployment setup)
 
 ### ✅ Sudah Selesai (semua fase)
 
@@ -32,8 +32,21 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fitur Jadwal Makanan | Meal plan grid 7×3, push notification jam 04:00 | ✅ |
 | Fix Auth Loop | Loop reload & UNAUTHORIZED error setelah token expired | ✅ |
 | Bug fixes & ngrok dev | CORS, refresh token, foto proxy, meal plan display | ✅ |
+| Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Fase 10 — Deployment Setup — 2026-09-02
+- `frontend/Dockerfile` — multi-stage build (deps → builder → runner), Node 20 Alpine, standalone output
+- `frontend/next.config.mjs` — tambah `output: "standalone"` untuk Docker
+- `frontend/.dockerignore` — exclude node_modules, .next, .env
+- `backend/Dockerfile` — tambah `-ldflags="-s -w"` (ukuran binary lebih kecil), hapus copy `.env` ke image, tambah HEALTHCHECK
+- `backend/.dockerignore` — exclude .env, .idea, migrations, bin
+- `docker-compose.prod.yml` — production stack: postgres, redis, minio, backend, frontend (tanpa Nginx — pakai reverse proxy eksternal)
+- `.env.example` — update dengan semua env vars production
+- `.github/workflows/ci.yml` — CI: lint + typecheck + build + test (backend Go + frontend Next.js)
+- `.github/workflows/cd.yml` — CD: build & push Docker image ke GHCR, deploy ke VPS via SSH
+- `docs/deployment.md` — panduan lengkap: setup VPS, GitHub Secrets, jalankan production, troubleshooting
 
 #### Logo User Custom — 2026-09-01
 - `frontend/public/icons/assets-habit/` — tambah `logo-user-ayah.png`, `logo-user-ibu.png`, `logo-user-anak.png`
@@ -188,18 +201,15 @@ PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -c "
 
 | Task | Prioritas |
 |---|---|
-| **Fase 10 — Testing & Deployment** | Berikutnya — prioritas utama |
-| Unit test backend (auth service, task service) | Tinggi |
-| Dockerfile frontend (Next.js standalone) | Tinggi |
-| Dockerfile backend | Tinggi |
-| GitHub Actions CI/CD pipeline | Sedang |
-| Production checklist (HTTPS, env secrets) | Sedang |
+| **Halaman Register** — belum diupdate seperti login (masih pakai Card lama) | Sedang |
+| Unit test backend (auth service, task service) | Sedang |
 | Setup database lokal + jalankan seed | Perlu konfirmasi user |
 
 ### ⚡ Next Steps (langsung dikerjakan saat mulai sesi baru)
-1. Tanya user: mau lanjut **Fase 10 (Testing & Deployment)** atau ada perbaikan UI/fitur dulu?
-2. Jika Fase 10: mulai dari unit test backend → Dockerfile → CI/CD
-3. Jika ada perbaikan: baca mockup `docs/ui-ux/` lagi sebagai referensi
+1. Setup GitHub repo + tambahkan secrets (lihat `docs/deployment.md` section 2)
+2. Push ke `master` → CI/CD akan jalan otomatis
+3. Opsional: update halaman Register agar tampilannya seperti halaman Login
+4. Opsional: tulis unit test backend (auth service, task service)
 
 > **⚠️ Catatan Dev Environment:**
 > - Ngrok URL berubah setiap restart tunnel. Update dua tempat jika URL berubah:
