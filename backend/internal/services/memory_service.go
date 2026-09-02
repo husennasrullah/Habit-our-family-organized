@@ -210,13 +210,13 @@ func (s *MemoryService) UploadPhotos(memoryID, familyID uuid.UUID, files []*mult
 }
 
 // GetPhotoStream mengambil stream foto langsung dari storage — dipakai oleh proxy handler.
-func (s *MemoryService) GetPhotoStream(photoID, familyID uuid.UUID) (io.ReadCloser, string, error) {
+func (s *MemoryService) GetPhotoStream(photoID, familyID uuid.UUID) (io.ReadCloser, string, int64, error) {
 	photo, err := s.repo.GetPhotoByID(photoID)
 	if err != nil {
-		return nil, "", errors.New("foto tidak ditemukan")
+		return nil, "", 0, errors.New("foto tidak ditemukan")
 	}
 	if _, err := s.repo.GetByID(photo.MemoryID, familyID); err != nil {
-		return nil, "", errors.New("akses ditolak")
+		return nil, "", 0, errors.New("akses ditolak")
 	}
 	return s.storage.GetObject(context.Background(), photo.ObjectKey)
 }

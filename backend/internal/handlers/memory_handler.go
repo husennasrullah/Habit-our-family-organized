@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"strconv"
 
 	"keluarga-app/backend/internal/services"
@@ -185,7 +186,7 @@ func (h *MemoryHandler) ServePhoto(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "photo ID tidak valid"})
 	}
-	r, contentType, err := h.memoryService.GetPhotoStream(photoID, getFamilyID(c))
+	r, contentType, size, err := h.memoryService.GetPhotoStream(photoID, getFamilyID(c))
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -193,7 +194,10 @@ func (h *MemoryHandler) ServePhoto(c *fiber.Ctx) error {
 
 	c.Set("Content-Type", contentType)
 	c.Set("Cache-Control", "private, max-age=3600")
-	return c.SendStream(r)
+	if size > 0 {
+		c.Set("Content-Length", fmt.Sprintf("%d", size))
+	}
+	return c.SendStream(r, int(size))
 }
 
 // DeletePhoto godoc

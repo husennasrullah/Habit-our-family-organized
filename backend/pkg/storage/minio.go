@@ -92,22 +92,22 @@ func (s *minioStorage) PublicURL(key string) string {
 
 // GetObject mengambil file dari MinIO dan mengembalikan stream-nya.
 // Dipakai oleh ServePhoto handler untuk proxy foto ke browser.
-func (s *minioStorage) GetObject(ctx context.Context, key string) (io.ReadCloser, string, error) {
+func (s *minioStorage) GetObject(ctx context.Context, key string) (io.ReadCloser, string, int64, error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
 	obj, err := s.client.GetObject(ctx, s.bucket, key, minio.GetObjectOptions{})
 	if err != nil {
-		return nil, "", fmt.Errorf("storage: get '%s' failed: %w", key, err)
+		return nil, "", 0, fmt.Errorf("storage: get '%s' failed: %w", key, err)
 	}
 	info, err := obj.Stat()
 	if err != nil {
 		obj.Close()
-		return nil, "", fmt.Errorf("storage: stat '%s' failed: %w", key, err)
+		return nil, "", 0, fmt.Errorf("storage: stat '%s' failed: %w", key, err)
 	}
 	contentType := info.ContentType
 	if contentType == "" {
 		contentType = "image/jpeg"
 	}
-	return obj, contentType, nil
+	return obj, contentType, info.Size, nil
 }

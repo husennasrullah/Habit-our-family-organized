@@ -25,5 +25,5 @@ type Storage interface {
 
 	// GetObject mengembalikan stream file langsung dari storage.
 	// Gunakan untuk proxy — hindari expose endpoint MinIO ke publik.
-	GetObject(ctx context.Context, key string) (io.ReadCloser, string, error)
+	GetObject(ctx context.Context, key string) (io.ReadCloser, string, int64, error)
 }
