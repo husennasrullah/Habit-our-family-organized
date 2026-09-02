@@ -88,10 +88,11 @@ export function useUploadPhotos() {
     mutationFn: async ({ memoryId, files }: { memoryId: string; files: File[] }) => {
       const form = new FormData();
       files.forEach((f) => form.append("photos", f));
+      // Jangan set Content-Type manual — biarkan browser/axios set otomatis
+      // agar boundary multipart ter-generate dengan benar
       const { data } = await api.post(
         `/memories/${memoryId}/photos`,
         form,
-        { headers: { "Content-Type": "multipart/form-data" } }
       );
       return data.data;
     },
