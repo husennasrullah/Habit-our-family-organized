@@ -187,6 +187,22 @@ export interface Task {
   updated_at: string;
 }
 
+// ─── Financial Goals ─────────────────────────────────────────────────────────
+
+export interface FinancialGoal {
+  id: string;
+  family_id: string;
+  created_by: string;
+  title: string;
+  target_amount: number;
+  current_amount: number;
+  deadline: string | null;
+  notes: string;
+  is_achieved: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 // ─── Memories ────────────────────────────────────────────────────────────────
 
 export interface MemoryPhoto {

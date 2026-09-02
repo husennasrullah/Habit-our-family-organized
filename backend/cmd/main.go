@@ -55,10 +55,11 @@ func main() {
 	expenseRepo  := repositories.NewExpenseRepository(database.DB)
 	budgetRepo   := repositories.NewBudgetRepository(database.DB)
 	shoppingRepo := repositories.NewShoppingRepository(database.DB)
-	memoryRepo   := repositories.NewMemoryRepository(database.DB)
-	kidsRepo     := repositories.NewKidsRepository(database.DB)
-	docRepo      := repositories.NewDocumentRepository(database.DB)
-	mealRepo     := repositories.NewMealPlanRepository(database.DB)
+	memoryRepo    := repositories.NewMemoryRepository(database.DB)
+	kidsRepo      := repositories.NewKidsRepository(database.DB)
+	docRepo       := repositories.NewDocumentRepository(database.DB)
+	mealRepo      := repositories.NewMealPlanRepository(database.DB)
+	goalRepo      := repositories.NewFinancialGoalRepository(database.DB)
 
 	// ─── Services ─────────────────────────────────────────────────────────────
 	authService     := services.NewAuthService(memberRepo, jwtManager, database.RDB, &cfg.Google)
@@ -70,6 +71,7 @@ func main() {
 	kidsService     := services.NewKidsService(kidsRepo)
 	docService      := services.NewDocumentService(docRepo, storageClient)
 	mealPlanService := services.NewMealPlanService(mealRepo)
+	goalService     := services.NewFinancialGoalService(goalRepo)
 	pushSubRepo     := repositories.NewPushSubscriptionRepository(database.DB)
 
 	// ─── Scheduler: notifikasi meal plan jam 04:00 ────────────────────────────
@@ -86,6 +88,7 @@ func main() {
 	kidsHandler     := handlers.NewKidsHandler(kidsService)
 	docHandler      := handlers.NewDocumentHandler(docService)
 	mealPlanHandler := handlers.NewMealPlanHandler(mealPlanService)
+	goalHandler     := handlers.NewFinancialGoalHandler(goalService)
 	pushHandler     := handlers.NewPushHandler(pushSubRepo)
 
 	// ─── WebSocket Hub ────────────────────────────────────────────────────────
@@ -205,6 +208,14 @@ func main() {
 	docs.Get("",        docHandler.GetDocuments)
 	docs.Post("",       docHandler.UploadDocument)
 	docs.Delete("/:id", docHandler.DeleteDocument)
+
+	// Financial Goals routes
+	goals := api.Group("/financial-goals", authMw)
+	goals.Get("",            goalHandler.GetGoals)
+	goals.Post("",           goalHandler.CreateGoal)
+	goals.Put("/:id",        goalHandler.UpdateGoal)
+	goals.Patch("/:id/progress", goalHandler.AddFund)
+	goals.Delete("/:id",    goalHandler.DeleteGoal)
 
 	// Meal Plan routes
 	meals := api.Group("/meal-plans", authMw)
