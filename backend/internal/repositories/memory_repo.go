@@ -34,7 +34,13 @@ func (r *MemoryRepository) GetByID(id, familyID uuid.UUID) (*models.Memory, erro
 func (r *MemoryRepository) GetByFamily(familyID uuid.UUID, opts MemoryQueryOpts) ([]models.Memory, error) {
 	var list []models.Memory
 	q := r.db.Preload("Photos", func(db *gorm.DB) *gorm.DB {
-		return db.Order(`"order" ASC, created_at ASC`).Limit(1) // hanya cover photo
+		// Subquery: ambil 1 foto cover per memory menggunakan DISTINCT ON (PostgreSQL)
+		return db.Where(`id IN (
+			SELECT DISTINCT ON (memory_id) id
+			FROM memory_photos
+			WHERE deleted_at IS NULL
+			ORDER BY memory_id, "order" ASC, created_at ASC
+		)`)
 	}).Where("family_id = ?", familyID)
 
 	if opts.Year > 0 {
