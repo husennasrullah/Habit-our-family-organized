@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuthStore } from "@/stores/authStore";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api/v1";
 
@@ -11,11 +10,16 @@ function resolvePhotoUrl(url: string): string {
   return url;
 }
 
+// Ambil token fresh dari localStorage setiap kali dibutuhkan
+function getFreshToken(): string {
+  if (typeof window === "undefined") return "";
+  return localStorage.getItem("access_token") ?? "";
+}
+
 // Cache blob URL supaya tidak re-fetch setiap render
 const blobCache = new Map<string, string>();
 
 export function usePhotoUrl(rawUrl: string): string {
-  const token = useAuthStore((s) => s.accessToken);
   const [blobUrl, setBlobUrl] = useState<string>(() => blobCache.get(rawUrl) ?? "");
 
   useEffect(() => {
@@ -35,8 +39,9 @@ export function usePhotoUrl(rawUrl: string): string {
       return;
     }
 
-    // Fetch dengan Authorization header lalu buat blob URL
-    let objectUrl = "";
+    // Ambil token fresh dari localStorage (bukan dari React state yang bisa stale)
+    const token = getFreshToken();
+
     fetch(resolved, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })
@@ -45,18 +50,16 @@ export function usePhotoUrl(rawUrl: string): string {
         return res.blob();
       })
       .then((blob) => {
-        objectUrl = URL.createObjectURL(blob);
+        const objectUrl = URL.createObjectURL(blob);
         blobCache.set(rawUrl, objectUrl);
         setBlobUrl(objectUrl);
       })
       .catch(() => {
-        // Gagal fetch — biarkan kosong, tampilkan placeholder
         setBlobUrl("");
       });
 
-    // Cleanup: jangan revoke karena ada di cache global
     return () => {};
-  }, [rawUrl, token]);
+  }, [rawUrl]);
 
   return blobUrl;
 }
