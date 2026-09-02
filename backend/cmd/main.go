@@ -93,7 +93,8 @@ func main() {
 
 	// ─── Fiber App ────────────────────────────────────────────────────────────
 	app := fiber.New(fiber.Config{
-		AppName: "Keluarga API v1.0",
+		AppName:   "Keluarga API v1.0",
+		BodyLimit: 50 * 1024 * 1024, // 50MB — untuk upload foto
 	})
 
 	// Middleware global
