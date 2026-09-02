@@ -11,7 +11,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   const sidebarCollapsed = useUIStore((s) => s.sidebarCollapsed);
 
   return (
-    <div className="min-h-screen bg-[#F4F6F8] dark:bg-neutral-950">
+    <div className="min-h-screen bg-[#F0F2F5] dark:bg-neutral-950">
       <Sidebar />
 
       {/* Main area — offset ikut sidebar collapsed/expanded */}

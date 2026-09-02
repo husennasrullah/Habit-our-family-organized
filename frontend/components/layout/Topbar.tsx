@@ -37,16 +37,19 @@ export function Topbar({ title, searchPlaceholder }: TopbarProps) {
         </div>
       )}
 
-      {/* Kanan: bell + avatar */}
+      {/* Kanan: bell + separator + avatar */}
       <div className="flex items-center gap-2">
         <button className="relative p-2 text-neutral-400 hover:text-neutral-700 rounded-lg hover:bg-neutral-100 transition-colors">
           <Bell className="h-5 w-5" />
-          {/* dot notifikasi */}
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary-500 ring-2 ring-white" />
+          {/* dot notifikasi merah */}
+          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
         </button>
 
+        {/* Separator */}
+        <span className="h-5 w-px bg-neutral-200" />
+
         {user && (
-          <div className="h-8 w-8 rounded-full overflow-hidden flex-shrink-0 cursor-pointer ring-2 ring-primary-200">
+          <div className="h-8 w-8 rounded-full overflow-hidden flex-shrink-0 cursor-pointer ring-2 ring-teal-200">
             <Image
               src={user.avatar_url || (user.role === "child" ? "/icons/assets-habit/logo-user-anak.png" : "/icons/assets-habit/logo-user-ayah.png")}
               alt={user.name}

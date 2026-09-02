@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { X, Menu, ChevronUp, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { X, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
@@ -22,6 +22,7 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const pathname   = usePathname();
+  const router     = useRouter();
   const { sidebarOpen, toggleSidebar, sidebarCollapsed, toggleCollapsed } = useUIStore();
   const user       = useAuthStore((s) => s.user);
 
@@ -39,16 +40,13 @@ export function Sidebar() {
         className={cn(
           "fixed left-0 top-0 z-40 flex h-full flex-col bg-white dark:bg-neutral-900 transition-all duration-300",
           "border-r border-neutral-200 dark:border-neutral-800",
-          // Desktop: collapsed = w-16, expanded = w-64
           sidebarCollapsed ? "lg:w-16" : "lg:w-64",
-          // Mobile: slide in/out
           sidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-64",
           "lg:translate-x-0"
         )}
       >
         {/* ── Logo ──────────────────────────────────────────────── */}
         <div className="flex h-16 items-center justify-between px-3 border-b border-neutral-100 dark:border-neutral-800">
-          {/* Logo — sembunyikan title saat collapsed */}
           <Link href="/dashboard" className="flex items-center gap-2.5 min-w-0 overflow-hidden">
             <Image
               src="/icons/assets-habit/logo-habit.png"
@@ -105,24 +103,21 @@ export function Sidebar() {
                     }}
                     title={sidebarCollapsed ? label : undefined}
                     className={cn(
-                      "relative flex items-center rounded-lg px-2 py-2.5 text-sm font-medium transition-all",
+                      "relative flex items-center rounded-xl px-2 py-2.5 text-sm font-medium transition-all",
                       sidebarCollapsed ? "justify-center" : "gap-3 px-3",
                       isActive
-                        ? "bg-primary-50 text-primary-700"
-                        : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-800"
+                        ? "bg-teal-50 text-teal-700 font-semibold"
+                        : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-800"
                     )}
                   >
-                    {isActive && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-primary-600" />
-                    )}
                     <Image
                       src={img}
                       alt={label}
-                      width={18}
-                      height={18}
+                      width={20}
+                      height={20}
                       className={cn(
                         "flex-shrink-0 object-contain",
-                        !isActive && "opacity-50"
+                        !isActive && "opacity-60"
                       )}
                     />
                     {!sidebarCollapsed && label}
@@ -133,13 +128,12 @@ export function Sidebar() {
           </ul>
         </nav>
 
-        {/* ── User info — sembunyikan saat collapsed ─────────────── */}
+        {/* ── User info ─────────────────────────────── */}
         {user && (
           <div className="border-t border-neutral-100 dark:border-neutral-800 p-3">
             {sidebarCollapsed ? (
-              /* Collapsed: hanya avatar */
               <div className="flex justify-center">
-                <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-primary-200">
+                <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-teal-200">
                   <Image
                     src={user.avatar_url || (user.role === "child" ? "/icons/assets-habit/logo-user-anak.png" : "/icons/assets-habit/logo-user-ayah.png")}
                     alt={user.name}
@@ -150,9 +144,8 @@ export function Sidebar() {
                 </div>
               </div>
             ) : (
-              /* Expanded: avatar + nama + email */
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-primary-200">
+                <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-teal-200">
                   <Image
                     src={user.avatar_url || (user.role === "child" ? "/icons/assets-habit/logo-user-anak.png" : "/icons/assets-habit/logo-user-ayah.png")}
                     alt={user.name}
@@ -163,9 +156,13 @@ export function Sidebar() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-neutral-800 truncate">{user.name}</p>
-                  <p className="text-xs text-neutral-400 truncate">{user.email}</p>
+                  <button
+                    onClick={() => router.push("/settings")}
+                    className="text-xs text-teal-600 hover:underline font-medium"
+                  >
+                    lihat profil
+                  </button>
                 </div>
-                <ChevronUp className="h-4 w-4 text-neutral-300 flex-shrink-0" />
               </div>
             )}
           </div>

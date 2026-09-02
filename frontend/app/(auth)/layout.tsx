@@ -1,4 +1,5 @@
 import { Providers } from "@/app/providers";
+import Image from "next/image";
 
 export default function AuthLayout({
   children,
@@ -7,25 +8,20 @@ export default function AuthLayout({
 }) {
   return (
     <Providers>
-      <div className="min-h-screen bg-[#1a2744] flex items-center justify-center p-4 relative overflow-hidden">
-        {/* Dekoratif lingkaran samar */}
-        <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-white/5" />
-        <div className="absolute -bottom-32 -right-20 h-80 w-80 rounded-full bg-white/5" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-white/[0.03]" />
-        <div className="absolute top-10 right-10 h-40 w-40 rounded-full bg-[#f97316]/5" />
-        <div className="absolute bottom-10 left-10 h-56 w-56 rounded-full bg-primary-500/5" />
+      <div className="min-h-screen bg-[#F0F2F5] flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
 
-        <div className="relative z-10 w-full max-w-md">
           {/* Branding */}
-          <div className="flex flex-col items-center mb-8">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <div className="flex flex-col items-center mb-6">
+            <Image
               src="/icons/assets-habit/logo-habit.png"
               alt="HABIT"
-              className="w-20 h-20 object-contain mb-3 drop-shadow-lg"
+              width={72}
+              height={72}
+              className="object-contain mb-3 drop-shadow-sm"
             />
             <h1
-              className="text-4xl tracking-[0.2em] text-white mb-1"
+              className="text-3xl tracking-[0.2em] text-[#1a2744] mb-0.5"
               style={{ fontFamily: "var(--font-nunito)", fontWeight: 900 }}
             >
               HABIT
@@ -35,8 +31,11 @@ export default function AuthLayout({
             </p>
           </div>
 
-          {/* Form card */}
-          {children}
+          {/* Card wrapper */}
+          <div className="bg-white rounded-2xl shadow-md border border-neutral-100 px-6 py-7">
+            {children}
+          </div>
+
         </div>
       </div>
     </Providers>

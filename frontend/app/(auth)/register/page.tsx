@@ -59,16 +59,16 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="w-full border-0 rounded-2xl bg-white/10 backdrop-blur-md text-white [&_label]:text-white/80 [&_input]:bg-white/10 [&_input]:border-white/20 [&_input]:text-white [&_input]:placeholder:text-white/30">
-      <CardHeader className="text-center pb-2">
-        <CardTitle className="text-xl font-bold text-white">Buat Akun</CardTitle>
-        <CardDescription className="text-white/60">Mulai kelola kehidupan keluarga bersama</CardDescription>
+    <Card className="w-full border-0 shadow-none">
+      <CardHeader className="text-center pb-2 px-0">
+        <CardTitle className="text-xl font-bold text-neutral-900">Buat Akun</CardTitle>
+        <CardDescription className="text-neutral-500">Mulai kelola kehidupan keluarga bersama</CardDescription>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="px-0">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {serverError && (
-            <p className="rounded-lg bg-error-50 px-3 py-2 text-sm text-error-600">
+            <p className="rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-600">
               {serverError}
             </p>
           )}
@@ -111,7 +111,7 @@ export default function RegisterPage() {
 
           <a
             href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google`}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
           >
             <GoogleIcon />
             Daftar dengan Google
@@ -119,10 +119,10 @@ export default function RegisterPage() {
         </form>
       </CardContent>
 
-      <CardFooter className="justify-center">
+      <CardFooter className="justify-center px-0 pt-2">
         <p className="text-sm text-neutral-500">
           Sudah punya akun?{" "}
-          <Link href="/login" className="font-medium text-primary-600 hover:underline">
+          <Link href="/login" className="font-semibold text-teal-600 hover:underline">
             Masuk
           </Link>
         </p>
