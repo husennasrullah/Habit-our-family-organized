@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"io"
 	"strconv"
 
 	"keluarga-app/backend/internal/services"
@@ -190,14 +191,17 @@ func (h *MemoryHandler) ServePhoto(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 	}
-	defer r.Close()
+	// Baca seluruh konten ke memory dulu agar stream tidak ditutup prematur
+	data, err := io.ReadAll(r)
+	r.Close()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "gagal membaca foto"})
+	}
 
 	c.Set("Content-Type", contentType)
 	c.Set("Cache-Control", "private, max-age=3600")
-	if size > 0 {
-		c.Set("Content-Length", fmt.Sprintf("%d", size))
-	}
-	return c.SendStream(r, int(size))
+	c.Set("Content-Length", fmt.Sprintf("%d", size))
+	return c.Send(data)
 }
 
 // DeletePhoto godoc
