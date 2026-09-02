@@ -57,6 +57,9 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "127.0.0.1:9000:9000"   # API — hanya localhost VPS, tidak publik
+      - "127.0.0.1:9001:9001"   # Console — hanya localhost VPS, tidak publik
     volumes:
       - minio-data:/data
     healthcheck:
