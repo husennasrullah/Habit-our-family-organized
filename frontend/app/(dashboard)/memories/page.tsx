@@ -55,10 +55,11 @@ export default function MemoriesPage() {
     }
   };
 
-  const handleDelete = async () => {
-    if (!selectedMemory) return;
+  const handleDelete = async (memoryToDelete?: Memory | null) => {
+    const target = memoryToDelete ?? selectedMemory;
+    if (!target) return;
     try {
-      await deleteMemory.mutateAsync(selectedMemory.id);
+      await deleteMemory.mutateAsync(target.id);
       toast.success("Kenangan dihapus");
       setModalOpen(false);
     } catch {
@@ -173,7 +174,7 @@ export default function MemoriesPage() {
               key={memory.id}
               memory={memory}
               onEdit={(m) => { setSelectedMemory(m); setModalOpen(true); }}
-              onDelete={handleDelete}
+              onDelete={(m) => handleDelete(m)}
               onOpen={(m) => openLightbox(m, 0)}
               onToggleFavorite={handleToggleFavorite}
             />
