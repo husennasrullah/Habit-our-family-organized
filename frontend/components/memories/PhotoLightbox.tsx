@@ -4,13 +4,23 @@ import { useEffect, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Memory } from "@/types";
+import { usePhotoUrl } from "@/hooks/usePhotoUrl";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api/v1";
-
-function resolvePhotoUrl(url: string): string {
-  if (!url) return "";
-  if (url.startsWith("/")) return `${API_BASE.replace(/\/api\/v1$/, "")}${url}`;
-  return url;
+function LightboxImage({ url, alt }: { url: string; alt: string }) {
+  const src = usePhotoUrl(url);
+  if (!src) return (
+    <div className="flex h-64 w-64 items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-white border-t-transparent" />
+    </div>
+  );
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      className="max-h-[85vh] max-w-full rounded-lg object-contain"
+    />
+  );
 }
 
 interface PhotoLightboxProps {
@@ -69,12 +79,7 @@ export function PhotoLightbox({ memory, photoIndex, onClose, onNavigate }: Photo
 
       {/* Image */}
       <div className="relative max-h-screen max-w-screen-lg px-16" onClick={(e) => e.stopPropagation()}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={resolvePhotoUrl(current.url)}
-          alt={current.caption || memory.title}
-          className="max-h-[85vh] max-w-full rounded-lg object-contain"
-        />
+        <LightboxImage url={current.url} alt={current.caption || memory.title} />
         {current.caption && (
           <p className="mt-2 text-center text-sm text-white/70">{current.caption}</p>
         )}

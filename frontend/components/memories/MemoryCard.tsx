@@ -5,15 +5,7 @@ import { id as dateLocale } from "date-fns/locale";
 import { Heart, ImageIcon, Pencil, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Memory } from "@/types";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api/v1";
-
-function resolvePhotoUrl(url: string): string {
-  if (!url) return "";
-  // Jika relative path (/api/v1/...), prefix dengan BE base URL
-  if (url.startsWith("/")) return `${API_BASE.replace(/\/api\/v1$/, "")}${url}`;
-  return url;
-}
+import { usePhotoUrl } from "@/hooks/usePhotoUrl";
 
 interface MemoryCardProps {
   memory: Memory;
@@ -21,6 +13,23 @@ interface MemoryCardProps {
   onDelete: (m: Memory) => void;
   onOpen:   (m: Memory) => void;
   onToggleFavorite: (m: Memory) => void;
+}
+
+function CoverPhoto({ url, alt }: { url: string; alt: string }) {
+  const src = usePhotoUrl(url);
+  if (!src) return (
+    <div className="flex h-full items-center justify-center">
+      <ImageIcon className="h-12 w-12 text-neutral-300" />
+    </div>
+  );
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+    />
+  );
 }
 
 export function MemoryCard({
@@ -36,12 +45,7 @@ export function MemoryCard({
       {/* Cover photo */}
       <div className="relative h-48 bg-neutral-100 overflow-hidden">
         {coverPhoto ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={resolvePhotoUrl(coverPhoto.url)}
-            alt={memory.title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
+          <CoverPhoto url={coverPhoto.url} alt={memory.title} />
         ) : (
           <div className="flex h-full items-center justify-center">
             <ImageIcon className="h-12 w-12 text-neutral-300" />

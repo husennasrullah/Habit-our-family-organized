@@ -3,10 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { X, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { X, Menu, PanelLeftClose, PanelLeftOpen, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
+import { useAuth } from "@/hooks/useAuth";
 
 const NAV_ITEMS = [
   { href: "/dashboard",  label: "Dashboard",    img: "/icons/assets-habit/menu-dashboard.png" },
@@ -25,6 +26,7 @@ export function Sidebar() {
   const router     = useRouter();
   const { sidebarOpen, toggleSidebar, sidebarCollapsed, toggleCollapsed } = useUIStore();
   const user       = useAuthStore((s) => s.user);
+  const { logout } = useAuth();
 
   return (
     <>
@@ -132,7 +134,7 @@ export function Sidebar() {
         {user && (
           <div className="border-t border-neutral-100 dark:border-neutral-800 p-3">
             {sidebarCollapsed ? (
-              <div className="flex justify-center">
+              <div className="flex flex-col items-center gap-2">
                 <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-teal-200">
                   <Image
                     src={user.avatar_url || (user.role === "child" ? "/icons/assets-habit/logo-user-anak.png" : "/icons/assets-habit/logo-user-ayah.png")}
@@ -142,6 +144,13 @@ export function Sidebar() {
                     className="h-9 w-9 rounded-full object-cover"
                   />
                 </div>
+                <button
+                  onClick={logout}
+                  title="Keluar"
+                  className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
               </div>
             ) : (
               <div className="flex items-center gap-3">
@@ -163,6 +172,13 @@ export function Sidebar() {
                     lihat profil
                   </button>
                 </div>
+                <button
+                  onClick={logout}
+                  title="Keluar"
+                  className="flex-shrink-0 p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
               </div>
             )}
           </div>
