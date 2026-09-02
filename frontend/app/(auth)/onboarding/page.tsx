@@ -31,7 +31,6 @@ export default function OnboardingPage() {
   const [serverError, setServerError] = useState("");
   const router = useRouter();
   const setUser = useAuthStore((s) => s.setUser);
-  const user = useAuthStore((s) => s.user);
 
   const createForm = useForm<CreateForm>({ resolver: zodResolver(createSchema) });
   const joinForm = useForm<JoinForm>({ resolver: zodResolver(joinSchema) });
@@ -39,7 +38,6 @@ export default function OnboardingPage() {
   const refreshAndRedirect = async () => {
     try {
       // Refresh token agar JWT baru berisi family_id
-      const refreshToken = localStorage.getItem("refresh_token");
       const { data: refreshRes } = await authApi.refresh();
       const newToken = (refreshRes as { data: { access_token: string } }).data.access_token;
       if (newToken) {
@@ -49,7 +47,6 @@ export default function OnboardingPage() {
       // Ambil data user terbaru
       const { data: meRes } = await authApi.getMe();
       if (meRes.data) setUser(meRes.data);
-      void refreshToken;
     } catch {
       // Kalau refresh gagal, tetap redirect — token lama masih bisa dipakai sementara
     }

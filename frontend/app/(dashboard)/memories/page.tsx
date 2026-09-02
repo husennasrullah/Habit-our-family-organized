@@ -41,15 +41,21 @@ export default function MemoriesPage() {
       if (selectedMemory) {
         await updateMemory.mutateAsync({ id: selectedMemory.id, ...values });
         toast.success("Kenangan diperbarui");
+        setModalOpen(false);
       } else {
         const created = await createMemory.mutateAsync(values);
-        // Upload pending photos after create
-        if (pendingFiles?.length && created?.id) {
-          await uploadPhotos.mutateAsync({ memoryId: created.id, files: pendingFiles });
-        }
+        // Selalu close modal dulu, upload foto di background
+        setModalOpen(false);
         toast.success("Kenangan ditambahkan 🎉");
+        // Upload foto jika ada — error tidak blokir modal close
+        if (pendingFiles?.length && created?.id) {
+          try {
+            await uploadPhotos.mutateAsync({ memoryId: created.id, files: pendingFiles });
+          } catch {
+            toast.error("Kenangan tersimpan tapi foto gagal diupload — coba upload lagi dari edit kenangan");
+          }
+        }
       }
-      setModalOpen(false);
     } catch {
       toast.error("Gagal menyimpan kenangan");
     }

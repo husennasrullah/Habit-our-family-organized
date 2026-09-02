@@ -151,8 +151,9 @@ func (s *MemoryService) Delete(id, familyID uuid.UUID) error {
 		return errors.New("kenangan tidak ditemukan")
 	}
 	// Hapus semua foto dari storage terlebih dahulu
+	ctx := context.Background()
 	for _, p := range m.Photos {
-		_ = s.storage.Delete(nil, p.ObjectKey) //nolint
+		_ = s.storage.Delete(ctx, p.ObjectKey) //nolint
 	}
 	return s.repo.Delete(id, familyID)
 }
@@ -196,7 +197,7 @@ func (s *MemoryService) UploadPhotos(memoryID, familyID uuid.UUID, files []*mult
 		}
 		if err := s.repo.AddPhoto(photo); err != nil {
 			// Rollback: hapus dari storage
-			_ = s.storage.Delete(nil, key) //nolint
+			_ = s.storage.Delete(context.Background(), key) //nolint
 			return nil, err
 		}
 
@@ -230,6 +231,6 @@ func (s *MemoryService) DeletePhoto(photoID, familyID uuid.UUID) error {
 	if _, err := s.repo.GetByID(photo.MemoryID, familyID); err != nil {
 		return errors.New("akses ditolak")
 	}
-	_ = s.storage.Delete(nil, photo.ObjectKey) //nolint
+	_ = s.storage.Delete(context.Background(), photo.ObjectKey) //nolint
 	return s.repo.DeletePhoto(photoID)
 }
