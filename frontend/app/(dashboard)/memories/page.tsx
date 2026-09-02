@@ -22,19 +22,19 @@ const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - i);
 
 export default function MemoriesPage() {
-  const [yearFilter, setYearFilter]       = useState<number | undefined>();
-  const [favFilter, setFavFilter]         = useState(false);
-  const [modalOpen, setModalOpen]         = useState(false);
+  const [yearFilter, setYearFilter] = useState<number | undefined>();
+  const [favFilter, setFavFilter] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
   // Lightbox state
   const [lightboxMemory, setLightboxMemory] = useState<Memory | null>(null);
-  const [photoIdx, setPhotoIdx]             = useState(0);
+  const [photoIdx, setPhotoIdx] = useState(0);
 
   const { data: memories = [], isLoading } = useMemories(yearFilter, undefined, favFilter || undefined);
-  const createMemory  = useCreateMemory();
-  const updateMemory  = useUpdateMemory();
-  const deleteMemory  = useDeleteMemory();
-  const uploadPhotos  = useUploadPhotos();
+  const createMemory = useCreateMemory();
+  const updateMemory = useUpdateMemory();
+  const deleteMemory = useDeleteMemory();
+  const uploadPhotos = useUploadPhotos();
 
   const handleSave = async (values: MemoryFormValues, pendingFiles?: File[]) => {
     try {
@@ -73,9 +73,15 @@ export default function MemoriesPage() {
     }
   };
 
-  const openLightbox = useCallback((memory: Memory, idx = 0) => {
+  const openLightbox = useCallback(async (memory: Memory, idx = 0) => {
     if (!memory.photos.length) return;
-    setLightboxMemory(memory);
+    // Fetch detail memory untuk mendapatkan semua foto (list hanya load 1 cover)
+    try {
+      const { data } = await import("@/lib/api").then(m => m.api.get<{ data: Memory }>(`/memories/${memory.id}`));
+      setLightboxMemory(data.data);
+    } catch {
+      setLightboxMemory(memory);
+    }
     setPhotoIdx(idx);
   }, []);
 
@@ -160,12 +166,12 @@ export default function MemoriesPage() {
           {/* Ilustrasi tree sederhana sesuai mockup */}
           <div className="mb-5 flex flex-col items-center">
             <svg width="80" height="80" viewBox="0 0 80 80" fill="none" className="text-teal-200">
-              <ellipse cx="40" cy="28" rx="22" ry="18" fill="currentColor" opacity="0.5"/>
-              <ellipse cx="25" cy="22" rx="13" ry="10" fill="currentColor" opacity="0.4"/>
-              <ellipse cx="55" cy="20" rx="11" ry="9" fill="currentColor" opacity="0.3"/>
-              <line x1="40" y1="44" x2="40" y2="68" stroke="#9CA3AF" strokeWidth="3" strokeLinecap="round"/>
-              <line x1="40" y1="54" x2="30" y2="46" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"/>
-              <line x1="40" y1="50" x2="50" y2="44" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"/>
+              <ellipse cx="40" cy="28" rx="22" ry="18" fill="currentColor" opacity="0.5" />
+              <ellipse cx="25" cy="22" rx="13" ry="10" fill="currentColor" opacity="0.4" />
+              <ellipse cx="55" cy="20" rx="11" ry="9" fill="currentColor" opacity="0.3" />
+              <line x1="40" y1="44" x2="40" y2="68" stroke="#9CA3AF" strokeWidth="3" strokeLinecap="round" />
+              <line x1="40" y1="54" x2="30" y2="46" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" />
+              <line x1="40" y1="50" x2="50" y2="44" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </div>
           <p className="text-base font-semibold text-neutral-700">Belum ada kenangan</p>
