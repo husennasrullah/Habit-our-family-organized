@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Users, UserPlus } from "lucide-react";
 
-import { familyApi } from "@/lib/auth-api";
+import { familyApi, authApi } from "@/lib/auth-api";
 import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,17 +36,31 @@ export default function OnboardingPage() {
   const createForm = useForm<CreateForm>({ resolver: zodResolver(createSchema) });
   const joinForm = useForm<JoinForm>({ resolver: zodResolver(joinSchema) });
 
+  const refreshAndRedirect = async () => {
+    try {
+      // Refresh token agar JWT baru berisi family_id
+      const refreshToken = localStorage.getItem("refresh_token");
+      const { data: refreshRes } = await authApi.refresh();
+      const newToken = (refreshRes as { data: { access_token: string } }).data.access_token;
+      if (newToken) {
+        localStorage.setItem("access_token", newToken);
+        document.cookie = `access_token=${newToken}; path=/; max-age=${15 * 60}; SameSite=Lax`;
+      }
+      // Ambil data user terbaru
+      const { data: meRes } = await authApi.getMe();
+      if (meRes.data) setUser(meRes.data);
+      void refreshToken;
+    } catch {
+      // Kalau refresh gagal, tetap redirect — token lama masih bisa dipakai sementara
+    }
+    router.push("/dashboard");
+  };
+
   const onCreateSubmit = async (data: CreateForm) => {
     setServerError("");
     try {
       await familyApi.create({ name: data.name });
-      // Refresh user info
-      if (user) {
-        const { data: membersRes } = await familyApi.getMembers();
-        const me = membersRes.data.find((m) => m.id === user.id);
-        if (me) setUser(me);
-      }
-      router.push("/dashboard");
+      await refreshAndRedirect();
     } catch (err: unknown) {
       setServerError(
         (err as { response?: { data?: { message?: string } } })?.response?.data
@@ -59,12 +73,7 @@ export default function OnboardingPage() {
     setServerError("");
     try {
       await familyApi.join({ invite_code: data.invite_code });
-      if (user) {
-        const { data: membersRes } = await familyApi.getMembers();
-        const me = membersRes.data.find((m) => m.id === user.id);
-        if (me) setUser(me);
-      }
-      router.push("/dashboard");
+      await refreshAndRedirect();
     } catch (err: unknown) {
       setServerError(
         (err as { response?: { data?: { message?: string } } })?.response?.data
