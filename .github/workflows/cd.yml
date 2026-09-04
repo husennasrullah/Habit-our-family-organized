@@ -142,18 +142,28 @@ jobs:
           GH_ACTOR: ${{ github.actor }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_OWNER: ${{ github.repository_owner }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          envs: DEPLOY_PATH,GH_ACTOR,GH_TOKEN,GH_OWNER
+          envs: DEPLOY_PATH,GH_ACTOR,GH_TOKEN,GH_OWNER,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET
           script: |
             set -e
 
             cd "$DEPLOY_PATH"
 
             git pull origin main
+
+            # Update Google OAuth credentials di .env VPS jika secrets tersedia
+            if [ -n "$GOOGLE_CLIENT_ID" ]; then
+              sed -i "s|^GOOGLE_CLIENT_ID=.*|GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID|" .env
+            fi
+            if [ -n "$GOOGLE_CLIENT_SECRET" ]; then
+              sed -i "s|^GOOGLE_CLIENT_SECRET=.*|GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET|" .env
+            fi
 
             echo "$GH_TOKEN" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
 

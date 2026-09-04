@@ -12,7 +12,7 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-09-02 (Fase 10 — Deployment setup)
+> **Last updated:** 2026-09-02 (Halaman Settings)
 
 ### ✅ Sudah Selesai (semua fase)
 
@@ -35,6 +35,15 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Halaman Settings — 2026-09-02
+- `frontend/app/(dashboard)/settings/page.tsx` — halaman baru: profil user (nama, email, role, auth provider), info keluarga (nama + kode undangan dengan tombol copy), daftar anggota keluarga (avatar, nama, email, badge role), tombol logout. React Query fetch `/family` dan `/family/members`. Skeleton loading state. Dark mode support.
+- Route `/settings` sudah terdaftar di sidebar (`Sidebar.tsx`) dan middleware (`middleware.ts`) — tidak ada perubahan diperlukan
+
+#### Google OAuth — Production Setup — 2026-09-02
+- `.env.example` (root) — tambah komentar instruksi redirect URI Google Cloud Console + note bahwa `GOOGLE_REDIRECT_URL` & `FRONTEND_BASE_URL` otomatis dari `BACKEND_URL`/`FRONTEND_URL`
+- `docs/deployment.md` — tambah section **§3 Setup Google OAuth** (langkah buat credentials, authorized redirect URI, GitHub Secrets, `.env` VPS). Tambah `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET` ke tabel GitHub Secrets. Renumber section 3→4→5→6→7 menjadi 4→5→6→7→8
+- `.github/workflows/cd.yml` — inject `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET` sebagai env di step deploy SSH. Script deploy sekarang auto-update nilai di `.env` VPS via `sed -i` setiap kali CD berjalan
 
 #### Fase 10 — Deployment Setup — 2026-09-02
 - `frontend/Dockerfile` — multi-stage build (deps → builder → runner), Node 20 Alpine, standalone output
@@ -204,6 +213,7 @@ PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -c "
 | **Halaman Register** — belum diupdate seperti login (masih pakai Card lama) | Sedang |
 | Unit test backend (auth service, task service) | Sedang |
 | Seed data production DB di VPS | Perlu dikerjakan |
+| Edit profil (nama, avatar) dari halaman Settings | Opsional |
 
 ### ⚡ Next Steps (langsung dikerjakan saat mulai sesi baru)
 1. Setup GitHub repo + tambahkan secrets (lihat `docs/deployment.md` section 2)

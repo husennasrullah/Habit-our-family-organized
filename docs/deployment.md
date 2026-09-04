@@ -58,6 +58,8 @@ Buka **GitHub repo → Settings → Secrets and variables → Actions**, tambahk
 | `NEXT_PUBLIC_API_URL` | `https://habit.senlabs.web.id/api/v1` |
 | `NEXT_PUBLIC_APP_URL` | `https://habit.senlabs.web.id` |
 | `VAPID_PUBLIC_KEY` | VAPID public key kamu |
+| `GOOGLE_CLIENT_ID` | Client ID dari Google Cloud Console |
+| `GOOGLE_CLIENT_SECRET` | Client Secret dari Google Cloud Console |
 
 > SSH key yang dipakai: `~/.ssh/deploy_key` (sudah ada di VPS, sudah terdaftar di `authorized_keys`)
 
@@ -66,7 +68,41 @@ Buka **GitHub repo → Settings → Secrets and variables → Actions**, tambahk
 
 ---
 
-## 3. Setup `.env` di VPS
+## 3. Setup Google OAuth (Wajib untuk Login dengan Google)
+
+### a. Buat Credentials di Google Cloud Console
+
+1. Buka [https://console.cloud.google.com/](https://console.cloud.google.com/)
+2. Buat project baru atau pilih yang sudah ada
+3. **APIs & Services → Credentials → + CREATE CREDENTIALS → OAuth client ID**
+4. Application type: **Web application**
+5. **Authorized redirect URIs**, tambahkan:
+   ```
+   https://habit.senlabs.web.id/api/v1/auth/google/callback
+   ```
+6. Salin **Client ID** dan **Client Secret**
+
+> **OAuth consent screen** → pilih **External**, status **Testing** cukup untuk penggunaan pribadi.
+> Tambahkan email kamu ke **Test users**.
+
+### b. Tambahkan ke GitHub Secrets
+
+Tambahkan dua secrets ini ke **GitHub repo → Settings → Secrets and variables → Actions**:
+- `GOOGLE_CLIENT_ID` → Client ID dari langkah di atas
+- `GOOGLE_CLIENT_SECRET` → Client Secret dari langkah di atas
+
+### c. Tambahkan ke `.env` di VPS
+
+```env
+GOOGLE_CLIENT_ID=xxxxxxxx.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxxxx
+```
+
+`GOOGLE_REDIRECT_URL` dan `FRONTEND_BASE_URL` sudah otomatis digenerate dari `BACKEND_URL` dan `FRONTEND_URL` di `docker-compose.prod.yml` — **tidak perlu diisi manual**.
+
+---
+
+## 4. Setup `.env` di VPS
 
 ```bash
 cd /home/ubuntu/habit
@@ -105,7 +141,7 @@ VAPID_PRIVATE_KEY=...
 
 ---
 
-## 4. Jalankan Production Pertama Kali
+## 5. Jalankan Production Pertama Kali
 
 ```bash
 cd /home/ubuntu/habit
@@ -126,7 +162,7 @@ docker compose -f docker-compose.prod.yml logs -f frontend
 
 ---
 
-## 5. Konfigurasi Nginx (Reverse Proxy)
+## 6. Konfigurasi Nginx (Reverse Proxy)
 
 Arahkan domain `habit.senlabs.web.id` ke port `3001` (frontend) dan `/api` ke port `8081` (backend).
 
@@ -174,7 +210,7 @@ server {
 
 ---
 
-## 6. Alur Deploy Otomatis
+## 7. Alur Deploy Otomatis
 
 Setiap `git push` ke branch `master`/`main`:
 
@@ -193,7 +229,7 @@ Image akan di-tag `v1.0.0` + `1.0` di GHCR.
 
 ---
 
-## 7. Troubleshooting
+## 8. Troubleshooting
 
 ### Image tidak ter-pull di VPS
 ```bash
