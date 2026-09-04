@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HABIT — Login</title>
+<style>
+:root{--p:#12b8aa;--pd:#079b90;--ps:#e9faf7;--t:#172033;--m:#7b8498;--line:#e8edf2;--bg:#f7fafb;--o:#f4a62a}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--t);background:radial-gradient(circle at 8% 15%,#12b8aa1a,transparent 24%),radial-gradient(circle at 90% 85%,#9a72e817,transparent 25%),var(--bg)}
+.page{min-height:100vh;display:grid;grid-template-columns:1.08fr .92fr}
+.brand-side{padding:46px 7vw 46px 8vw;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.brand{display:flex;align-items:center;gap:13px}.brand-mark{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:29px;background:linear-gradient(145deg,#e7faf7,#fff3d9);border:1px solid #e0eee9;box-shadow:0 8px 25px #1834490f}.brand-name{font-size:25px;font-weight:900;letter-spacing:.14em}.brand-sub{color:var(--o);font-size:9px;font-weight:850;letter-spacing:.09em;margin-top:3px}
+.intro{max-width:570px;margin-top:-25px}.badge{display:inline-flex;padding:7px 11px;border-radius:99px;background:var(--ps);color:var(--pd);font-size:11px;font-weight:800;margin-bottom:20px}.intro h1{font-size:clamp(38px,4.4vw,62px);line-height:1.05;letter-spacing:-.055em;margin:0}.intro h1 span{color:var(--p)}.intro p{color:var(--m);font-size:15px;line-height:1.75;max-width:500px;margin:22px 0 0}
+.scene{width:min(520px,90%);height:175px;margin-top:34px;border-radius:28px;background:radial-gradient(circle at 82% 35%,#cff3ed,transparent 25%),linear-gradient(135deg,#fff,#f1fbfa);border:1px solid #e9eff2;box-shadow:0 15px 45px #19354c0f;display:flex;align-items:center;justify-content:center;font-size:84px;position:relative;overflow:hidden}.scene small{position:absolute;left:24px;bottom:18px;font-size:11px;color:#697588;font-weight:700}.footer{color:#9aa3b1;font-size:11px}
+.login-side{display:grid;place-items:center;padding:35px 7vw}.card{width:min(430px,100%);background:#fffffff2;border:1px solid #e2e8ed;border-radius:26px;padding:38px;box-shadow:0 24px 70px #1b2d4117}.card h2{margin:0;font-size:25px;letter-spacing:-.035em}.desc{color:var(--m);font-size:13px;margin:8px 0 28px;line-height:1.55}
+.field{margin-bottom:17px}.field label{display:block;font-size:12px;font-weight:750;color:#4f5b70;margin-bottom:8px}.wrap{position:relative}.icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.65}input[type=email],input[type=password],input[type=text]{width:100%;height:49px;border:1px solid var(--line);border-radius:12px;padding:0 43px;outline:0;background:#fbfcfd;color:var(--t);font-size:13px}input:focus{border-color:#12b8aa99;box-shadow:0 0 0 4px #12b8aa1a;background:#fff}.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);border:0;background:transparent;cursor:pointer;color:#8791a1}
+.row{display:flex;justify-content:space-between;align-items:center;margin:4px 0 22px;font-size:11px}.remember{display:flex;gap:7px;align-items:center;color:#707b8e}.remember input{accent-color:var(--p)}a{color:var(--pd);text-decoration:none;font-weight:700}
+.login{width:100%;height:50px;border:0;border-radius:13px;background:linear-gradient(135deg,var(--p),var(--pd));color:#fff;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 9px 22px #12b8aa3b}.login:hover{transform:translateY(-1px)}
+.divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:#a3aab6;font-size:10px}.divider:before,.divider:after{content:"";height:1px;background:var(--line);flex:1}
+.google{width:100%;height:48px;border:1px solid var(--line);background:#fff;border-radius:12px;color:#4d586b;font-size:12px;font-weight:700;cursor:pointer}.register{text-align:center;color:var(--m);font-size:12px;margin:24px 0 0}.security{text-align:center;color:#a1a9b5;font-size:10px;margin-top:22px}
+.mobile{display:none}
+@media(max-width:900px){.page{grid-template-columns:1fr}.brand-side{min-height:330px;padding:28px 8vw}.intro{margin-top:30px}.scene,.footer{display:none}.login-side{padding:15px 8vw 45px}.card{margin-top:-25px}}
+@media(max-width:520px){.brand-side{min-height:245px;padding:24px}.brand-mark{width:45px;height:45px;font-size:23px}.brand-name{font-size:20px}.intro{margin-top:28px}.badge{margin-bottom:13px}.intro h1{font-size:35px}.intro p{font-size:12px;margin-top:13px}.login-side{padding:0 18px 30px}.card{padding:27px 21px;border-radius:21px}}
+</style>
+</head>
+<body>
+<div class="page">
+<section class="brand-side">
+<div class="brand"><div class="brand-mark">🏠</div><div><div class="brand-name">HABIT</div><div class="brand-sub">OUR FAMILY, ORGANIZED</div></div></div>
+<div class="intro">
+<div class="badge">✦ Family Command Center</div>
+<h1>Urus keluarga,<br><span>lebih mudah.</span></h1>
+<p>Satu tempat untuk mengatur tugas, keuangan, jadwal, kesehatan, dan kenangan keluarga — supaya hidup bersama terasa lebih ringan.</p>
+<div class="scene">🏠 👨🏻 👩🏻 👶🏻<small>Semua yang penting untuk keluarga, dalam satu tempat. 💚</small></div>
+</div>
+<div class="footer">© 2026 HABIT · Made for family life</div>
+</section>
+<section class="login-side">
+<div class="card">
+<h2>Selamat datang kembali 👋</h2>
+<p class="desc">Masuk ke HABIT dan lanjutkan mengatur kehidupan keluargamu.</p>
+<form onsubmit="event.preventDefault();alert('Demo login — sambungkan ke API kamu.');">
+<div class="field"><label>Email</label><div class="wrap"><span class="icon">✉</span><input type="email" placeholder="nama@email.com" required></div></div>
+<div class="field"><label>Password</label><div class="wrap"><span class="icon">🔒</span><input id="pw" type="password" placeholder="Masukkan password" required><button class="eye" type="button" onclick="togglePw()">👁</button></div></div>
+<div class="row"><label class="remember"><input type="checkbox"> Ingat saya</label><a href="#">Lupa password?</a></div>
+<button class="login">Masuk ke HABIT →</button>
+</form>
+<div class="divider">atau lanjutkan dengan</div>
+<button class="google">ⓖ &nbsp; Masuk dengan Google</button>
+<div class="register">Belum punya akun? <a href="#">Daftar sekarang</a></div>
+<div class="security">🔒 Data keluarga kamu tetap aman dan privat.</div>
+</div>
+</section>
+</div>
+<script>function togglePw(){const x=document.getElementById("pw");x.type=x.type==="password"?"text":"password"}</script>
+</body>
+</html>

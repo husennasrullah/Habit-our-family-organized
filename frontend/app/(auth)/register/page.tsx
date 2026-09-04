@@ -6,19 +6,10 @@ import { z } from "zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 const registerSchema = z
   .object({
@@ -38,6 +29,8 @@ export default function RegisterPage() {
   const { register: registerUser } = useAuth();
   const router = useRouter();
   const [serverError, setServerError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const {
     register,
@@ -59,75 +52,136 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="w-full border-0 shadow-none">
-      <CardHeader className="text-center pb-2 px-0">
-        <CardTitle className="text-xl font-bold text-neutral-900">Buat Akun</CardTitle>
-        <CardDescription className="text-neutral-500">Mulai kelola kehidupan keluarga bersama</CardDescription>
-      </CardHeader>
-
-      <CardContent className="px-0">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {serverError && (
-            <p className="rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-600">
-              {serverError}
-            </p>
-          )}
-
-          <div className="space-y-1">
-            <Label htmlFor="name">Nama</Label>
-            <Input id="name" placeholder="Nama lengkap" autoComplete="name" {...register("name")} />
-            {errors.name && <p className="text-xs text-error-500">{errors.name.message}</p>}
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="nama@email.com" autoComplete="email" {...register("email")} />
-            {errors.email && <p className="text-xs text-error-500">{errors.email.message}</p>}
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="Min. 8 karakter" autoComplete="new-password" {...register("password")} />
-            {errors.password && <p className="text-xs text-error-500">{errors.password.message}</p>}
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="confirmPassword">Konfirmasi Password</Label>
-            <Input id="confirmPassword" type="password" placeholder="Ulangi password" autoComplete="new-password" {...register("confirmPassword")} />
-            {errors.confirmPassword && (
-              <p className="text-xs text-error-500">{errors.confirmPassword.message}</p>
-            )}
-          </div>
-
-          <Button type="submit" className="w-full" loading={isSubmitting}>
-            Daftar
-          </Button>
-
-          <div className="relative my-2 flex items-center gap-2">
-            <div className="flex-1 border-t border-neutral-200" />
-            <span className="text-xs text-neutral-400">atau</span>
-            <div className="flex-1 border-t border-neutral-200" />
-          </div>
-
-          <a
-            href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google`}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
-          >
-            <GoogleIcon />
-            Daftar dengan Google
-          </a>
-        </form>
-      </CardContent>
-
-      <CardFooter className="justify-center px-0 pt-2">
-        <p className="text-sm text-neutral-500">
-          Sudah punya akun?{" "}
-          <Link href="/login" className="font-semibold text-teal-600 hover:underline">
-            Masuk
-          </Link>
+    <div className="w-full space-y-6">
+      {/* Heading */}
+      <div>
+        <h2 className="text-2xl font-black tracking-tight text-[#172033]">
+          Buat akun baru 🏠
+        </h2>
+        <p className="text-sm text-slate-500 mt-1.5 leading-relaxed">
+          Mulai kelola kehidupan keluarga bersama HABIT.
         </p>
-      </CardFooter>
-    </Card>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {serverError && (
+          <p className="rounded-xl bg-red-50 border border-red-100 px-3.5 py-2.5 text-sm text-red-600">
+            {serverError}
+          </p>
+        )}
+
+        {/* Nama */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-slate-600 uppercase tracking-wide">Nama</label>
+          <div className="relative">
+            <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Nama lengkap"
+              autoComplete="name"
+              {...register("name")}
+              className="w-full h-[50px] rounded-xl bg-slate-50 border border-slate-200 pl-10 pr-4 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 focus:bg-white transition-all"
+            />
+          </div>
+          {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
+        </div>
+
+        {/* Email */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-slate-600 uppercase tracking-wide">Email</label>
+          <div className="relative">
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+            <input
+              type="email"
+              placeholder="nama@email.com"
+              autoComplete="email"
+              {...register("email")}
+              className="w-full h-[50px] rounded-xl bg-slate-50 border border-slate-200 pl-10 pr-4 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 focus:bg-white transition-all"
+            />
+          </div>
+          {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+        </div>
+
+        {/* Password */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-slate-600 uppercase tracking-wide">Password</label>
+          <div className="relative">
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Min. 8 karakter"
+              autoComplete="new-password"
+              {...register("password")}
+              className="w-full h-[50px] rounded-xl bg-slate-50 border border-slate-200 pl-10 pr-11 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 focus:bg-white transition-all"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+          {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
+        </div>
+
+        {/* Konfirmasi Password */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-slate-600 uppercase tracking-wide">Konfirmasi Password</label>
+          <div className="relative">
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+            <input
+              type={showConfirm ? "text" : "password"}
+              placeholder="Ulangi password"
+              autoComplete="new-password"
+              {...register("confirmPassword")}
+              className="w-full h-[50px] rounded-xl bg-slate-50 border border-slate-200 pl-10 pr-11 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 focus:bg-white transition-all"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirm((v) => !v)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+          {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>}
+        </div>
+
+        {/* Submit */}
+        <Button
+          type="submit"
+          loading={isSubmitting}
+          className="w-full h-[50px] font-bold rounded-xl text-sm bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-md shadow-teal-200 border-0"
+        >
+          Daftar ke HABIT →
+        </Button>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 border-t border-slate-200" />
+          <span className="text-xs text-slate-400 font-medium">atau lanjutkan dengan</span>
+          <div className="flex-1 border-t border-slate-200" />
+        </div>
+
+        {/* Google */}
+        <a
+          href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google`}
+          className="flex w-full items-center justify-center gap-2.5 h-[48px] rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all"
+        >
+          <GoogleIcon />
+          Daftar dengan Google
+        </a>
+      </form>
+
+      {/* Login link */}
+      <p className="text-center text-sm text-slate-500">
+        Sudah punya akun?{" "}
+        <Link href="/login" className="font-bold text-teal-600 hover:underline transition-colors">
+          Masuk
+        </Link>
+      </p>
+    </div>
   );
 }
 

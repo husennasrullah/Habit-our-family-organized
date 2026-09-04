@@ -12,7 +12,7 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-09-02 (Halaman Settings)
+> **Last updated:** 2026-09-02 (Fix Google OAuth callback 404)
 
 ### ✅ Sudah Selesai (semua fase)
 
@@ -35,6 +35,17 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Fix Google OAuth Callback 404 — 2026-09-02
+- **Root cause:** `app/(auth)/callback/page.tsx` di Next.js App Router resolve ke URL `/callback` (bukan `/auth/callback`) karena route group `(auth)` tidak menambah prefix URL. Backend redirect ke `/auth/callback` → 404.
+- **Fix:** Pindah halaman callback dari `app/(auth)/callback/page.tsx` → `app/auth/callback/page.tsx` (di luar route group). URL sekarang benar: `/auth/callback`.
+- Bonus: halaman callback tidak lagi dibungkus auth layout (split layout), cukup full-screen loading spinner.
+
+#### Auth Pages Redesign — 2026-09-02
+- `frontend/app/(auth)/layout.tsx` — split layout baru: sisi kiri branding (hero copy, ilustrasi dummy emoji, tagline, background gradient), sisi kanan form. Mobile: logo saja, layout single column
+- `frontend/app/(auth)/login/page.tsx` — redesign: heading baru, input dengan icon (Mail/Lock), show/hide password toggle, tombol gradient teal, tombol Google lebih clean
+- `frontend/app/(auth)/register/page.tsx` — redesign seragam dengan login: icon per field (User/Mail/Lock), show/hide password untuk kedua field password, hapus Card/CardContent shadcn
+- `frontend/app/(auth)/onboarding/page.tsx` — redesign: heading baru, pilihan mode pakai border rounded-2xl dengan hover color, form create/join pakai input bergaya sama, tombol kembali inline (ArrowLeft), warna aksen teal (create) dan purple (join)
 
 #### Halaman Settings — 2026-09-02
 - `frontend/app/(dashboard)/settings/page.tsx` — halaman baru: profil user (nama, email, role, auth provider), info keluarga (nama + kode undangan dengan tombol copy), daftar anggota keluarga (avatar, nama, email, badge role), tombol logout. React Query fetch `/family` dan `/family/members`. Skeleton loading state. Dark mode support.
@@ -210,7 +221,6 @@ PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -c "
 
 | Task | Prioritas |
 |---|---|
-| **Halaman Register** — belum diupdate seperti login (masih pakai Card lama) | Sedang |
 | Unit test backend (auth service, task service) | Sedang |
 | Seed data production DB di VPS | Perlu dikerjakan |
 | Edit profil (nama, avatar) dari halaman Settings | Opsional |
