@@ -13,20 +13,24 @@ function CallbackContent() {
 
   useEffect(() => {
     const token = searchParams.get("token");
+    const refreshToken = searchParams.get("refresh_token");
     if (!token) {
       router.replace("/login?error=oauth_failed");
       return;
     }
 
-    // Simpan access token lalu ambil profil user
+    // Simpan access token & refresh token sementara
     localStorage.setItem("access_token", token);
+    if (refreshToken) {
+      localStorage.setItem("refresh_token", refreshToken);
+    }
 
     api
       .get<ApiResponse<AuthUser>>("/auth/me", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(({ data }) => {
-        setAuth(data.data, token);
+        setAuth(data.data, token, refreshToken || undefined);
         if (!data.data.family_id) {
           router.replace("/onboarding");
         } else {
@@ -35,6 +39,7 @@ function CallbackContent() {
       })
       .catch(() => {
         localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
         router.replace("/login?error=oauth_failed");
       });
   }, [searchParams, router, setAuth]);

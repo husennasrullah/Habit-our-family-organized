@@ -187,10 +187,12 @@ func (h *AuthHandler) GoogleCallback(c *fiber.Ctx) error {
 		})
 	}
 
-	// Redirect ke frontend dengan access token di query param
+	setRefreshCookie(c, resp.RefreshToken)
+
+	// Redirect ke frontend dengan access_token dan refresh_token di query param
 	frontendURL := h.googleCfg.FrontendBaseURL + "/auth/callback"
 	return c.Redirect(
-		frontendURL+"?token="+resp.AccessToken,
+		frontendURL+"?token="+resp.AccessToken+"&refresh_token="+resp.RefreshToken,
 		fiber.StatusTemporaryRedirect,
 	)
 }

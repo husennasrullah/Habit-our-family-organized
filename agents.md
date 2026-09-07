@@ -12,7 +12,7 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-09-02 (Fix lint unused import in Dashboard)
+> **Last updated:** 2026-09-02 (Fix Google OAuth missing refresh token)
 
 ### ✅ Sudah Selesai (semua fase)
 
@@ -35,6 +35,11 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Fix Google OAuth Missing Refresh Token — 2026-09-02
+- **Root Cause:** Pada endpoint `/auth/google/callback` di backend, `GoogleCallback` handler hanya menyertakan `token` (access token) di redirect URL dan tidak memasang cookie `refresh_token` maupun mengirimnya ke URL. Akibatnya saat frontend redirect/reload atau mount `AuthSync`/interceptor 401, refresh token tidak ditemukan di `localStorage` maupun cookie.
+- **Fix Backend:** [`backend/internal/handlers/auth_handler.go`](backend/internal/handlers/auth_handler.go) sekarang memanggil `setRefreshCookie(c, resp.RefreshToken)` dan menyertakan `&refresh_token=` pada redirect URL frontend.
+- **Fix Frontend:** [`frontend/app/auth/callback/page.tsx`](frontend/app/auth/callback/page.tsx) menangkap parameter `refresh_token` dari query URL, menyimpannya ke `localStorage`, dan mengoperkannya ke `setAuth(user, token, refreshToken)`.
 
 #### Fix Lint Unused Import — 2026-09-02
 - `frontend/app/(dashboard)/dashboard/page.tsx` — Hapus unused import `ShieldCheck` dari `lucide-react` yang menyebabkan error ESLint saat production build / CI.
