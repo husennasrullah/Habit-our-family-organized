@@ -12,7 +12,7 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-09-02 (Dashboard Redesign & Layout Alignment)
+> **Last updated:** 2026-09-02 (Fix lint unused import in Dashboard)
 
 ### ✅ Sudah Selesai (semua fase)
 
@@ -35,6 +35,10 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Fix Lint Unused Import — 2026-09-02
+- `frontend/app/(dashboard)/dashboard/page.tsx` — Hapus unused import `ShieldCheck` dari `lucide-react` yang menyebabkan error ESLint saat production build / CI.
+- Verifikasi `npm run lint` dan `npm run build` berhasil 100%.
 
 #### Dashboard Redesign & Layout Alignment — 2026-09-02
 - `frontend/app/(dashboard)/dashboard/page.tsx` — Full redesign mengikuti `docs/redesign/habit-dashboard-redesign.html`:

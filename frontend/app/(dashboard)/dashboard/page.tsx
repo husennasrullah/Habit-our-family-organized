@@ -11,7 +11,6 @@ import {
   ChevronLeft,
   ChevronRight,
   MoreVertical,
-  ShieldCheck,
   Check,
   Syringe,
   Heart,
