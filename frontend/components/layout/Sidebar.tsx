@@ -130,9 +130,9 @@ export function Sidebar() {
           </ul>
         </nav>
 
-        {/* ── User info ─────────────────────────────── */}
+        {/* ── User info & Quote ─────────────────────── */}
         {user && (
-          <div className="border-t border-neutral-100 dark:border-neutral-800 p-3">
+          <div className="border-t border-neutral-100 dark:border-neutral-800 p-3 space-y-3">
             {sidebarCollapsed ? (
               <div className="flex flex-col items-center gap-2">
                 <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-teal-200">
@@ -153,33 +153,46 @@ export function Sidebar() {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-teal-200">
-                  <Image
-                    src={user.avatar_url || (user.role === "child" ? "/icons/assets-habit/logo-user-anak.png" : "/icons/assets-habit/logo-user-ayah.png")}
-                    alt={user.name}
-                    width={36}
-                    height={36}
-                    className="h-9 w-9 rounded-full object-cover"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-neutral-800 truncate">{user.name}</p>
+              <>
+                <div className="flex items-center gap-3 bg-neutral-50 dark:bg-neutral-800/50 p-2.5 rounded-xl border border-neutral-100 dark:border-neutral-800">
+                  <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-teal-200">
+                    <Image
+                      src={user.avatar_url || (user.role === "child" ? "/icons/assets-habit/logo-user-anak.png" : "/icons/assets-habit/logo-user-ayah.png")}
+                      alt={user.name}
+                      width={36}
+                      height={36}
+                      className="h-9 w-9 rounded-full object-cover"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-neutral-800 dark:text-neutral-100 truncate">{user.name}</p>
+                    <button
+                      onClick={() => router.push("/settings")}
+                      className="text-xs text-teal-600 dark:text-teal-400 hover:underline font-medium"
+                    >
+                      Lihat profil
+                    </button>
+                  </div>
                   <button
-                    onClick={() => router.push("/settings")}
-                    className="text-xs text-teal-600 hover:underline font-medium"
+                    onClick={logout}
+                    title="Keluar"
+                    className="flex-shrink-0 p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                   >
-                    lihat profil
+                    <LogOut className="h-4 w-4" />
                   </button>
                 </div>
-                <button
-                  onClick={logout}
-                  title="Keluar"
-                  className="flex-shrink-0 p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                >
-                  <LogOut className="h-4 w-4" />
-                </button>
-              </div>
+
+                {/* Quote Box (Mockup design) */}
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#e9faf7] to-[#eefcff] dark:from-teal-950/40 dark:to-blue-950/30 p-3.5 border border-teal-100/60 dark:border-neutral-800">
+                  <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed pr-8">
+                    <b className="text-neutral-900 dark:text-neutral-100 font-bold">Keluarga yang terorganisir,</b><br />
+                    hidup yang lebih bahagia. 💚
+                  </p>
+                  <span className="absolute right-2 -bottom-2 text-3xl opacity-80 pointer-events-none">
+                    🪴
+                  </span>
+                </div>
+              </>
             )}
           </div>
         )}

@@ -12,7 +12,7 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-09-02 (Fix Google OAuth callback 404)
+> **Last updated:** 2026-09-02 (Dashboard Redesign & Layout Alignment)
 
 ### ✅ Sudah Selesai (semua fase)
 
@@ -35,6 +35,16 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Dashboard Redesign & Layout Alignment — 2026-09-02
+- `frontend/app/(dashboard)/dashboard/page.tsx` — Full redesign mengikuti `docs/redesign/habit-dashboard-redesign.html`:
+  - Hero section banner "Family Command Center" dengan background radial gradients & ilustrasi emoji.
+  - 4 Summary Cards (Tugas, Acara, Sisa Anggaran dengan bar progress, Kenangan) dengan efek circle accent.
+  - Left column: Tugas Utama dengan interactive quick complete check & priority tag, Pengeluaran Bulan Ini dengan categorical progress bars.
+  - Right column: Mini Calendar bulanan navigasi interaktif, Reminder Vaksin list dengan status pills, Family Pulse widget yang menampilkan progress aktivitas anggota keluarga real-time.
+  - Tips Harian banner di bagian bawah dengan rotasi harian.
+- `frontend/components/layout/Sidebar.tsx` — Tambah quote card box "Keluarga yang terorganisir, hidup yang lebih bahagia 💚 🪴" di bagian bawah sidebar desktop.
+- `frontend/app/(dashboard)/layout.tsx` — Sesuaikan background `#F6F8FB` & padding `lg:p-8` agar konsisten dengan mockup.
 
 #### Fix Google OAuth Callback 404 — 2026-09-02
 - **Root cause:** `app/(auth)/callback/page.tsx` di Next.js App Router resolve ke URL `/callback` (bukan `/auth/callback`) karena route group `(auth)` tidak menambah prefix URL. Backend redirect ke `/auth/callback` → 404.

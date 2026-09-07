@@ -11,7 +11,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   const sidebarCollapsed = useUIStore((s) => s.sidebarCollapsed);
 
   return (
-    <div className="min-h-screen bg-[#F0F2F5] dark:bg-neutral-950">
+    <div className="min-h-screen bg-[#F6F8FB] dark:bg-neutral-950 text-neutral-800 dark:text-neutral-100">
       <Sidebar />
 
       {/* Main area — offset ikut sidebar collapsed/expanded */}
@@ -19,7 +19,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
         <Topbar />
 
         {/* pb-24 mobile = ruang untuk bottom nav + safe area */}
-        <main className="p-4 pb-24 lg:p-6 lg:pb-8">
+        <main className="p-4 pb-24 lg:p-8 lg:pb-12">
           {children}
         </main>
       </div>
