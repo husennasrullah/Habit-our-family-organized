@@ -313,6 +313,102 @@ export interface MealPlan {
   updated_at: string;
 }
 
+// ─── Trips / Vacation Planner ─────────────────────────────────────────────────
+
+export type TripStatus = "planning" | "ongoing" | "completed" | "cancelled";
+
+export interface TripItinerary {
+  id: string;
+  trip_id: string;
+  day_number: number;
+  date: string | null;
+  time_start: string;
+  time_end: string;
+  title: string;
+  location: string;
+  location_url: string;
+  notes: string;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TripPackingItem {
+  id: string;
+  trip_id: string;
+  item_name: string;
+  category: string;
+  assigned_to: string | null;
+  is_packed: boolean;
+  packed_by: string | null;
+  assignee?: FamilyMember;
+  packer?: FamilyMember;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Trip {
+  id: string;
+  family_id: string;
+  created_by: string;
+  title: string;
+  destination: string;
+  start_date: string;
+  end_date: string;
+  cover_image_url: string;
+  budget_estimate: number;
+  status: TripStatus;
+  notes: string;
+  creator?: FamilyMember;
+  members?: FamilyMember[];
+  itineraries?: TripItinerary[];
+  packing_items?: TripPackingItem[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateTripPayload {
+  title: string;
+  destination: string;
+  start_date: string;
+  end_date: string;
+  cover_image_url?: string;
+  budget_estimate?: number;
+  status?: TripStatus;
+  notes?: string;
+  member_ids?: string[];
+}
+
+export interface UpdateTripPayload {
+  title?: string;
+  destination?: string;
+  start_date?: string;
+  end_date?: string;
+  cover_image_url?: string;
+  budget_estimate?: number;
+  status?: TripStatus;
+  notes?: string;
+  member_ids?: string[];
+}
+
+export interface CreateItineraryPayload {
+  day_number: number;
+  date?: string | null;
+  time_start?: string;
+  time_end?: string;
+  title: string;
+  location?: string;
+  location_url?: string;
+  notes?: string;
+  sort_order?: number;
+}
+
+export interface CreatePackingItemPayload {
+  item_name: string;
+  category?: string;
+  assigned_to?: string | null;
+}
+
 export interface CreateMealPlanPayload {
   date: string;
   meal_type: MealType;

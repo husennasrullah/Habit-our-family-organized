@@ -26,6 +26,10 @@ func AutoMigrate() {
 		&models.MealPlan{},
 		&models.PushSubscription{},
 		&models.FinancialGoal{},
+		&models.Trip{},
+		&models.TripMember{},
+		&models.TripItinerary{},
+		&models.TripPackingItem{},
 	); err != nil {
 		log.Fatalf("AutoMigrate failed: %v", err)
 	}

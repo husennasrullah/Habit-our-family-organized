@@ -60,6 +60,7 @@ func main() {
 	docRepo       := repositories.NewDocumentRepository(database.DB)
 	mealRepo      := repositories.NewMealPlanRepository(database.DB)
 	goalRepo      := repositories.NewFinancialGoalRepository(database.DB)
+	tripRepo      := repositories.NewTripRepository(database.DB)
 
 	// ─── Services ─────────────────────────────────────────────────────────────
 	authService     := services.NewAuthService(memberRepo, jwtManager, database.RDB, &cfg.Google)
@@ -72,6 +73,7 @@ func main() {
 	docService      := services.NewDocumentService(docRepo, storageClient)
 	mealPlanService := services.NewMealPlanService(mealRepo)
 	goalService     := services.NewFinancialGoalService(goalRepo)
+	tripService     := services.NewTripService(tripRepo)
 	pushSubRepo     := repositories.NewPushSubscriptionRepository(database.DB)
 
 	// ─── Scheduler: notifikasi meal plan jam 04:00 ────────────────────────────
@@ -89,6 +91,7 @@ func main() {
 	docHandler      := handlers.NewDocumentHandler(docService)
 	mealPlanHandler := handlers.NewMealPlanHandler(mealPlanService)
 	goalHandler     := handlers.NewFinancialGoalHandler(goalService)
+	tripHandler     := handlers.NewTripHandler(tripService)
 	pushHandler     := handlers.NewPushHandler(pushSubRepo)
 
 	// ─── WebSocket Hub ────────────────────────────────────────────────────────
@@ -223,6 +226,20 @@ func main() {
 	meals.Post("",       mealPlanHandler.CreateMealPlan)
 	meals.Put("/:id",    mealPlanHandler.UpdateMealPlan)
 	meals.Delete("/:id", mealPlanHandler.DeleteMealPlan)
+
+	// Trips & Vacation Planner routes
+	trips := api.Group("/trips", authMw)
+	trips.Get("",                                  tripHandler.GetTrips)
+	trips.Post("",                                 tripHandler.CreateTrip)
+	trips.Get("/:id",                              tripHandler.GetTripByID)
+	trips.Put("/:id",                              tripHandler.UpdateTrip)
+	trips.Delete("/:id",                           tripHandler.DeleteTrip)
+	trips.Post("/:id/itineraries",                 tripHandler.AddItinerary)
+	trips.Put("/:id/itineraries/:itinerary_id",    tripHandler.UpdateItinerary)
+	trips.Delete("/:id/itineraries/:itinerary_id", tripHandler.DeleteItinerary)
+	trips.Post("/:id/packing",                     tripHandler.AddPackingItem)
+	trips.Patch("/:id/packing/:item_id/toggle",    tripHandler.TogglePackingItem)
+	trips.Delete("/:id/packing/:item_id",          tripHandler.DeletePackingItem)
 
 	// Push Notification routes
 	push := api.Group("/push")
