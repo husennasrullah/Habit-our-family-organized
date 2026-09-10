@@ -1,7 +1,8 @@
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import {
   ArrowLeft,
   Calendar,
@@ -36,8 +37,9 @@ const PACKING_CATEGORIES = [
   "Lain-lain",
 ];
 
-export default function TripDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function TripDetailPage({ params }: { params?: { id?: string } }) {
+  const routeParams = useParams();
+  const id = (params?.id || routeParams?.id) as string;
   const { data: trip, isLoading } = useTrip(id);
   const { data: members = [] } = useFamilyMembers();
 
@@ -178,8 +180,8 @@ export default function TripDetailPage({ params }: { params: Promise<{ id: strin
             </span>
             <span className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">
               <Calendar className="w-3 h-3 text-blue-300" />
-              {new Date(trip.start_date).toLocaleDateString("id-ID", { day: "numeric", month: "short" })} -{" "}
-              {new Date(trip.end_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+              {trip.start_date ? new Date(trip.start_date).toLocaleDateString("id-ID", { day: "numeric", month: "short" }) : "-"} -{" "}
+              {trip.end_date ? new Date(trip.end_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "-"}
             </span>
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold">{trip.title}</h1>
