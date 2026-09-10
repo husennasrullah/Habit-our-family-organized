@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS trips (
     budget_estimate NUMERIC(15, 2) DEFAULT 0,
     status VARCHAR(50) DEFAULT 'planning', -- 'planning', 'ongoing', 'completed', 'cancelled'
     notes TEXT,
+    event_id UUID REFERENCES events(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),
     deleted_at TIMESTAMPTZ

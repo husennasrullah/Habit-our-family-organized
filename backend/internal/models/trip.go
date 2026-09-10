@@ -25,6 +25,7 @@ type Trip struct {
 	BudgetEstimate float64            `gorm:"type:numeric(15,2);default:0" json:"budget_estimate"`
 	Status         TripStatus         `gorm:"type:varchar(50);default:'planning'" json:"status"`
 	Notes          string             `gorm:"type:text;default:''" json:"notes"`
+	EventID        *uuid.UUID         `gorm:"type:uuid" json:"event_id,omitempty"`
 	Creator        *FamilyMember      `gorm:"foreignKey:CreatedBy" json:"creator,omitempty"`
 	Members        []FamilyMember     `gorm:"many2many:trip_members;joinForeignKey:trip_id;joinReferences:member_id" json:"members,omitempty"`
 	Itineraries    []TripItinerary    `gorm:"foreignKey:TripID;constraint:OnDelete:CASCADE" json:"itineraries,omitempty"`

@@ -73,7 +73,7 @@ func main() {
 	docService      := services.NewDocumentService(docRepo, storageClient)
 	mealPlanService := services.NewMealPlanService(mealRepo)
 	goalService     := services.NewFinancialGoalService(goalRepo)
-	tripService     := services.NewTripService(tripRepo)
+	tripService     := services.NewTripService(tripRepo, eventRepo)
 	pushSubRepo     := repositories.NewPushSubscriptionRepository(database.DB)
 
 	// ─── Scheduler: notifikasi meal plan jam 04:00 ────────────────────────────

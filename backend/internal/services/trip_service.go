@@ -63,11 +63,12 @@ type CreatePackingItemRequest struct {
 }
 
 type TripService struct {
-	repo *repositories.TripRepository
+	repo      *repositories.TripRepository
+	eventRepo *repositories.EventRepository
 }
 
-func NewTripService(repo *repositories.TripRepository) *TripService {
-	return &TripService{repo: repo}
+func NewTripService(repo *repositories.TripRepository, eventRepo *repositories.EventRepository) *TripService {
+	return &TripService{repo: repo, eventRepo: eventRepo}
 }
 
 // ─── Trips ────────────────────────────────────────────────────────────────────
@@ -82,6 +83,27 @@ func (s *TripService) CreateTrip(req *CreateTripRequest, familyID, userID uuid.U
 		status = models.TripStatus(req.Status)
 	}
 
+	// 1. Buat event kalender otomatis bertipe "vacation"
+	event := &models.Event{
+		FamilyID:    familyID,
+		CreatedBy:   userID,
+		Title:       "🏖️ " + req.Title + " (" + req.Destination + ")",
+		Description: req.Notes,
+		StartAt:     req.StartDate + "T00:00:00Z",
+		EndAt:       req.EndDate + "T23:59:59Z",
+		IsAllDay:    true,
+		Type:        models.EventTypeVacation,
+		Color:       "emerald",
+	}
+	if err := s.eventRepo.Create(event); err == nil {
+		// Event berhasil dibuat
+	}
+
+	var eventID *uuid.UUID
+	if event.ID != uuid.Nil {
+		eventID = &event.ID
+	}
+
 	trip := &models.Trip{
 		FamilyID:       familyID,
 		CreatedBy:      userID,
@@ -93,6 +115,7 @@ func (s *TripService) CreateTrip(req *CreateTripRequest, familyID, userID uuid.U
 		BudgetEstimate: req.BudgetEstimate,
 		Status:         status,
 		Notes:          req.Notes,
+		EventID:        eventID,
 	}
 
 	if err := s.repo.Create(trip, req.MemberIDs); err != nil {
@@ -145,10 +168,26 @@ func (s *TripService) UpdateTrip(id, familyID uuid.UUID, req *UpdateTripRequest)
 		return nil, err
 	}
 
+	// Sync event kalender terkait jika ada
+	if trip.EventID != nil {
+		if ev, err := s.eventRepo.GetByID(*trip.EventID, familyID); err == nil && ev != nil {
+			ev.Title = "🏖️ " + trip.Title + " (" + trip.Destination + ")"
+			ev.Description = trip.Notes
+			ev.StartAt = trip.StartDate + "T00:00:00Z"
+			ev.EndAt = trip.EndDate + "T23:59:59Z"
+			_ = s.eventRepo.Update(ev)
+		}
+	}
+
 	return s.repo.GetByID(id, familyID)
 }
 
 func (s *TripService) DeleteTrip(id, familyID uuid.UUID) error {
+	trip, err := s.repo.GetByID(id, familyID)
+	if err == nil && trip != nil && trip.EventID != nil {
+		// Hapus juga jadwal di kalender
+		_ = s.eventRepo.Delete(*trip.EventID, familyID)
+	}
 	return s.repo.Delete(id, familyID)
 }
 
