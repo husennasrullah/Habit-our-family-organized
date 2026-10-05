@@ -50,7 +50,7 @@ services:
 
   # ─── MinIO (Object Storage) ─────────────────────────────
   minio:
-    image: minio/minio:latest
+    image: minio-local:latest
     container_name: habit_minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
