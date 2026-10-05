@@ -23,8 +23,6 @@ import {
   Receipt,
   FileText,
   UploadCloud,
-  CheckCircle2,
-  Circle,
   Download,
   Wallet,
 } from "lucide-react";
@@ -42,7 +40,6 @@ import {
   useDeletePackingItem,
   useAddTripExpense,
   useDeleteTripExpense,
-  useToggleExpenseSplit,
   useUploadTripDocument,
   useDeleteTripDocument,
   tripKeys,
@@ -83,7 +80,6 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
   const deletePacking = useDeletePackingItem(id);
   const addExpense = useAddTripExpense(id);
   const deleteExpense = useDeleteTripExpense(id);
-  const toggleExpenseSplit = useToggleExpenseSplit(id);
   const uploadDoc = useUploadTripDocument(id);
   const deleteDoc = useDeleteTripDocument(id);
 
