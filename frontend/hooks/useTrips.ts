@@ -7,8 +7,14 @@ import type {
   UpdateTripPayload,
   TripItinerary,
   CreateItineraryPayload,
+  TripItineraryBudget,
+  CreateItineraryBudgetPayload,
   TripPackingItem,
   CreatePackingItemPayload,
+  TripExpense,
+  TripExpenseSplit,
+  TripDocument,
+  CreateTripExpensePayload,
 } from "@/types";
 
 export const tripKeys = {
@@ -36,7 +42,7 @@ export function useTrip(id: string) {
       return data.data;
     },
     enabled: !!id,
-    staleTime: 30_000,
+    staleTime: 0,
   });
 }
 
@@ -125,6 +131,36 @@ export function useDeleteItinerary(tripId: string) {
   });
 }
 
+// ─── Itinerary Budget Items ───────────────────────────────────────────────────
+
+export function useAddItineraryBudget(tripId: string, itineraryId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: CreateItineraryBudgetPayload) => {
+      const { data } = await api.post<ApiResponse<TripItineraryBudget>>(
+        `/trips/${tripId}/itineraries/${itineraryId}/budgets`,
+        payload
+      );
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: tripKeys.detail(tripId) });
+    },
+  });
+}
+
+export function useDeleteItineraryBudget(tripId: string, itineraryId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (budgetId: string) => {
+      await api.delete(`/trips/${tripId}/itineraries/${itineraryId}/budgets/${budgetId}`);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: tripKeys.detail(tripId) });
+    },
+  });
+}
+
 // ─── Packing Items ───────────────────────────────────────────────────────────
 
 export function useAddPackingItem(tripId: string) {
@@ -160,6 +196,81 @@ export function useDeletePackingItem(tripId: string) {
   return useMutation({
     mutationFn: async (itemId: string) => {
       await api.delete(`/trips/${tripId}/packing/${itemId}`);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: tripKeys.detail(tripId) });
+      qc.invalidateQueries({ queryKey: tripKeys.list() });
+    },
+  });
+}
+
+// ─── Expenses & Split Bill ───────────────────────────────────────────────────
+
+export function useAddTripExpense(tripId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: CreateTripExpensePayload) => {
+      const { data } = await api.post<ApiResponse<TripExpense>>(`/trips/${tripId}/expenses`, payload);
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: tripKeys.detail(tripId) });
+      qc.invalidateQueries({ queryKey: tripKeys.list() });
+    },
+  });
+}
+
+export function useDeleteTripExpense(tripId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (expenseId: string) => {
+      await api.delete(`/trips/${tripId}/expenses/${expenseId}`);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: tripKeys.detail(tripId) });
+      qc.invalidateQueries({ queryKey: tripKeys.list() });
+    },
+  });
+}
+
+export function useToggleExpenseSplit(tripId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ expenseId, splitId }: { expenseId: string; splitId: string }) => {
+      const { data } = await api.patch<ApiResponse<TripExpenseSplit>>(
+        `/trips/${tripId}/expenses/${expenseId}/splits/${splitId}/toggle`
+      );
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: tripKeys.detail(tripId) });
+    },
+  });
+}
+
+// ─── Documents & Tickets ─────────────────────────────────────────────────────
+
+export function useUploadTripDocument(tripId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const { data } = await api.post<ApiResponse<TripDocument>>(`/trips/${tripId}/documents`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: tripKeys.detail(tripId) });
+      qc.invalidateQueries({ queryKey: tripKeys.list() });
+    },
+  });
+}
+
+export function useDeleteTripDocument(tripId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (docId: string) => {
+      await api.delete(`/trips/${tripId}/documents/${docId}`);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: tripKeys.detail(tripId) });

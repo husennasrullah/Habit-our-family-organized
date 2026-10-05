@@ -29,7 +29,11 @@ func AutoMigrate() {
 		&models.Trip{},
 		&models.TripMember{},
 		&models.TripItinerary{},
+		&models.TripItineraryBudget{},
 		&models.TripPackingItem{},
+		&models.TripExpense{},
+		&models.TripExpenseSplit{},
+		&models.TripDocument{},
 	); err != nil {
 		log.Fatalf("AutoMigrate failed: %v", err)
 	}

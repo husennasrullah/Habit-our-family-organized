@@ -1,9 +1,17 @@
 package services
 
 import (
+	"context"
 	"errors"
+	"fmt"
+	"mime/multipart"
+	"path/filepath"
+	"strings"
+	"time"
+
 	"keluarga-app/backend/internal/models"
 	"keluarga-app/backend/internal/repositories"
+	"keluarga-app/backend/pkg/storage"
 
 	"github.com/google/uuid"
 )
@@ -56,19 +64,42 @@ type UpdateItineraryRequest struct {
 	SortOrder   int     `json:"sort_order"`
 }
 
+type CreateItineraryBudgetRequest struct {
+	Label  string  `json:"label" validate:"required"`
+	Amount float64 `json:"amount" validate:"required"`
+}
+
 type CreatePackingItemRequest struct {
 	ItemName   string     `json:"item_name" validate:"required"`
 	Category   string     `json:"category"`
 	AssignedTo *uuid.UUID `json:"assigned_to"`
 }
 
+type ExpenseSplitItemRequest struct {
+	MemberID  uuid.UUID `json:"member_id"`
+	Amount    float64   `json:"amount"`
+	IsSettled bool      `json:"is_settled"`
+}
+
+type CreateTripExpenseRequest struct {
+	Title     string                    `json:"title"`
+	Amount    float64                   `json:"amount"`
+	Category  string                    `json:"category"`
+	Date      string                    `json:"date"`
+	PaidBy    *uuid.UUID                `json:"paid_by"`
+	Notes     string                    `json:"notes"`
+	SplitType string                    `json:"split_type"` // 'all', 'custom'
+	Splits    []ExpenseSplitItemRequest `json:"splits"`
+}
+
 type TripService struct {
 	repo      *repositories.TripRepository
 	eventRepo *repositories.EventRepository
+	storage   storage.Storage
 }
 
-func NewTripService(repo *repositories.TripRepository, eventRepo *repositories.EventRepository) *TripService {
-	return &TripService{repo: repo, eventRepo: eventRepo}
+func NewTripService(repo *repositories.TripRepository, eventRepo *repositories.EventRepository, storage storage.Storage) *TripService {
+	return &TripService{repo: repo, eventRepo: eventRepo, storage: storage}
 }
 
 // ─── Trips ────────────────────────────────────────────────────────────────────
@@ -264,6 +295,33 @@ func (s *TripService) UpdateItinerary(itineraryID, tripID, familyID uuid.UUID, r
 	return item, nil
 }
 
+// ─── Itinerary Budget Items ───────────────────────────────────────────────────
+
+func (s *TripService) AddItineraryBudget(itineraryID, tripID, familyID uuid.UUID, req *CreateItineraryBudgetRequest) (*models.TripItineraryBudget, error) {
+	if _, err := s.repo.GetItineraryByID(itineraryID, tripID); err != nil {
+		return nil, errors.New("itinerary not found")
+	}
+	if req.Label == "" {
+		return nil, errors.New("label is required")
+	}
+	item := &models.TripItineraryBudget{
+		ItineraryID: itineraryID,
+		Label:       req.Label,
+		Amount:      req.Amount,
+	}
+	if err := s.repo.AddItineraryBudget(item); err != nil {
+		return nil, err
+	}
+	return item, nil
+}
+
+func (s *TripService) DeleteItineraryBudget(budgetID, itineraryID, tripID, familyID uuid.UUID) error {
+	if _, err := s.repo.GetItineraryByID(itineraryID, tripID); err != nil {
+		return errors.New("itinerary not found")
+	}
+	return s.repo.DeleteItineraryBudget(budgetID, itineraryID)
+}
+
 func (s *TripService) DeleteItinerary(itineraryID, tripID, familyID uuid.UUID) error {
 	if _, err := s.repo.GetByID(tripID, familyID); err != nil {
 		return errors.New("trip not found")
@@ -324,4 +382,194 @@ func (s *TripService) DeletePackingItem(itemID, tripID, familyID uuid.UUID) erro
 		return errors.New("trip not found")
 	}
 	return s.repo.DeletePackingItem(itemID, tripID)
+}
+
+// ─── Expenses ────────────────────────────────────────────────────────────────
+
+func (s *TripService) AddExpense(tripID, familyID uuid.UUID, req *CreateTripExpenseRequest) (*models.TripExpense, error) {
+	if req.Title == "" {
+		return nil, errors.New("judul pengeluaran wajib diisi")
+	}
+	if req.Amount <= 0 {
+		return nil, errors.New("nominal pengeluaran harus lebih besar dari 0")
+	}
+	if req.Date == "" {
+		req.Date = time.Now().Format("2006-01-02")
+	}
+	if req.Category == "" {
+		req.Category = "Lain-lain"
+	}
+	if req.SplitType == "" {
+		req.SplitType = "all"
+	}
+
+	// Verify trip exists
+	trip, err := s.repo.GetByID(tripID, familyID)
+	if err != nil {
+		return nil, errors.New("liburan tidak ditemukan")
+	}
+
+	expense := &models.TripExpense{
+		TripID:    tripID,
+		FamilyID:  familyID,
+		Title:     req.Title,
+		Amount:    req.Amount,
+		Category:  req.Category,
+		Date:      req.Date,
+		PaidBy:    req.PaidBy,
+		Notes:     req.Notes,
+		SplitType: req.SplitType,
+	}
+
+	var splits []models.TripExpenseSplit
+	if len(req.Splits) > 0 {
+		for _, sp := range req.Splits {
+			splits = append(splits, models.TripExpenseSplit{
+				MemberID:  sp.MemberID,
+				Amount:    sp.Amount,
+				IsSettled: sp.IsSettled,
+			})
+		}
+	} else if req.SplitType == "all" && len(trip.Members) > 0 {
+		splitAmount := req.Amount / float64(len(trip.Members))
+		for _, m := range trip.Members {
+			isPaidByThisMember := req.PaidBy != nil && *req.PaidBy == m.ID
+			splits = append(splits, models.TripExpenseSplit{
+				MemberID:  m.ID,
+				Amount:    splitAmount,
+				IsSettled: isPaidByThisMember,
+			})
+		}
+	}
+
+	if err := s.repo.AddExpense(expense, splits); err != nil {
+		return nil, fmt.Errorf("gagal menambahkan pengeluaran: %w", err)
+	}
+
+	return s.repo.GetExpenseByID(expense.ID, tripID, familyID)
+}
+
+func (s *TripService) UpdateExpense(expenseID, tripID, familyID uuid.UUID, req *CreateTripExpenseRequest) (*models.TripExpense, error) {
+	expense, err := s.repo.GetExpenseByID(expenseID, tripID, familyID)
+	if err != nil {
+		return nil, errors.New("pengeluaran tidak ditemukan")
+	}
+
+	if req.Title != "" {
+		expense.Title = req.Title
+	}
+	if req.Amount > 0 {
+		expense.Amount = req.Amount
+	}
+	if req.Category != "" {
+		expense.Category = req.Category
+	}
+	if req.Date != "" {
+		expense.Date = req.Date
+	}
+	expense.PaidBy = req.PaidBy
+	expense.Notes = req.Notes
+	if req.SplitType != "" {
+		expense.SplitType = req.SplitType
+	}
+
+	var splits []models.TripExpenseSplit
+	if len(req.Splits) > 0 {
+		for _, sp := range req.Splits {
+			splits = append(splits, models.TripExpenseSplit{
+				MemberID:  sp.MemberID,
+				Amount:    sp.Amount,
+				IsSettled: sp.IsSettled,
+			})
+		}
+	}
+
+	if err := s.repo.UpdateExpense(expense, splits); err != nil {
+		return nil, fmt.Errorf("gagal memperbarui pengeluaran: %w", err)
+	}
+
+	return s.repo.GetExpenseByID(expense.ID, tripID, familyID)
+}
+
+func (s *TripService) DeleteExpense(expenseID, tripID, familyID uuid.UUID) error {
+	return s.repo.DeleteExpense(expenseID, tripID, familyID)
+}
+
+func (s *TripService) ToggleExpenseSplit(splitID, expenseID, tripID, familyID uuid.UUID) (*models.TripExpenseSplit, error) {
+	_, err := s.repo.GetExpenseByID(expenseID, tripID, familyID)
+	if err != nil {
+		return nil, errors.New("pengeluaran tidak ditemukan")
+	}
+	return s.repo.ToggleExpenseSplitSettled(splitID, expenseID)
+}
+
+// ─── Documents ───────────────────────────────────────────────────────────────
+
+func (s *TripService) UploadDocument(
+	tripID, familyID, userID uuid.UUID,
+	title, docType, notes string,
+	fh *multipart.FileHeader,
+) (*models.TripDocument, error) {
+	_, err := s.repo.GetByID(tripID, familyID)
+	if err != nil {
+		return nil, errors.New("liburan tidak ditemukan")
+	}
+
+	if title == "" {
+		title = fh.Filename
+	}
+	if docType == "" {
+		docType = "other"
+	}
+
+	f, err := fh.Open()
+	if err != nil {
+		return nil, fmt.Errorf("gagal membuka file: %w", err)
+	}
+	defer f.Close()
+
+	ext := strings.ToLower(filepath.Ext(fh.Filename))
+	key := fmt.Sprintf("trips/%s/docs/%s%s", tripID, uuid.New(), ext)
+	ct := fh.Header.Get("Content-Type")
+	if ct == "" {
+		ct = "application/octet-stream"
+	}
+
+	if s.storage != nil {
+		if _, err := s.storage.Upload(context.Background(), key, ct, f, fh.Size); err != nil {
+			return nil, fmt.Errorf("gagal upload file: %w", err)
+		}
+	}
+
+	doc := &models.TripDocument{
+		TripID:     tripID,
+		FamilyID:   familyID,
+		UploadedBy: userID,
+		Title:      title,
+		DocType:    docType,
+		FilePath:   key,
+		FileName:   fh.Filename,
+		FileSize:   fh.Size,
+		FileType:   ct,
+		Notes:      notes,
+	}
+
+	if err := s.repo.AddDocument(doc); err != nil {
+		return nil, fmt.Errorf("gagal menyimpan data dokumen: %w", err)
+	}
+
+	return s.repo.GetDocumentByID(doc.ID, tripID, familyID)
+}
+
+func (s *TripService) DeleteDocument(docID, tripID, familyID uuid.UUID) error {
+	doc, err := s.repo.GetDocumentByID(docID, tripID, familyID)
+	if err != nil {
+		return errors.New("dokumen tidak ditemukan")
+	}
+
+	if s.storage != nil && doc.FilePath != "" {
+		_ = s.storage.Delete(context.Background(), doc.FilePath)
+	}
+
+	return s.repo.DeleteDocument(docID, tripID, familyID)
 }

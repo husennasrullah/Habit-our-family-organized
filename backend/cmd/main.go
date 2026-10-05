@@ -73,7 +73,7 @@ func main() {
 	docService      := services.NewDocumentService(docRepo, storageClient)
 	mealPlanService := services.NewMealPlanService(mealRepo)
 	goalService     := services.NewFinancialGoalService(goalRepo)
-	tripService     := services.NewTripService(tripRepo, eventRepo)
+	tripService     := services.NewTripService(tripRepo, eventRepo, storageClient)
 	pushSubRepo     := repositories.NewPushSubscriptionRepository(database.DB)
 
 	// ─── Scheduler: notifikasi meal plan jam 04:00 ────────────────────────────
@@ -234,12 +234,22 @@ func main() {
 	trips.Get("/:id",                              tripHandler.GetTripByID)
 	trips.Put("/:id",                              tripHandler.UpdateTrip)
 	trips.Delete("/:id",                           tripHandler.DeleteTrip)
-	trips.Post("/:id/itineraries",                 tripHandler.AddItinerary)
-	trips.Put("/:id/itineraries/:itinerary_id",    tripHandler.UpdateItinerary)
-	trips.Delete("/:id/itineraries/:itinerary_id", tripHandler.DeleteItinerary)
-	trips.Post("/:id/packing",                     tripHandler.AddPackingItem)
+	trips.Post("/:id/itineraries",                                               tripHandler.AddItinerary)
+	trips.Put("/:id/itineraries/:itinerary_id",                                  tripHandler.UpdateItinerary)
+	trips.Delete("/:id/itineraries/:itinerary_id",                               tripHandler.DeleteItinerary)
+	trips.Post("/:id/itineraries/:itinerary_id/budgets",                         tripHandler.AddItineraryBudget)
+	trips.Delete("/:id/itineraries/:itinerary_id/budgets/:budget_id",            tripHandler.DeleteItineraryBudget)
+	trips.Post("/:id/packing",                                                   tripHandler.AddPackingItem)
 	trips.Patch("/:id/packing/:item_id/toggle",    tripHandler.TogglePackingItem)
-	trips.Delete("/:id/packing/:item_id",          tripHandler.DeletePackingItem)
+	trips.Delete("/:id/packing/:item_id", tripHandler.DeletePackingItem)
+	// Trips - Expenses & Split Bill
+	trips.Post("/:id/expenses", tripHandler.AddExpense)
+	trips.Put("/:id/expenses/:expense_id", tripHandler.UpdateExpense)
+	trips.Delete("/:id/expenses/:expense_id", tripHandler.DeleteExpense)
+	trips.Patch("/:id/expenses/:expense_id/splits/:split_id/toggle", tripHandler.ToggleExpenseSplit)
+	// Trips - Documents & Tickets
+	trips.Post("/:id/documents", tripHandler.UploadDocument)
+	trips.Delete("/:id/documents/:doc_id", tripHandler.DeleteDocument)
 
 	// Push Notification routes
 	push := api.Group("/push")

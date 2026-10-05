@@ -32,7 +32,7 @@ function AuthSync() {
       .post(
         `${BASE_URL}/auth/refresh`,
         storedRefresh ? { refresh_token: storedRefresh } : {},
-        { withCredentials: true }
+        { withCredentials: false }
       )
       .then(({ data }) => {
         const newToken: string = data.data.access_token;

@@ -317,6 +317,15 @@ export interface MealPlan {
 
 export type TripStatus = "planning" | "ongoing" | "completed" | "cancelled";
 
+export interface TripItineraryBudget {
+  id: string;
+  itinerary_id: string;
+  label: string;
+  amount: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface TripItinerary {
   id: string;
   trip_id: string;
@@ -329,6 +338,7 @@ export interface TripItinerary {
   location_url: string;
   notes: string;
   sort_order: number;
+  budget_items?: TripItineraryBudget[];
   created_at: string;
   updated_at: string;
 }
@@ -343,6 +353,51 @@ export interface TripPackingItem {
   packed_by: string | null;
   assignee?: FamilyMember;
   packer?: FamilyMember;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TripExpenseSplit {
+  id: string;
+  expense_id: string;
+  member_id: string;
+  amount: number;
+  is_settled: boolean;
+  member?: FamilyMember;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TripExpense {
+  id: string;
+  trip_id: string;
+  family_id: string;
+  title: string;
+  amount: number;
+  category: string;
+  date: string;
+  paid_by?: string | null;
+  notes: string;
+  split_type: "all" | "custom";
+  payer?: FamilyMember;
+  splits?: TripExpenseSplit[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TripDocument {
+  id: string;
+  trip_id: string;
+  family_id: string;
+  uploaded_by: string;
+  title: string;
+  doc_type: "ticket" | "hotel" | "insurance" | "visa" | "other";
+  file_path: string;
+  file_name: string;
+  file_size: number;
+  file_type: string;
+  notes: string;
+  uploader?: FamilyMember;
   created_at: string;
   updated_at: string;
 }
@@ -363,6 +418,8 @@ export interface Trip {
   members?: FamilyMember[];
   itineraries?: TripItinerary[];
   packing_items?: TripPackingItem[];
+  expenses?: TripExpense[];
+  documents?: TripDocument[];
   created_at: string;
   updated_at: string;
 }
@@ -403,10 +460,30 @@ export interface CreateItineraryPayload {
   sort_order?: number;
 }
 
+export interface CreateItineraryBudgetPayload {
+  label: string;
+  amount: number;
+}
+
 export interface CreatePackingItemPayload {
   item_name: string;
   category?: string;
   assigned_to?: string | null;
+}
+
+export interface CreateTripExpensePayload {
+  title: string;
+  amount: number;
+  category?: string;
+  date?: string;
+  paid_by?: string | null;
+  notes?: string;
+  split_type?: "all" | "custom";
+  splits?: Array<{
+    member_id: string;
+    amount: number;
+    is_settled?: boolean;
+  }>;
 }
 
 export interface CreateMealPlanPayload {

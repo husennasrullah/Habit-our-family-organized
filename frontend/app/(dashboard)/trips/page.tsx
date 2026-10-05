@@ -230,16 +230,34 @@ export default function TripsPage() {
                       />
                     </div>
 
-                    {trip.budget_estimate > 0 && (
-                      <div className="flex justify-between items-center pt-1 text-xs">
-                        <span className="flex items-center gap-1.5">
-                          <Wallet className="w-3.5 h-3.5 text-amber-500" /> Estimasi Budget
-                        </span>
-                        <span className="font-semibold text-neutral-800 dark:text-neutral-200">
-                          Rp {trip.budget_estimate.toLocaleString("id-ID")}
-                        </span>
-                      </div>
-                    )}
+                    {(() => {
+                      const itineraryBudgetTotal = (trip.itineraries ?? []).reduce(
+                        (sum, it) => sum + (it.budget_items ?? []).reduce((s, b) => s + b.amount, 0),
+                        0
+                      );
+                      return (
+                        <div className="space-y-1 pt-1 text-xs">
+                          {trip.budget_estimate > 0 && (
+                            <div className="flex justify-between items-center">
+                              <span className="flex items-center gap-1.5">
+                                <Wallet className="w-3.5 h-3.5 text-amber-500" /> Estimasi Budget
+                              </span>
+                              <span className="font-semibold text-neutral-800 dark:text-neutral-200">
+                                Rp {trip.budget_estimate.toLocaleString("id-ID")}
+                              </span>
+                            </div>
+                          )}
+                          {itineraryBudgetTotal > 0 && (
+                            <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400">
+                              <span>Total Budget Aktivitas</span>
+                              <span className="font-semibold">
+                                Rp {itineraryBudgetTotal.toLocaleString("id-ID")}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Actions */}

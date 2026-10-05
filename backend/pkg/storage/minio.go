@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -22,31 +23,54 @@ type minioStorage struct {
 	publicURL string // base URL untuk akses publik, kosong = pakai presigned URL
 }
 
+// noopStorage adalah fallback ketika MinIO tidak tersedia.
+// Semua operasi upload/delete/serve mengembalikan error 503.
+// Backend tetap berjalan normal; hanya fitur foto & dokumen yang nonaktif.
+type noopStorage struct{}
+
+var errStorageUnavailable = errors.New("storage tidak tersedia: MinIO belum dikonfigurasi atau tidak dapat dijangkau. Jalankan MinIO atau set STORAGE_ENDPOINT yang valid")
+
+func (n *noopStorage) Upload(_ context.Context, _, _ string, _ io.Reader, _ int64) (string, error) {
+	return "", errStorageUnavailable
+}
+func (n *noopStorage) Delete(_ context.Context, _ string) error { return errStorageUnavailable }
+func (n *noopStorage) PresignedURL(_ context.Context, _ string, _ time.Duration) (string, error) {
+	return "", errStorageUnavailable
+}
+func (n *noopStorage) PublicURL(_ string) string { return "" }
+func (n *noopStorage) GetObject(_ context.Context, _ string) (io.ReadCloser, string, int64, error) {
+	return nil, "", 0, errStorageUnavailable
+}
+
 // NewMinIOStorage membuat instance storage yang terhubung ke MinIO / R2 / S3.
-// Dipanggil dari main.go dan di-inject ke service sebagai interface Storage.
+// Jika koneksi gagal (MinIO tidak jalan), mengembalikan noopStorage agar
+// backend tetap bisa start — fitur upload foto/dokumen akan return error 503.
 func NewMinIOStorage(cfg *config.StorageConfig) Storage {
 	mc, err := minio.New(cfg.Endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(cfg.AccessKey, cfg.SecretKey, ""),
 		Secure: cfg.UseSSL,
 	})
 	if err != nil {
-		log.Fatalf("storage: failed to init client: %v", err)
+		log.Printf("⚠️  storage: failed to init client (%v) — upload/dokumen dinonaktifkan", err)
+		return &noopStorage{}
 	}
 
-	// Auto-create bucket jika belum ada (hanya berlaku untuk MinIO dev)
+	// Cek koneksi ke bucket (akan gagal jika MinIO tidak jalan)
 	ctx := context.Background()
 	exists, err := mc.BucketExists(ctx, cfg.Bucket)
 	if err != nil {
-		log.Fatalf("storage: failed to check bucket: %v", err)
+		log.Printf("⚠️  storage: cannot reach MinIO at %s (%v) — upload/dokumen dinonaktifkan", cfg.Endpoint, err)
+		return &noopStorage{}
 	}
 	if !exists {
 		if err := mc.MakeBucket(ctx, cfg.Bucket, minio.MakeBucketOptions{}); err != nil {
-			log.Fatalf("storage: failed to create bucket '%s': %v", cfg.Bucket, err)
+			log.Printf("⚠️  storage: failed to create bucket '%s' (%v) — upload/dokumen dinonaktifkan", cfg.Bucket, err)
+			return &noopStorage{}
 		}
 		log.Printf("storage: bucket '%s' created", cfg.Bucket)
 	}
 
-	log.Printf("storage: connected (endpoint=%s, bucket=%s, ssl=%v)", cfg.Endpoint, cfg.Bucket, cfg.UseSSL)
+	log.Printf("✅ storage: connected (endpoint=%s, bucket=%s, ssl=%v)", cfg.Endpoint, cfg.Bucket, cfg.UseSSL)
 	return &minioStorage{
 		client:    mc,
 		bucket:    cfg.Bucket,
