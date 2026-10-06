@@ -74,7 +74,7 @@ services:
   # PostgreSQL tidak dijalankan via Docker — pakai DB yang sudah ada di VPS.
   # Set DB_HOST ke IP/hostname VPS di .env
   backend:
-    image: ghcr.io/${GITHUB_REPOSITORY}/habit-backend:${IMAGE_TAG:-latest}
+    image: ghcr.io/${IMAGE_OWNER:-senlabs}/habit-backend:${IMAGE_TAG:-latest}
     container_name: habit_backend
     restart: unless-stopped
     ports:
@@ -121,7 +121,7 @@ services:
   # ─── Seed (jalankan sekali, lalu exit) ──────────────────
   # Jalankan manual: docker compose -f docker-compose.prod.yml run --rm seed
   seed:
-    image: ghcr.io/${GITHUB_REPOSITORY}/habit-backend:${IMAGE_TAG:-main}
+    image: ghcr.io/${IMAGE_OWNER:-senlabs}/habit-backend:${IMAGE_TAG:-main}
     container_name: habit_seed
     entrypoint: ["./seed"]
     environment:
@@ -141,7 +141,7 @@ services:
 
   # ─── Frontend (Next.js) ─────────────────────────────────
   frontend:
-    image: ghcr.io/${GITHUB_REPOSITORY}/habit-frontend:${IMAGE_TAG:-latest}
+    image: ghcr.io/${IMAGE_OWNER:-senlabs}/habit-frontend:${IMAGE_TAG:-latest}
     container_name: habit_frontend
     restart: unless-stopped
     ports:

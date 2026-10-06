@@ -471,80 +471,91 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
       </div>
 
       {/* Hero Header */}
-      <div className="relative rounded-3xl overflow-hidden bg-neutral-900 text-white min-h-[220px] shadow-lg flex flex-col justify-end p-6 md:p-8">
+      <div className="relative rounded-3xl overflow-hidden bg-neutral-900 min-h-[220px] shadow-lg flex flex-col justify-end">
         {trip.cover_image_url && (
           <img
             src={trip.cover_image_url}
             alt={trip.title}
-            className="absolute inset-0 w-full h-full object-cover opacity-40 filter brightness-90"
+            className="absolute inset-0 w-full h-full object-cover opacity-60"
           />
         )}
-        <div className="relative z-10 space-y-2">
+        {/* gradient overlay supaya teks selalu terbaca */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+        <div className="relative z-10 space-y-2 p-6 md:p-8">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">
+            <span className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-white">
               <MapPin className="w-3 h-3 text-rose-300" /> {trip.destination}
             </span>
-            <span className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">
+            <span className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-white">
               <Calendar className="w-3 h-3 text-blue-300" />
               {trip.start_date ? new Date(trip.start_date).toLocaleDateString("id-ID", { day: "numeric", month: "short" }) : "-"} -{" "}
               {trip.end_date ? new Date(trip.end_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "-"}
             </span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-extrabold">{trip.title}</h1>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-white drop-shadow-md">{trip.title}</h1>
         </div>
       </div>
 
       {/* Main Tabs */}
-      <div className="flex items-center gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-2">
+      <div className="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
         <button
           onClick={() => setActiveTab("itinerary")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
+          className={`flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap shrink-0 ${
             activeTab === "itinerary"
               ? "bg-blue-600 text-white shadow"
               : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
           }`}
         >
-          <ListTodo className="w-4 h-4" /> Jadwal & Itinerary
+          <ListTodo className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <span>Jadwal</span>
+          <span className="hidden sm:inline">& Itinerary</span>
         </button>
         <button
           onClick={() => setActiveTab("packing")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
+          className={`flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap shrink-0 ${
             activeTab === "packing"
               ? "bg-blue-600 text-white shadow"
               : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
           }`}
         >
-          <Luggage className="w-4 h-4" /> Packing ({packedCount}/{packingItems.length})
+          <Luggage className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <span>Packing ({packedCount}/{packingItems.length})</span>
         </button>
         <button
           onClick={() => setActiveTab("expenses")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
+          className={`flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap shrink-0 ${
             activeTab === "expenses"
               ? "bg-blue-600 text-white shadow"
               : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
           }`}
         >
-          <Receipt className="w-4 h-4" /> Pengeluaran ({expenses.length})
+          <Receipt className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <span>Pengeluaran ({expenses.length})</span>
         </button>
         <button
           onClick={() => setActiveTab("documents")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
+          className={`flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap shrink-0 ${
             activeTab === "documents"
               ? "bg-blue-600 text-white shadow"
               : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
           }`}
         >
-          <FileText className="w-4 h-4" /> Dokumen & Tiket ({documents.length})
+          <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <span>Dokumen</span>
+          <span className="hidden sm:inline">& Tiket ({documents.length})</span>
+          <span className="sm:hidden">({documents.length})</span>
         </button>
         <button
           onClick={() => setActiveTab("overview")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
+          className={`flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap shrink-0 ${
             activeTab === "overview"
               ? "bg-blue-600 text-white shadow"
               : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
           }`}
         >
-          <Info className="w-4 h-4" /> Info & Catatan
+          <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <span>Info</span>
+          <span className="hidden sm:inline">& Catatan</span>
         </button>
       </div>
 
@@ -1310,14 +1321,14 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
 
       {/* ─── MODAL: Add Itinerary ─────────────────────────────────────────── */}
       {showItineraryModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4 my-8">
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl w-full max-w-md p-4 sm:p-6 shadow-2xl space-y-4 my-4 sm:my-8">
             <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
               <h3 className="text-lg font-bold">Tambah Jadwal Aktivitas</h3>
               <button type="button" onClick={() => { setShowItineraryModal(false); setAddBudgetRows([]); }} className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200">✕</button>
             </div>
             <form onSubmit={handleItinerarySubmit} className="space-y-4">
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-semibold mb-1">Hari ke- *</label>
                   <input type="number" min="1" required value={itineraryForm.day_number} onChange={(e) => setItineraryForm({ ...itineraryForm, day_number: Number(e.target.value) }) } className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800" />
@@ -1377,7 +1388,7 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
                       placeholder="Nominal"
                       value={row.amount}
                       onChange={(e) => { const next = [...addBudgetRows]; next[idx] = { ...next[idx], amount: e.target.value }; setAddBudgetRows(next); }}
-                      className="w-32 px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                      className="w-24 sm:w-32 px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-amber-400"
                     />
                     <button type="button" onClick={() => setAddBudgetRows(addBudgetRows.filter((_, i) => i !== idx))} className="p-2 text-neutral-400 hover:text-rose-600 rounded-lg transition">
                       <Trash2 className="w-4 h-4" />
@@ -1404,8 +1415,8 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
 
       {/* ─── MODAL: Edit Itinerary ────────────────────────────────────────── */}
       {editingItinerary && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl w-full max-w-md p-4 sm:p-6 shadow-2xl space-y-4 my-4 sm:my-8">
             <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
               <h3 className="text-lg font-bold">Edit Jadwal Aktivitas</h3>
               <button
@@ -1416,7 +1427,7 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
               </button>
             </div>
             <form onSubmit={handleEditItinerarySubmit} className="space-y-4">
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-semibold mb-1">Hari ke- *</label>
                   <input
@@ -1523,7 +1534,7 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
                         next[idx] = { ...next[idx], amount: e.target.value };
                         setBudgetRows(next);
                       }}
-                      className="w-32 px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                      className="w-24 sm:w-32 px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-amber-400"
                     />
                     <button
                       type="button"
