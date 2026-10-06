@@ -1328,18 +1328,36 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
               <button type="button" onClick={() => { setShowItineraryModal(false); setAddBudgetRows([]); }} className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200">✕</button>
             </div>
             <form onSubmit={handleItinerarySubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold mb-1">Hari ke- *</label>
-                  <input type="number" min="1" required value={itineraryForm.day_number} onChange={(e) => setItineraryForm({ ...itineraryForm, day_number: Number(e.target.value) }) } className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800" />
-                </div>
+              {(() => {
+                const tripDays = trip?.start_date && trip?.end_date
+                  ? Math.max(1, Math.round((new Date(trip.end_date).getTime() - new Date(trip.start_date).getTime()) / 86400000) + 1)
+                  : undefined;
+                return (
+                  <div>
+                    <label className="block text-xs font-semibold mb-1">
+                      Hari ke berapa? *{tripDays ? <span className="font-normal text-neutral-500 ml-1">(maks. hari {tripDays})</span> : ""}
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max={tripDays}
+                      required
+                      placeholder={tripDays ? `1 – ${tripDays}` : "Contoh: 1, 2, 3..."}
+                      value={itineraryForm.day_number}
+                      onChange={(e) => setItineraryForm({ ...itineraryForm, day_number: Number(e.target.value) })}
+                      className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                );
+              })()}
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold mb-1">Jam Mulai</label>
-                  <input type="time" value={itineraryForm.time_start} onChange={(e) => setItineraryForm({ ...itineraryForm, time_start: e.target.value })} className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800" />
+                  <input type="time" value={itineraryForm.time_start} onChange={(e) => setItineraryForm({ ...itineraryForm, time_start: e.target.value })} className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold mb-1">Jam Selesai</label>
-                  <input type="time" value={itineraryForm.time_end} onChange={(e) => setItineraryForm({ ...itineraryForm, time_end: e.target.value })} className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800" />
+                  <input type="time" value={itineraryForm.time_end} onChange={(e) => setItineraryForm({ ...itineraryForm, time_end: e.target.value })} className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
               </div>
 
@@ -1427,25 +1445,36 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
               </button>
             </div>
             <form onSubmit={handleEditItinerarySubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold mb-1">Hari ke- *</label>
-                  <input
-                    type="number"
-                    min="1"
-                    required
-                    value={editItineraryForm.day_number}
-                    onChange={(e) => setEditItineraryForm({ ...editItineraryForm, day_number: Number(e.target.value) })}
-                    className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800"
-                  />
-                </div>
+              {(() => {
+                const tripDays = trip?.start_date && trip?.end_date
+                  ? Math.max(1, Math.round((new Date(trip.end_date).getTime() - new Date(trip.start_date).getTime()) / 86400000) + 1)
+                  : undefined;
+                return (
+                  <div>
+                    <label className="block text-xs font-semibold mb-1">
+                      Hari ke berapa? *{tripDays ? <span className="font-normal text-neutral-500 ml-1">(maks. hari {tripDays})</span> : ""}
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max={tripDays}
+                      required
+                      placeholder={tripDays ? `1 – ${tripDays}` : "Contoh: 1, 2, 3..."}
+                      value={editItineraryForm.day_number}
+                      onChange={(e) => setEditItineraryForm({ ...editItineraryForm, day_number: Number(e.target.value) })}
+                      className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                );
+              })()}
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold mb-1">Jam Mulai</label>
                   <input
                     type="time"
                     value={editItineraryForm.time_start}
                     onChange={(e) => setEditItineraryForm({ ...editItineraryForm, time_start: e.target.value })}
-                    className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800"
+                    className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
@@ -1454,7 +1483,7 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
                     type="time"
                     value={editItineraryForm.time_end}
                     onChange={(e) => setEditItineraryForm({ ...editItineraryForm, time_end: e.target.value })}
-                    className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800"
+                    className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
