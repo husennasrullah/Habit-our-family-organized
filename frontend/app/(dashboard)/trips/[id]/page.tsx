@@ -640,11 +640,20 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
                   <div key={dayNum} className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-sm overflow-hidden">
                     {/* Day header */}
                     <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/50">
-                      <div className="flex items-center gap-2">
-                        <span className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
                           H{dayNum}
                         </span>
                         <span className="font-bold text-sm">Hari ke-{dayNum}</span>
+                        {trip.start_date && (() => {
+                          const d = new Date(trip.start_date);
+                          d.setDate(d.getDate() + dayNum - 1);
+                          return (
+                            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+                              {d.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                            </span>
+                          );
+                        })()}
                         <span className="text-xs text-neutral-400">{dayItems.length} aktivitas</span>
                       </div>
                       {dayBudget > 0 && (
