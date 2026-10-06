@@ -1353,11 +1353,11 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold mb-1">Jam Mulai</label>
-                  <input type="time" value={itineraryForm.time_start} onChange={(e) => setItineraryForm({ ...itineraryForm, time_start: e.target.value })} className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input type="text" inputMode="numeric" pattern="^([01]\d|2[0-3]):[0-5]\d$" placeholder="HH:MM" maxLength={5} value={itineraryForm.time_start} onChange={(e) => setItineraryForm({ ...itineraryForm, time_start: e.target.value })} className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold mb-1">Jam Selesai</label>
-                  <input type="time" value={itineraryForm.time_end} onChange={(e) => setItineraryForm({ ...itineraryForm, time_end: e.target.value })} className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input type="text" inputMode="numeric" pattern="^([01]\d|2[0-3]):[0-5]\d$" placeholder="HH:MM" maxLength={5} value={itineraryForm.time_end} onChange={(e) => setItineraryForm({ ...itineraryForm, time_end: e.target.value })} className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
               </div>
 
@@ -1471,7 +1471,11 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
                 <div>
                   <label className="block text-xs font-semibold mb-1">Jam Mulai</label>
                   <input
-                    type="time"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="^([01]\d|2[0-3]):[0-5]\d$"
+                    placeholder="HH:MM"
+                    maxLength={5}
                     value={editItineraryForm.time_start}
                     onChange={(e) => setEditItineraryForm({ ...editItineraryForm, time_start: e.target.value })}
                     className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1480,7 +1484,11 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
                 <div>
                   <label className="block text-xs font-semibold mb-1">Jam Selesai</label>
                   <input
-                    type="time"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="^([01]\d|2[0-3]):[0-5]\d$"
+                    placeholder="HH:MM"
+                    maxLength={5}
                     value={editItineraryForm.time_end}
                     onChange={(e) => setEditItineraryForm({ ...editItineraryForm, time_end: e.target.value })}
                     className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
