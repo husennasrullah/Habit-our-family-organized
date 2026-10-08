@@ -223,14 +223,31 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
     });
 
     // 2. Hapus budget items yang sudah dihapus dari rows
-    const existingIds = (editingItinerary.budget_items ?? []).map((b) => b.id);
+    const existingItems = editingItinerary.budget_items ?? [];
+    const existingIds = existingItems.map((b) => b.id);
     const keptIds = budgetRows.filter((r) => r.id).map((r) => r.id!);
     const toDelete = existingIds.filter((eid) => !keptIds.includes(eid));
     for (const bid of toDelete) {
       await deleteBudgetHook.mutateAsync(bid);
     }
 
-    // 3. Tambah budget items baru (yang belum punya id)
+    // 3. Update budget items yang sudah ada tapi nilainya berubah (delete + re-add)
+    for (const row of budgetRows) {
+      if (row.id) {
+        const original = existingItems.find((b) => b.id === row.id);
+        const labelChanged = original && original.label !== row.label.trim();
+        const amountChanged = original && original.amount !== Number(row.amount);
+        if ((labelChanged || amountChanged) && row.label.trim() && Number(row.amount) > 0) {
+          await deleteBudgetHook.mutateAsync(row.id);
+          await addBudgetHook.mutateAsync({
+            label: row.label.trim(),
+            amount: Number(row.amount),
+          });
+        }
+      }
+    }
+
+    // 4. Tambah budget items baru (yang belum punya id)
     for (const row of budgetRows) {
       if (!row.id && row.label.trim() && Number(row.amount) > 0) {
         await addBudgetHook.mutateAsync({
@@ -1362,11 +1379,11 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold mb-1">Jam Mulai</label>
-                  <input type="text" inputMode="numeric" pattern="^([01]\d|2[0-3]):[0-5]\d$" placeholder="HH:MM" maxLength={5} value={itineraryForm.time_start} onChange={(e) => setItineraryForm({ ...itineraryForm, time_start: e.target.value })} className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input type="time" value={itineraryForm.time_start} onChange={(e) => setItineraryForm({ ...itineraryForm, time_start: e.target.value })} className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold mb-1">Jam Selesai</label>
-                  <input type="text" inputMode="numeric" pattern="^([01]\d|2[0-3]):[0-5]\d$" placeholder="HH:MM" maxLength={5} value={itineraryForm.time_end} onChange={(e) => setItineraryForm({ ...itineraryForm, time_end: e.target.value })} className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input type="time" value={itineraryForm.time_end} onChange={(e) => setItineraryForm({ ...itineraryForm, time_end: e.target.value })} className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
               </div>
 
@@ -1480,11 +1497,7 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
                 <div>
                   <label className="block text-xs font-semibold mb-1">Jam Mulai</label>
                   <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="^([01]\d|2[0-3]):[0-5]\d$"
-                    placeholder="HH:MM"
-                    maxLength={5}
+                    type="time"
                     value={editItineraryForm.time_start}
                     onChange={(e) => setEditItineraryForm({ ...editItineraryForm, time_start: e.target.value })}
                     className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1493,11 +1506,7 @@ export default function TripDetailPage({ params }: { params?: { id?: string } })
                 <div>
                   <label className="block text-xs font-semibold mb-1">Jam Selesai</label>
                   <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="^([01]\d|2[0-3]):[0-5]\d$"
-                    placeholder="HH:MM"
-                    maxLength={5}
+                    type="time"
                     value={editItineraryForm.time_end}
                     onChange={(e) => setEditItineraryForm({ ...editItineraryForm, time_end: e.target.value })}
                     className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
