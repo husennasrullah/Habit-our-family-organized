@@ -1,0 +1,54 @@
+{
+  "checks": [
+    "month-1440",
+    "week-1440",
+    "day-1440",
+    "month-390",
+    "week-390",
+    "day-390",
+    "month-375",
+    "week-375",
+    "day-375",
+    "empty state",
+    "error state"
+  ],
+  "errors": [],
+  "audits": [
+    {
+      "label": "month-1440",
+      "violations": []
+    },
+    {
+      "label": "week-1440",
+      "violations": []
+    },
+    {
+      "label": "dark-1440",
+      "violations": []
+    },
+    {
+      "label": "month-390",
+      "violations": []
+    },
+    {
+      "label": "week-390",
+      "violations": []
+    },
+    {
+      "label": "dark-390",
+      "violations": []
+    },
+    {
+      "label": "month-375",
+      "violations": []
+    },
+    {
+      "label": "week-375",
+      "violations": []
+    },
+    {
+      "label": "dark-375",
+      "violations": []
+    }
+  ]
+}

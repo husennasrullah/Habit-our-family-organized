@@ -12,7 +12,14 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-13 (Pengiriman pembenahan menu Liburan)
+> **Last updated:** 2026-11-13 (Modernisasi kalender dan pengiriman ke origin)
+
+### Modernisasi kalender dan pengiriman — 2026-11-13
+- Pengguna meminta tampilan kalender lebih modern, kemudian menyetujui penyimpanan dan push ke origin/main.
+- File: halaman calendar, CalendarHeader/MonthView/EventBadge/DayView/WeekView, TimeGrid baru, calendarUtils, globals.css, tes dan script QA. Toolbar menjadi navigasi ringkas dengan segmented view; kalender bulanan memiliki tanggal terpilih, badge pastel, panel agenda di desktop dan indikator titik serta panel di bawah pada mobile. Form tambah/edit/hapus dan hook API tetap digunakan.
+- Grid hari/minggu bersama memisahkan acara sepanjang hari, memotong acara lintas tengah malam sesuai tanggal, menempatkan acara bersamaan pada kolom terpisah, menyediakan slot jam lewat keyboard dan scroll awal pukul 07.00. Grid mingguan dapat digeser mendatar pada HP. Warna dan kontras mode gelap diperbaiki.
+- Verifikasi: 15 tes frontend lulus; build produksi terisolasi .next-qa termasuk lint/typecheck 19 halaman; browser fixture 11 pemeriksaan pada 1440/390/375 px tanpa overflow/error runtime dan sembilan audit axe terarah tanpa pelanggaran. Memeriksa pilih tanggal, tanggal form tambah, view bulan/minggu/hari, acara bersamaan/seharian, empty/error state. Bukti docs/qa/calendar-modern-*; script frontend/scripts/calendar-qa.cjs. Tidak mengubah data keluarga/backend/schema; QA memakai API fixture, belum uji mutasi API nyata.
+- Pengiriman: commit perubahan kalender beserta panduan, rencana dan bukti QA; push biasa ke origin/main tanpa force. Next steps: pantau CI/CD dan review tampilan kalender di deployment.
 
 ### Pengiriman pembenahan menu Liburan — 2026-11-13
 - Pengguna meminta pembaruan panduan agent serta commit dan push perubahan Liburan ke origin. Panduan resmi repo menggunakan nama `agents.md`; tidak membuat file duplikat `agent.md`.

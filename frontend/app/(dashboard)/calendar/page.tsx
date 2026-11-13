@@ -107,7 +107,7 @@ export default function CalendarPage() {
   // ─── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="space-y-4">
+    <div className="calendar-page w-full min-w-0 space-y-4">
       <PageHeader
         title="Kalender"
         description="Waktu untuk yang penting. Atur agenda keluarga bersama."
@@ -134,10 +134,9 @@ export default function CalendarPage() {
             <MonthView
               currentDate={currentDate}
               events={events}
-              onDayClick={(day) => {
-                setCurrentDate(day);
-                setView("day");
-              }}
+              onDayClick={setCurrentDate}
+              onAddEvent={handleAddEvent}
+              onOpenDay={() => setView("day")}
               onEventClick={handleEventClick}
             />
           )}

@@ -683,6 +683,8 @@ Membangun API untuk manajemen event kalender keluarga dengan dukungan recurring 
 
 #### [x] Task 3.2 — Frontend: Halaman Calendar
 
+**Pembaruan 2026-11-13:** Tampilan dimodernkan dengan toolbar ringkas, panel agenda tanggal terpilih, kalender mobile bertitik dan grid hari/minggu bersama. Acara seharian dipisahkan; acara lintas hari dipotong per tanggal dan acara bersamaan ditata berdampingan. Verifikasi: 15 tes frontend, build/lint/typecheck dan QA browser fixture 11 pemeriksaan + sembilan audit axe terarah lulus. Bukti: `docs/qa/calendar-modern-results.json`.
+
 **Intent:**
 Membangun tampilan kalender interaktif yang menampilkan event semua anggota keluarga dengan sinkronisasi real-time.
 
