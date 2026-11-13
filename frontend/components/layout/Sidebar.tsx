@@ -1,215 +1,245 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { X, Menu, PanelLeftClose, PanelLeftOpen, LogOut } from "lucide-react";
+import { usePathname } from "next/navigation";
+import {
+  X,
+  Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
+  ChevronRight,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import { navigation, isNavigationActive } from "@/lib/navigation";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
-import { useAuth } from "@/hooks/useAuth";
-
-const NAV_ITEMS = [
-  { href: "/dashboard",  label: "Dashboard",    img: "/icons/assets-habit/menu-dashboard.png" },
-  { href: "/calendar",   label: "Kalender",     img: "/icons/assets-habit/menu-calendar.png" },
-  { href: "/tasks",      label: "Tugas",        img: "/icons/assets-habit/menu-tugas.png" },
-  { href: "/budget",     label: "Keuangan",     img: "/icons/assets-habit/menu-keuangan.png" },
-  { href: "/meals", label: "Jadwal Makan", img: "/icons/assets-habit/menu-jadwalmakan.png" },
-  { href: "/trips", label: "Liburan", img: "/icons/assets-habit/menu-calendar.png" },
-  { href: "/memories", label: "Kenangan", img: "/icons/assets-habit/menu-kenangan.png" },
-  { href: "/kids",       label: "Anak",         img: "/icons/assets-habit/menu-anak.png" },
-  { href: "/documents",  label: "Dokumen",      img: "/icons/assets-habit/menu-document.png" },
-  { href: "/settings",   label: "Pengaturan",   img: "/icons/assets-habit/menu-pengaturan.png" },
-];
 
 export function Sidebar() {
-  const pathname   = usePathname();
-  const router     = useRouter();
-  const { sidebarOpen, toggleSidebar, sidebarCollapsed, toggleCollapsed } = useUIStore();
-  const user       = useAuthStore((s) => s.user);
-  const { logout } = useAuth();
+  const pathname = usePathname();
+  const { sidebarOpen, setSidebarOpen, sidebarCollapsed, toggleCollapsed } =
+    useUIStore();
+  const user = useAuthStore((s) => s.user);
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname, setSidebarOpen]);
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const opener =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const drawer = document.getElementById("mobile-navigation");
+    const media = window.matchMedia("(max-width: 1023px)");
+    const background = document.getElementById("dashboard-background");
+    const previous = document.body.style.overflow;
+    const onResize = () => {
+      if (!media.matches) setSidebarOpen(false);
+    };
+    media.addEventListener("change", onResize);
+    if (media.matches) {
+      document.body.style.overflow = "hidden";
+      if (background) background.inert = true;
+      drawer?.setAttribute("role", "dialog");
+      drawer?.setAttribute("aria-modal", "true");
+      drawer?.querySelector<HTMLButtonElement>("button")?.focus();
+    }
+    const onKey = (event: KeyboardEvent) => {
+      if (!media.matches) return;
+      if (event.key === "Escape") setSidebarOpen(false);
+      if (event.key === "Tab" && drawer) {
+        const controls = Array.from(
+          drawer.querySelectorAll<HTMLElement>("a[href], button"),
+        ).filter((el) => el.getClientRects().length > 0);
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      media.removeEventListener("change", onResize);
+      if (background) background.inert = false;
+      drawer?.removeAttribute("role");
+      drawer?.removeAttribute("aria-modal");
+      document.body.style.overflow = previous;
+      document.removeEventListener("keydown", onKey);
+      if (media.matches) opener?.focus();
+    };
+  }, [sidebarOpen, setSidebarOpen]);
 
   return (
     <>
-      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
-          onClick={toggleSidebar}
+          className="fixed inset-0 z-30 bg-slate-950/25 backdrop-blur-sm lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
         />
       )}
-
       <aside
+        id="mobile-navigation"
+        aria-label="Navigasi utama"
         className={cn(
-          "fixed left-0 top-0 z-40 flex h-full flex-col bg-white dark:bg-neutral-900 transition-all duration-300",
-          "border-r border-neutral-200 dark:border-neutral-800",
-          sidebarCollapsed ? "lg:w-16" : "lg:w-64",
-          sidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-64",
-          "lg:translate-x-0"
+          "app-sidebar",
+          sidebarCollapsed && "is-collapsed",
+          sidebarOpen ? "is-open" : "is-closed",
         )}
       >
-        {/* ── Logo ──────────────────────────────────────────────── */}
-        <div className="flex h-16 items-center justify-between px-3 border-b border-neutral-100 dark:border-neutral-800">
-          <Link href="/dashboard" className="flex items-center gap-2.5 min-w-0 overflow-hidden">
+        <div className="sidebar-brand">
+          <Link
+            href="/dashboard"
+            aria-label="HABIT — Beranda"
+            className="flex min-w-0 items-center gap-2.5"
+          >
             <Image
-              src="/icons/assets-habit/logo-habit.png"
-              alt="HABIT"
+              src="/icons/habit-mark-v2.png"
+              alt=""
               width={34}
               height={34}
-              className="flex-shrink-0 object-contain"
+              className="shrink-0 rounded-[11px]"
             />
-            {!sidebarCollapsed && (
-              <div className="min-w-0 flex flex-col items-center">
-                <span
-                  className="block text-[15px] leading-none tracking-[0.15em] text-[#1a2744]"
-                  style={{ fontFamily: "var(--font-nunito)", fontWeight: 900 }}
-                >
-                  HABIT
-                </span>
-                <span className="block text-[7.5px] font-semibold tracking-[0.12em] text-[#f97316] uppercase mt-0.5 whitespace-nowrap">
-                  Our Family, Organized
-                </span>
-              </div>
-            )}
+            <span
+              className={cn(
+                "sidebar-wordmark",
+                sidebarCollapsed && "lg:hidden",
+              )}
+            >
+              Habit<span>Ruang keluarga kita</span>
+            </span>
           </Link>
-          {/* Tombol close mobile */}
           <button
-            className="p-1 text-neutral-400 hover:text-neutral-700 lg:hidden"
-            onClick={toggleSidebar}
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Tutup navigasi"
+            className="sidebar-close lg:hidden"
           >
-            <X className="h-5 w-5" />
-          </button>
-          {/* Tombol collapse desktop */}
-          <button
-            className="hidden lg:flex p-1 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800"
-            onClick={toggleCollapsed}
-            title={sidebarCollapsed ? "Perluas sidebar" : "Ciutkan sidebar"}
-          >
-            {sidebarCollapsed
-              ? <PanelLeftOpen className="h-4 w-4" />
-              : <PanelLeftClose className="h-4 w-4" />
-            }
+            <X size={18} />
           </button>
         </div>
-
-        {/* ── Nav items ─────────────────────────────────────────── */}
-        <nav className="flex-1 overflow-y-auto px-2 py-3">
-          <ul className="space-y-0.5">
-            {NAV_ITEMS.map(({ href, label, img }) => {
-              const isActive = pathname === href || pathname.startsWith(href + "/");
-              return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    onClick={() => {
-                      if (window.innerWidth < 1024) toggleSidebar();
-                    }}
-                    title={sidebarCollapsed ? label : undefined}
-                    className={cn(
-                      "relative flex items-center rounded-xl px-2 py-2.5 text-sm font-medium transition-all",
-                      sidebarCollapsed ? "justify-center" : "gap-3 px-3",
-                      isActive
-                        ? "bg-teal-50 text-teal-700 font-semibold"
-                        : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-800"
-                    )}
-                  >
-                    <Image
-                      src={img}
-                      alt={label}
-                      width={20}
-                      height={20}
-                      className={cn(
-                        "flex-shrink-0 object-contain",
-                        !isActive && "opacity-60"
-                      )}
-                    />
-                    {!sidebarCollapsed && label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+        <nav className="sidebar-navigation">
+          {["Sehari-hari", "Keluarga", "Akun"].map((group) => (
+            <div key={group} className="sidebar-group">
+              <p
+                className={cn(
+                  "sidebar-group-label",
+                  sidebarCollapsed && "lg:sr-only",
+                )}
+              >
+                {group}
+              </p>
+              <ul>
+                {navigation
+                  .filter((item) => item.group === group)
+                  .map(({ href, label, icon: Icon }) => {
+                    const active = isNavigationActive(pathname, href);
+                    return (
+                      <li key={href}>
+                        <Link
+                          href={href}
+                          title={label}
+                          aria-current={active ? "page" : undefined}
+                          className={cn(
+                            "sidebar-link",
+                            active && "is-active",
+                            sidebarCollapsed && "lg:justify-center",
+                          )}
+                        >
+                          <Icon
+                            size={18}
+                            strokeWidth={1.7}
+                            fill={
+                              active && href === "/dashboard"
+                                ? "currentColor"
+                                : "none"
+                            }
+                          />
+                          <span className={cn(sidebarCollapsed && "lg:hidden")}>
+                            {label}
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+              </ul>
+            </div>
+          ))}
         </nav>
-
-        {/* ── User info & Quote ─────────────────────── */}
-        {user && (
-          <div className="border-t border-neutral-100 dark:border-neutral-800 p-3 space-y-3">
+        <div className="sidebar-footer">
+          {user && (
+            <Link
+              href="/settings"
+              aria-label={`Profil ${user.name}`}
+              title={user.name}
+              className="sidebar-profile"
+            >
+              <span className="sidebar-avatar">
+                {user.name.slice(0, 1).toUpperCase()}
+              </span>
+              <span
+                className={cn(
+                  "min-w-0 flex-1",
+                  sidebarCollapsed && "lg:hidden",
+                )}
+              >
+                <span className="block truncate text-xs font-bold">
+                  {user.name}
+                </span>
+                <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                  Profil keluarga
+                </span>
+              </span>
+              <ChevronRight
+                size={15}
+                className={cn(
+                  "shrink-0 text-muted-foreground",
+                  sidebarCollapsed && "lg:hidden",
+                )}
+              />
+            </Link>
+          )}
+          <button
+            onClick={toggleCollapsed}
+            aria-label={
+              sidebarCollapsed ? "Perluas navigasi" : "Ringkas navigasi"
+            }
+            title={sidebarCollapsed ? "Perluas navigasi" : "Ringkas navigasi"}
+            className="sidebar-collapse"
+          >
             {sidebarCollapsed ? (
-              <div className="flex flex-col items-center gap-2">
-                <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-teal-200">
-                  <Image
-                    src={user.avatar_url || (user.role === "child" ? "/icons/assets-habit/logo-user-anak.png" : "/icons/assets-habit/logo-user-ayah.png")}
-                    alt={user.name}
-                    width={36}
-                    height={36}
-                    className="h-9 w-9 rounded-full object-cover"
-                  />
-                </div>
-                <button
-                  onClick={logout}
-                  title="Keluar"
-                  className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                >
-                  <LogOut className="h-4 w-4" />
-                </button>
-              </div>
+              <PanelLeftOpen size={16} />
             ) : (
               <>
-                <div className="flex items-center gap-3 bg-neutral-50 dark:bg-neutral-800/50 p-2.5 rounded-xl border border-neutral-100 dark:border-neutral-800">
-                  <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-teal-200">
-                    <Image
-                      src={user.avatar_url || (user.role === "child" ? "/icons/assets-habit/logo-user-anak.png" : "/icons/assets-habit/logo-user-ayah.png")}
-                      alt={user.name}
-                      width={36}
-                      height={36}
-                      className="h-9 w-9 rounded-full object-cover"
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-neutral-800 dark:text-neutral-100 truncate">{user.name}</p>
-                    <button
-                      onClick={() => router.push("/settings")}
-                      className="text-xs text-teal-600 dark:text-teal-400 hover:underline font-medium"
-                    >
-                      Lihat profil
-                    </button>
-                  </div>
-                  <button
-                    onClick={logout}
-                    title="Keluar"
-                    className="flex-shrink-0 p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                  >
-                    <LogOut className="h-4 w-4" />
-                  </button>
-                </div>
-
-                {/* Quote Box (Mockup design) */}
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#e9faf7] to-[#eefcff] dark:from-teal-950/40 dark:to-blue-950/30 p-3.5 border border-teal-100/60 dark:border-neutral-800">
-                  <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed pr-8">
-                    <b className="text-neutral-900 dark:text-neutral-100 font-bold">Keluarga yang terorganisir,</b><br />
-                    hidup yang lebih bahagia. 💚
-                  </p>
-                  <span className="absolute right-2 -bottom-2 text-3xl opacity-80 pointer-events-none">
-                    🪴
-                  </span>
-                </div>
+                <PanelLeftClose size={16} />
+                <span>Ringkas sidebar</span>
               </>
             )}
-          </div>
-        )}
+          </button>
+        </div>
+        <div className="sidebar-scenery" aria-hidden="true" />
       </aside>
     </>
   );
 }
 
 export function SidebarToggle() {
-  const { toggleSidebar } = useUIStore();
+  const { sidebarOpen, toggleSidebar } = useUIStore();
   return (
     <button
-      className="p-2 text-neutral-500 hover:text-neutral-800 rounded-lg hover:bg-neutral-100 lg:hidden"
+      aria-label="Buka navigasi"
+      aria-controls="mobile-navigation"
+      aria-expanded={sidebarOpen}
       onClick={toggleSidebar}
+      className="topbar-icon lg:hidden"
     >
-      <Menu className="h-5 w-5" />
+      <Menu size={20} />
     </button>
   );
 }

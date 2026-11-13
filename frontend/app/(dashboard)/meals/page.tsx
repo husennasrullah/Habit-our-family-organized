@@ -1,8 +1,29 @@
 "use client";
 
+import { QueryError } from "@/components/shared/QueryError";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { ModalFrame } from "@/components/shared/ModalFrame";
+
 import { useState, useCallback, useEffect } from "react";
-import { Plus, ChevronLeft, ChevronRight, ExternalLink, Pencil, Trash2, Bell, X, UtensilsCrossed } from "lucide-react";
-import { format, addDays, startOfWeek, addWeeks, subWeeks, isSameDay } from "date-fns";
+import {
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Pencil,
+  Trash2,
+  Bell,
+  X,
+  UtensilsCrossed,
+} from "lucide-react";
+import {
+  format,
+  addDays,
+  startOfWeek,
+  addWeeks,
+  subWeeks,
+  isSameDay,
+} from "date-fns";
 import { id as dateLocale } from "date-fns/locale";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,10 +38,15 @@ import type { MealPlan, MealType } from "@/types";
 
 // ─── Konstanta ────────────────────────────────────────────────────────────────
 
-const MEAL_TYPES: { value: MealType; label: string; emoji: string; time: string }[] = [
-  { value: "breakfast", label: "Sarapan",     emoji: "🌅", time: "06:00–09:00" },
-  { value: "lunch",     label: "Makan Siang", emoji: "☀️", time: "11:00–13:00" },
-  { value: "dinner",    label: "Makan Malam", emoji: "🌙", time: "18:00–20:00" },
+const MEAL_TYPES: {
+  value: MealType;
+  label: string;
+  emoji: string;
+  time: string;
+}[] = [
+  { value: "breakfast", label: "Sarapan", emoji: "🌅", time: "06:00–09:00" },
+  { value: "lunch", label: "Makan Siang", emoji: "☀️", time: "11:00–13:00" },
+  { value: "dinner", label: "Makan Malam", emoji: "🌙", time: "18:00–20:00" },
 ];
 
 const DAY_LABELS = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
@@ -35,8 +61,14 @@ function toDateStr(d: Date): string {
   return format(d, "yyyy-MM-dd");
 }
 
-function getMealsForSlot(meals: MealPlan[], date: Date, mealType: MealType): MealPlan[] {
-  return meals.filter((m) => m.date.slice(0, 10) === toDateStr(date) && m.meal_type === mealType);
+function getMealsForSlot(
+  meals: MealPlan[],
+  date: Date,
+  mealType: MealType,
+): MealPlan[] {
+  return meals.filter(
+    (m) => m.date.slice(0, 10) === toDateStr(date) && m.meal_type === mealType,
+  );
 }
 
 // ─── Sub-komponen ─────────────────────────────────────────────────────────────
@@ -51,14 +83,19 @@ function MealSlotCard({
   return (
     <button
       onClick={() => onDetail(meal)}
-      className="group w-full text-left rounded-lg border border-neutral-100 dark:border-primary-900 bg-primary-50 dark:bg-primary-950 p-2.5 hover:bg-primary-100 dark:hover:bg-primary-900 hover:border-primary-200 transition-colors"
+      className="group w-full text-left rounded-lg border border-border dark:border-primary-900 bg-primary-50 dark:bg-primary-950 p-2.5 hover:bg-primary-100 dark:hover:bg-primary-900 hover:border-primary-200 transition-colors"
+      aria-label="Buka"
     >
-      <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-100 leading-snug line-clamp-2">{meal.name}</p>
+      <p className="text-xs font-semibold text-foreground dark:text-foreground leading-snug line-clamp-2">
+        {meal.name}
+      </p>
       {meal.notes && (
-        <p className="mt-0.5 text-[11px] text-neutral-500 line-clamp-1">{meal.notes}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">
+          {meal.notes}
+        </p>
       )}
       {meal.recipe_url && (
-        <span className="mt-0.5 flex items-center gap-1 text-[11px] text-primary-600">
+        <span className="mt-0.5 flex items-center gap-1 text-xs text-primary-600">
           <ExternalLink className="h-3 w-3" /> Resep
         </span>
       )}
@@ -84,21 +121,36 @@ function MealDetailModal({
   if (!meal) return null;
 
   const mealMeta = MEAL_TYPES.find((m) => m.value === meal.meal_type);
-  const dateLabel = format(new Date(meal.date.slice(0, 10) + "T00:00:00"), "EEEE, d MMMM yyyy", { locale: dateLocale });
+  const dateLabel = format(
+    new Date(meal.date.slice(0, 10) + "T00:00:00"),
+    "EEEE, d MMMM yyyy",
+    { locale: dateLocale },
+  );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40">
-      <div className="bg-white dark:bg-neutral-900 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl">
+    <ModalFrame
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40"
+      onClose={onClose}
+    >
+      <div className="bg-card dark:bg-card w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl">
         {/* Header */}
-        <div className="flex items-start justify-between px-5 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800">
+        <div className="flex items-start justify-between px-5 pt-5 pb-4 border-b border-border dark:border-border">
           <div className="flex items-center gap-2.5">
             <span className="text-2xl">{mealMeta?.emoji}</span>
             <div>
-              <p className="text-[11px] font-medium text-neutral-400 uppercase tracking-wider">{mealMeta?.label} · {mealMeta?.time}</p>
-              <p className="text-xs text-neutral-400 mt-0.5">{dateLabel}</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                {mealMeta?.label} · {mealMeta?.time}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {dateLabel}
+              </p>
             </div>
           </div>
-          <button onClick={onClose} className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100">
+          <button
+            onClick={onClose}
+            className="rounded-full p-1 text-muted-foreground hover:bg-muted"
+            aria-label="Tutup"
+          >
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -106,20 +158,28 @@ function MealDetailModal({
         {/* Body */}
         <div className="px-5 py-5 space-y-4">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 mb-1">Menu</p>
-            <p className="text-lg font-bold text-neutral-900 dark:text-neutral-50">{meal.name}</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+              Menu
+            </p>
+            <p className="text-lg font-bold text-foreground dark:text-neutral-50">
+              {meal.name}
+            </p>
           </div>
 
           {meal.notes && (
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 mb-1">Catatan</p>
-              <p className="text-sm text-neutral-700">{meal.notes}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                Catatan
+              </p>
+              <p className="text-sm text-foreground">{meal.notes}</p>
             </div>
           )}
 
           {meal.recipe_url && (
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 mb-1">Link Resep</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                Link Resep
+              </p>
               <a
                 href={meal.recipe_url}
                 target="_blank"
@@ -159,7 +219,7 @@ function MealDetailModal({
           </button>
         </div>
       </div>
-    </div>
+    </ModalFrame>
   );
 }
 
@@ -167,7 +227,8 @@ function AddSlotButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-lg border border-dashed border-neutral-200 py-1.5 flex items-center justify-center text-neutral-300 hover:border-primary-300 hover:text-primary-400 transition-colors"
+      aria-label="Tambah menu"
+      className="w-full rounded-lg border border-dashed border-border py-1.5 flex items-center justify-center text-neutral-300 hover:border-primary-300 hover:text-primary-400 transition-colors"
     >
       <Plus className="h-3.5 w-3.5" />
     </button>
@@ -193,8 +254,8 @@ function MealFormModal({
   editingMeal?: MealPlan;
   isSaving: boolean;
 }) {
-  const [name, setName]           = useState("");
-  const [notes, setNotes]         = useState("");
+  const [name, setName] = useState("");
+  const [notes, setNotes] = useState("");
   const [recipeURL, setRecipeURL] = useState("");
 
   // Sync state setiap kali modal dibuka atau editingMeal berganti
@@ -212,47 +273,71 @@ function MealFormModal({
   const dateLabel = format(date, "EEEE, d MMMM yyyy", { locale: dateLocale });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl w-full max-w-md">
-        <div className="px-5 py-4 border-b border-neutral-100 dark:border-neutral-800">
-          <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50">
+    <ModalFrame
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40"
+      onClose={onClose}
+    >
+      <div className="bg-card dark:bg-card rounded-2xl shadow-xl w-full max-w-md">
+        <div className="px-5 py-4 border-b border-border dark:border-border">
+          <h2 className="text-base font-semibold text-foreground dark:text-neutral-50">
             {editingMeal ? "Edit" : "Tambah"} {mealLabel}
           </h2>
-          <p className="text-xs text-neutral-400 mt-0.5">{dateLabel}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{dateLabel}</p>
         </div>
         <div className="p-5 space-y-4">
           <div>
-            <label className="text-xs font-medium text-neutral-600 dark:text-neutral-400">Nama Masakan *</label>
+            <label
+              className="text-xs font-medium text-foreground dark:text-muted-foreground"
+              htmlFor="field-page-dashboardmeals-0"
+            >
+              Nama Masakan *
+            </label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 px-3 py-2 text-sm focus:border-primary-400 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-border dark:border-border bg-card dark:bg-muted text-foreground dark:text-foreground px-3 py-2 text-sm focus:border-primary-400 focus:outline-none"
               placeholder="contoh: Nasi Goreng Spesial"
               autoFocus
+              id="field-page-dashboardmeals-0"
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-neutral-600 dark:text-neutral-400">Catatan Singkat</label>
+            <label
+              className="text-xs font-medium text-foreground dark:text-muted-foreground"
+              htmlFor="field-page-dashboardmeals-1"
+            >
+              Catatan Singkat
+            </label>
             <input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 px-3 py-2 text-sm focus:border-primary-400 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-border dark:border-border bg-card dark:bg-muted text-foreground dark:text-foreground px-3 py-2 text-sm focus:border-primary-400 focus:outline-none"
               placeholder="bahan khusus, porsi, dll."
+              id="field-page-dashboardmeals-1"
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-neutral-600 dark:text-neutral-400">Link Resep (opsional)</label>
+            <label
+              className="text-xs font-medium text-foreground dark:text-muted-foreground"
+              htmlFor="field-page-dashboardmeals-2"
+            >
+              Link Resep (opsional)
+            </label>
             <input
               value={recipeURL}
               onChange={(e) => setRecipeURL(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 px-3 py-2 text-sm focus:border-primary-400 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-border dark:border-border bg-card dark:bg-muted text-foreground dark:text-foreground px-3 py-2 text-sm focus:border-primary-400 focus:outline-none"
               placeholder="https://..."
               type="url"
+              id="field-page-dashboardmeals-2"
             />
           </div>
         </div>
         <div className="px-5 pb-5 flex gap-2 justify-end">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-foreground dark:text-foreground border border-border dark:border-border hover:bg-muted dark:hover:bg-neutral-800"
+          >
             Batal
           </button>
           <button
@@ -264,29 +349,36 @@ function MealFormModal({
           </button>
         </div>
       </div>
-    </div>
+    </ModalFrame>
   );
 }
 
 // ─── Halaman Utama ────────────────────────────────────────────────────────────
 
 export default function MealsPage() {
-  const today     = new Date();
-  const [weekStart, setWeekStart] = useState<Date>(() =>
-    startOfWeek(today, { weekStartsOn: 1 }) // Mulai Senin
+  const today = new Date();
+  const [activeDay, setActiveDay] = useState((today.getDay() + 6) % 7);
+  const [weekStart, setWeekStart] = useState<Date>(
+    () => startOfWeek(today, { weekStartsOn: 1 }), // Mulai Senin
   );
 
-  const [modalOpen, setModalOpen]           = useState(false);
-  const [detailMeal, setDetailMeal]         = useState<MealPlan | null>(null);
-  const [selectedDate, setSelectedDate]     = useState<Date>(today);
-  const [selectedMealType, setSelectedMealType] = useState<MealType>("breakfast");
-  const [editingMeal, setEditingMeal]       = useState<MealPlan | undefined>();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [detailMeal, setDetailMeal] = useState<MealPlan | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date>(today);
+  const [selectedMealType, setSelectedMealType] =
+    useState<MealType>("breakfast");
+  const [editingMeal, setEditingMeal] = useState<MealPlan | undefined>();
 
   const weekDays = getWeekDays(weekStart);
   const from = toDateStr(weekDays[0]);
-  const to   = toDateStr(weekDays[6]);
+  const to = toDateStr(weekDays[6]);
 
-  const { data: meals = [], isLoading } = useMealPlans(from, to);
+  const {
+    data: meals = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useMealPlans(from, to);
   const createMeal = useCreateMealPlan();
   const updateMeal = useUpdateMealPlan();
   const deleteMeal = useDeleteMealPlan();
@@ -310,7 +402,11 @@ export default function MealsPage() {
     setModalOpen(true);
   }, []);
 
-  const handleSave = async (values: { name: string; notes: string; recipe_url: string }) => {
+  const handleSave = async (values: {
+    name: string;
+    notes: string;
+    recipe_url: string;
+  }) => {
     try {
       if (editingMeal) {
         await updateMeal.mutateAsync({ id: editingMeal.id, ...values });
@@ -330,6 +426,7 @@ export default function MealsPage() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!window.confirm("Hapus menu ini dari jadwal makan?")) return;
     try {
       await deleteMeal.mutateAsync(id);
       setDetailMeal(null);
@@ -339,113 +436,230 @@ export default function MealsPage() {
     }
   };
 
-  const isThisWeek = toDateStr(weekStart) === toDateStr(startOfWeek(today, { weekStartsOn: 1 }));
+  const isThisWeek =
+    toDateStr(weekStart) === toDateStr(startOfWeek(today, { weekStartsOn: 1 }));
 
   return (
     <div className="space-y-5">
       {/* ── Header ───────────────────────────────────────────── */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Jadwal Makanan</h1>
-          <p className="mt-0.5 text-sm text-neutral-500">Rencanakan menu masakan keluarga tiap harinya.</p>
-        </div>
-        <NotificationBanner />
-      </div>
+      <PageHeader
+        title="Jadwal Makan"
+        description="Dari rencana sederhana, jadi hidangan untuk bersama."
+        action={
+          <>
+            <NotificationBanner />
+          </>
+        }
+      />
 
       {/* ── Navigasi minggu ──────────────────────────────────── */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center rounded-lg border border-neutral-200 bg-white overflow-hidden">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center rounded-lg border border-border bg-card overflow-hidden">
           <button
             onClick={() => setWeekStart(subWeeks(weekStart, 1))}
-            className="px-2.5 py-2 text-neutral-400 hover:bg-neutral-50 border-r border-neutral-200"
+            className="px-2.5 py-2 text-muted-foreground hover:bg-muted border-r border-border"
+            aria-label="Sebelumnya"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
-            onClick={() => setWeekStart(startOfWeek(today, { weekStartsOn: 1 }))}
-            className="px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+            onClick={() =>
+              setWeekStart(startOfWeek(today, { weekStartsOn: 1 }))
+            }
+            className="px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
           >
-            {isThisWeek ? "Minggu Ini" : format(weekStart, "d MMM", { locale: dateLocale })}
+            {isThisWeek
+              ? "Minggu Ini"
+              : format(weekStart, "d MMM", { locale: dateLocale })}
           </button>
           <button
             onClick={() => setWeekStart(addWeeks(weekStart, 1))}
-            className="px-2.5 py-2 text-neutral-400 hover:bg-neutral-50 border-l border-neutral-200"
+            className="px-2.5 py-2 text-muted-foreground hover:bg-muted border-l border-border"
+            aria-label="Berikutnya"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
-        <span className="text-sm text-neutral-500 capitalize">
-          {format(weekDays[0], "d MMM", { locale: dateLocale })} – {format(weekDays[6], "d MMM yyyy", { locale: dateLocale })}
+        <span className="text-sm text-muted-foreground capitalize">
+          {format(weekDays[0], "d MMM", { locale: dateLocale })} –{" "}
+          {format(weekDays[6], "d MMM yyyy", { locale: dateLocale })}
         </span>
       </div>
 
-      {/* ── Grid mingguan ─────────────────────────────────────── */}
-      <div className="bg-white rounded-xl border border-neutral-100 shadow-sm overflow-hidden">
-        {/* Scroll wrapper — horizontal scroll di mobile */}
-        <div className="overflow-x-auto">
-          <div className="min-w-[640px]">
-            {/* Header hari */}
-            <div className="grid grid-cols-8 border-b border-neutral-100">
-              {/* Kolom label waktu makan */}
-              <div className="py-3 px-3 bg-neutral-50" />
-              {weekDays.map((day, i) => {
-                const isToday = isSameDay(day, today);
-                return (
-                  <div
-                    key={i}
-                    className={cn(
-                      "py-3 px-2 text-center border-l border-neutral-100",
-                      isToday && "bg-primary-50"
-                    )}
-                  >
-                    <p className={cn("text-[11px] font-bold uppercase tracking-wider", isToday ? "text-primary-600" : "text-neutral-400")}>
-                      {DAY_LABELS[i]}
-                    </p>
-                    <p className={cn("text-base font-bold mt-0.5", isToday ? "text-primary-700" : "text-neutral-700")}>
-                      {format(day, "d")}
-                    </p>
-                  </div>
-                );
-              })}
+      {isError ? (
+        <QueryError retry={() => void refetch()} />
+      ) : (
+        <>
+          <div className="space-y-4 md:hidden">
+            <div className="grid grid-cols-7 gap-1 rounded-2xl border border-border bg-card p-2">
+              {weekDays.map((day, index) => (
+                <button
+                  key={index}
+                  aria-label={format(day, "EEEE, d MMMM", {
+                    locale: dateLocale,
+                  })}
+                  aria-pressed={index === activeDay}
+                  onClick={() => setActiveDay(index)}
+                  className={cn(
+                    "flex min-w-0 flex-col items-center gap-1 rounded-xl py-2 text-xs",
+                    index === activeDay
+                      ? "bg-primary-600 text-white"
+                      : "text-muted-foreground",
+                  )}
+                >
+                  <span>{DAY_LABELS[index]}</span>
+                  <span className="text-sm font-semibold">
+                    {format(day, "d")}
+                  </span>
+                </button>
+              ))}
             </div>
-
-            {/* Baris per waktu makan */}
-            {MEAL_TYPES.map((mt) => (
-              <div key={mt.value} className="grid grid-cols-8 border-b border-neutral-100 last:border-0">
-                {/* Label waktu makan */}
-                <div className="flex flex-col justify-center px-3 py-3 bg-neutral-50 border-r border-neutral-100">
-                  <span className="text-base">{mt.emoji}</span>
-                  <span className="text-xs font-semibold text-neutral-700 mt-0.5">{mt.label}</span>
-                  <span className="text-[10px] text-neutral-400">{mt.time}</span>
+            <p className="text-sm font-medium">
+              {format(weekDays[activeDay], "EEEE, d MMMM", {
+                locale: dateLocale,
+              })}
+            </p>
+            {MEAL_TYPES.map((type) => (
+              <section
+                key={type.value}
+                className="rounded-2xl border border-border bg-card p-5"
+              >
+                <div className="mb-4 flex items-center justify-between gap-2">
+                  <h2 className="text-base font-semibold">{type.label}</h2>
+                  <span className="text-xs text-muted-foreground">
+                    {type.time}
+                  </span>
                 </div>
-
-                {/* Slot per hari */}
-                {weekDays.map((day, i) => {
-                  const slotMeals = getMealsForSlot(meals, day, mt.value);
-                  const isToday   = isSameDay(day, today);
-                  return (
-                    <div
-                      key={i}
-                      className={cn("p-2 border-l border-neutral-100 min-h-[72px] flex flex-col gap-1", isToday && "bg-primary-50/30")}
+                {isLoading ? (
+                  <Skeleton className="h-20 rounded-xl" />
+                ) : (
+                  <div className="space-y-2">
+                    {getMealsForSlot(
+                      meals,
+                      weekDays[activeDay],
+                      type.value,
+                    ).map((meal) => (
+                      <MealSlotCard
+                        key={meal.id}
+                        meal={meal}
+                        onDetail={openDetail}
+                      />
+                    ))}
+                    {!getMealsForSlot(meals, weekDays[activeDay], type.value)
+                      .length && (
+                      <p className="py-2 text-sm text-muted-foreground">
+                        Mau masak apa hari ini?
+                      </p>
+                    )}
+                    <button
+                      onClick={() => openAdd(weekDays[activeDay], type.value)}
+                      className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border text-sm text-primary-700 dark:text-primary-200"
                     >
-                      {isLoading ? (
-                        <Skeleton className="h-12 w-full rounded-lg" />
-                      ) : (
-                        <>
-                          {slotMeals.map((meal) => (
-                            <MealSlotCard key={meal.id} meal={meal} onDetail={openDetail} />
-                          ))}
-                          <AddSlotButton onClick={() => openAdd(day, mt.value)} />
-                        </>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                      <Plus size={16} />
+                      Tambah menu
+                    </button>
+                  </div>
+                )}
+              </section>
             ))}
           </div>
-        </div>
-      </div>
+          {/* ── Grid mingguan ─────────────────────────────────────── */}
+          <div className="hidden overflow-hidden rounded-2xl border border-border bg-card md:block">
+            {/* Scroll wrapper — horizontal scroll di mobile */}
+            <div className="overflow-x-auto">
+              <div className="min-w-[640px]">
+                {/* Header hari */}
+                <div className="grid grid-cols-8 border-b border-border">
+                  {/* Kolom label waktu makan */}
+                  <div className="py-3 px-3 bg-muted" />
+                  {weekDays.map((day, i) => {
+                    const isToday = isSameDay(day, today);
+                    return (
+                      <div
+                        key={i}
+                        className={cn(
+                          "py-3 px-2 text-center border-l border-border",
+                          isToday && "bg-primary-50",
+                        )}
+                      >
+                        <p
+                          className={cn(
+                            "text-xs font-bold uppercase tracking-wider",
+                            isToday
+                              ? "text-primary-600"
+                              : "text-muted-foreground",
+                          )}
+                        >
+                          {DAY_LABELS[i]}
+                        </p>
+                        <p
+                          className={cn(
+                            "text-base font-bold mt-0.5",
+                            isToday ? "text-primary-700" : "text-foreground",
+                          )}
+                        >
+                          {format(day, "d")}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Baris per waktu makan */}
+                {MEAL_TYPES.map((mt) => (
+                  <div
+                    key={mt.value}
+                    className="grid grid-cols-8 border-b border-border last:border-0"
+                  >
+                    {/* Label waktu makan */}
+                    <div className="flex flex-col justify-center px-3 py-3 bg-muted border-r border-border">
+                      <span className="text-base">{mt.emoji}</span>
+                      <span className="text-xs font-semibold text-foreground mt-0.5">
+                        {mt.label}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {mt.time}
+                      </span>
+                    </div>
+
+                    {/* Slot per hari */}
+                    {weekDays.map((day, i) => {
+                      const slotMeals = getMealsForSlot(meals, day, mt.value);
+                      const isToday = isSameDay(day, today);
+                      return (
+                        <div
+                          key={i}
+                          className={cn(
+                            "p-2 border-l border-border min-h-[72px] flex flex-col gap-1",
+                            isToday && "bg-primary-50/30",
+                          )}
+                        >
+                          {isLoading ? (
+                            <Skeleton className="h-12 w-full rounded-lg" />
+                          ) : (
+                            <>
+                              {slotMeals.map((meal) => (
+                                <MealSlotCard
+                                  key={meal.id}
+                                  meal={meal}
+                                  onDetail={openDetail}
+                                />
+                              ))}
+                              <AddSlotButton
+                                onClick={() => openAdd(day, mt.value)}
+                              />
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* ── Detail Modal ──────────────────────────────────────── */}
       <MealDetailModal
@@ -472,7 +686,9 @@ export default function MealsPage() {
 
 // ─── Banner notifikasi ────────────────────────────────────────────────────────
 function NotificationBanner() {
-  const [status, setStatus] = useState<"idle" | "granted" | "denied" | "loading">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "granted" | "denied" | "loading"
+  >("idle");
 
   const requestNotification = async () => {
     if (!("Notification" in window) || !("serviceWorker" in navigator)) {
@@ -504,12 +720,16 @@ function NotificationBanner() {
       className={cn(
         "flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors shadow-sm",
         status === "denied"
-          ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
-          : "bg-primary-600 text-white hover:bg-primary-700"
+          ? "bg-muted text-muted-foreground cursor-not-allowed"
+          : "bg-primary-600 text-white hover:bg-primary-700",
       )}
     >
       <Bell className="h-4 w-4" />
-      {status === "loading" ? "Mengaktifkan..." : status === "denied" ? "Notifikasi ditolak" : "Aktifkan Notifikasi"}
+      {status === "loading"
+        ? "Mengaktifkan..."
+        : status === "denied"
+          ? "Notifikasi ditolak"
+          : "Aktifkan Notifikasi"}
     </button>
   );
 }
@@ -525,7 +745,9 @@ async function subscribeToPush() {
 
   const sub = await reg.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(public_key) as unknown as BufferSource,
+    applicationServerKey: urlBase64ToUint8Array(
+      public_key,
+    ) as unknown as BufferSource,
   });
 
   const json = sub.toJSON();
@@ -537,17 +759,17 @@ async function subscribeToPush() {
     },
     body: JSON.stringify({
       endpoint: json.endpoint,
-      p256dh:   (json.keys as Record<string, string>)?.p256dh,
-      auth:     (json.keys as Record<string, string>)?.auth,
+      p256dh: (json.keys as Record<string, string>)?.p256dh,
+      auth: (json.keys as Record<string, string>)?.auth,
     }),
   });
 }
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64  = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
   const rawData = window.atob(base64);
-  const output  = new Uint8Array(rawData.length);
+  const output = new Uint8Array(rawData.length);
   for (let i = 0; i < rawData.length; i++) {
     output[i] = rawData.charCodeAt(i);
   }

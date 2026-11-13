@@ -1,63 +1,158 @@
 "use client";
 
-import { Bell, Search } from "lucide-react";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Bell,
+  ChevronDown,
+  LogOut,
+  Settings,
+  CheckCheck,
+  ArrowRight,
+} from "lucide-react";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { useAuthStore } from "@/stores/authStore";
+import { useAuth } from "@/hooks/useAuth";
+import { useTasks } from "@/hooks/useTasks";
+import { groupTasks } from "@/lib/dashboard";
 import { SidebarToggle } from "./Sidebar";
 
-interface TopbarProps {
-  title?: string;
-  searchPlaceholder?: string;
-}
-
-export function Topbar({ title, searchPlaceholder }: TopbarProps) {
+export function Topbar() {
+  const pathname = usePathname();
   const user = useAuthStore((s) => s.user);
-
+  const { logout } = useAuth();
+  const tasks = useTasks();
+  const [now, setNow] = useState(() => new Date());
+  const menus = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    menus.current?.querySelectorAll("details[open]").forEach((menu) => {
+      (menu as HTMLDetailsElement).open = false;
+    });
+  }, [pathname]);
+  const grouped = groupTasks(tasks.data ?? [], now);
+  const due = grouped.today.length + grouped.overdue.length;
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    const close = (event: Event) => {
+      if (event instanceof KeyboardEvent && event.key !== "Escape") return;
+      if (
+        event.type === "pointerdown" &&
+        menus.current?.contains(event.target as Node)
+      )
+        return;
+      const focusedMenu = document.activeElement?.closest("details");
+      menus.current?.querySelectorAll("details[open]").forEach((menu) => {
+        (menu as HTMLDetailsElement).open = false;
+      });
+      if (event instanceof KeyboardEvent)
+        focusedMenu?.querySelector<HTMLElement>("summary")?.focus();
+    };
+    document.addEventListener("pointerdown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("pointerdown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, []);
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-neutral-100 bg-white dark:bg-neutral-900 dark:border-neutral-800 px-4 lg:px-6">
-      {/* Kiri: toggle mobile + judul halaman */}
-      <div className="flex items-center gap-3 min-w-0">
-        <SidebarToggle />
-        {title && (
-          <p className="text-sm text-neutral-500 truncate hidden sm:block">{title}</p>
-        )}
-      </div>
-
-      {/* Tengah: search bar (sesuai mockup) */}
-      {searchPlaceholder && (
-        <div className="flex-1 max-w-xs hidden md:block">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
-            <input
-              type="text"
-              placeholder={searchPlaceholder}
-              className="w-full rounded-lg border border-neutral-200 bg-neutral-50 pl-9 pr-3 py-2 text-sm text-neutral-700 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400"
-            />
+    <header className="app-topbar" aria-label="Kontrol akun dan tampilan">
+      <SidebarToggle />
+      <div ref={menus} className="ml-auto flex items-center gap-2">
+        <details
+          className="topbar-disclosure"
+          onToggle={(event) => {
+            const current = event.currentTarget;
+            if (current.open)
+              menus.current?.querySelectorAll("details").forEach((menu) => {
+                if (menu !== current) (menu as HTMLDetailsElement).open = false;
+              });
+          }}
+        >
+          <summary
+            className="topbar-icon relative"
+            aria-label="Buka pengingat tugas"
+          >
+            <Bell size={17} strokeWidth={1.8} />
+            {!tasks.isError && !tasks.isPending && due > 0 && (
+              <span className="reminder-dot" />
+            )}
+          </summary>
+          <div className="topbar-menu reminder-menu">
+            <p className="mb-1 text-sm font-bold">Pengingat hari ini</p>
+            {tasks.isPending ? (
+              <p className="text-xs text-muted-foreground">Memuat tugas…</p>
+            ) : tasks.isError ? (
+              <>
+                <p className="text-xs text-muted-foreground">
+                  Pengingat belum bisa dimuat.
+                </p>
+                <button
+                  onClick={() => void tasks.refetch()}
+                  className="dashboard-link mt-2"
+                >
+                  Coba lagi
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  {due
+                    ? `${grouped.today.length} tugas hari ini${grouped.overdue.length ? ` dan ${grouped.overdue.length} tugas terlambat` : ""}.`
+                    : "Tidak ada tugas hari ini atau yang terlambat."}
+                </p>
+                <Link
+                  href="/tasks"
+                  className="dashboard-link mt-3 flex items-center gap-2"
+                >
+                  <CheckCheck size={16} />
+                  Lihat semua tugas
+                  <ArrowRight size={14} />
+                </Link>
+              </>
+            )}
           </div>
-        </div>
-      )}
-
-      {/* Kanan: bell + separator + avatar */}
-      <div className="flex items-center gap-2">
-        <button className="relative p-2 text-neutral-400 hover:text-neutral-700 rounded-lg hover:bg-neutral-100 transition-colors">
-          <Bell className="h-5 w-5" />
-          {/* dot notifikasi merah */}
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
-        </button>
-
-        {/* Separator */}
-        <span className="h-5 w-px bg-neutral-200" />
-
+        </details>
+        <ThemeToggle />
         {user && (
-          <div className="h-8 w-8 rounded-full overflow-hidden flex-shrink-0 cursor-pointer ring-2 ring-teal-200">
-            <Image
-              src={user.avatar_url || (user.role === "child" ? "/icons/assets-habit/logo-user-anak.png" : "/icons/assets-habit/logo-user-ayah.png")}
-              alt={user.name}
-              width={32}
-              height={32}
-              className="h-8 w-8 rounded-full object-cover"
-            />
-          </div>
+          <details
+            className="topbar-disclosure"
+            onToggle={(event) => {
+              const current = event.currentTarget;
+              if (current.open)
+                menus.current?.querySelectorAll("details").forEach((menu) => {
+                  if (menu !== current)
+                    (menu as HTMLDetailsElement).open = false;
+                });
+            }}
+          >
+            <summary
+              className="topbar-account"
+              aria-label={`Buka menu akun ${user.name}`}
+            >
+              <span className="account-avatar">
+                {user.name.slice(0, 1).toUpperCase()}
+              </span>
+              <span className="hidden max-w-28 truncate text-xs font-semibold sm:block">
+                {user.name.split(" ")[0]}
+              </span>
+              <ChevronDown size={13} />
+            </summary>
+            <div className="topbar-menu account-menu">
+              <p className="truncate px-2 pb-2 text-xs text-muted-foreground">
+                {user.name}
+              </p>
+              <Link href="/settings">
+                <Settings size={16} />
+                Pengaturan akun
+              </Link>
+              <button onClick={logout}>
+                <LogOut size={16} />
+                Keluar
+              </button>
+            </div>
+          </details>
         )}
       </div>
     </header>

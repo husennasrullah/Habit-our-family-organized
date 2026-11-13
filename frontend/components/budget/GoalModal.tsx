@@ -1,5 +1,7 @@
 "use client";
 
+import { ModalFrame } from "@/components/shared/ModalFrame";
+
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,7 +34,13 @@ const DEFAULT: GoalFormValues = {
 };
 
 export function GoalModal({
-  isOpen, onClose, onSave, onDelete, goal, isSaving, isDeleting,
+  isOpen,
+  onClose,
+  onSave,
+  onDelete,
+  goal,
+  isSaving,
+  isDeleting,
 }: GoalModalProps) {
   const [form, setForm] = useState<GoalFormValues>(DEFAULT);
 
@@ -59,15 +67,22 @@ export function GoalModal({
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <ModalFrame
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      onClose={onClose}
+    >
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-card p-6 shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-base font-semibold text-neutral-900">
+          <h3 className="text-base font-semibold text-foreground">
             {goal ? "Edit Target" : "Tambah Target"}
           </h3>
-          <button onClick={onClose} className="rounded-lg p-1 text-neutral-400 hover:text-neutral-600">
+          <button
+            onClick={onClose}
+            className="rounded-lg p-1 text-muted-foreground hover:text-foreground"
+            aria-label="Tutup"
+          >
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -75,58 +90,100 @@ export function GoalModal({
         <div className="space-y-3">
           {/* Title */}
           <div>
-            <label className="block text-xs font-medium text-neutral-600 mb-1">Nama Target <span className="text-red-500">*</span></label>
+            <label
+              className="block text-xs font-medium text-foreground mb-1"
+              htmlFor="field-GoalModal-componentsbudget-0"
+            >
+              Nama Target <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               placeholder="cth: Dana Darurat, Liburan Eropa"
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+              className="w-full rounded-lg border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
               {...field("title")}
+              id="field-GoalModal-componentsbudget-0"
             />
           </div>
 
           {/* Target amount */}
           <div>
-            <label className="block text-xs font-medium text-neutral-600 mb-1">Nominal Target (Rp) <span className="text-red-500">*</span></label>
+            <label
+              className="block text-xs font-medium text-foreground mb-1"
+              htmlFor="field-GoalModal-componentsbudget-1"
+            >
+              Nominal Target (Rp) <span className="text-red-500">*</span>
+            </label>
             <input
               type="number"
               min={0}
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+              className="w-full rounded-lg border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
               {...field("target_amount")}
-              onChange={(e) => setForm((v) => ({ ...v, target_amount: Number(e.target.value) }))}
+              onChange={(e) =>
+                setForm((v) => ({
+                  ...v,
+                  target_amount: Number(e.target.value),
+                }))
+              }
+              id="field-GoalModal-componentsbudget-1"
             />
           </div>
 
           {/* Current amount */}
           <div>
-            <label className="block text-xs font-medium text-neutral-600 mb-1">Sudah Terkumpul (Rp)</label>
+            <label
+              className="block text-xs font-medium text-foreground mb-1"
+              htmlFor="field-GoalModal-componentsbudget-2"
+            >
+              Sudah Terkumpul (Rp)
+            </label>
             <input
               type="number"
               min={0}
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+              className="w-full rounded-lg border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
               {...field("current_amount")}
-              onChange={(e) => setForm((v) => ({ ...v, current_amount: Number(e.target.value) }))}
+              onChange={(e) =>
+                setForm((v) => ({
+                  ...v,
+                  current_amount: Number(e.target.value),
+                }))
+              }
+              id="field-GoalModal-componentsbudget-2"
             />
           </div>
 
           {/* Deadline */}
           <div>
-            <label className="block text-xs font-medium text-neutral-600 mb-1">Deadline (opsional)</label>
+            <label
+              className="block text-xs font-medium text-foreground mb-1"
+              htmlFor="field-GoalModal-componentsbudget-3"
+            >
+              Deadline (opsional)
+            </label>
             <input
               type="date"
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+              className="w-full rounded-lg border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
               {...field("deadline")}
+              id="field-GoalModal-componentsbudget-3"
             />
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-medium text-neutral-600 mb-1">Catatan (opsional)</label>
+            <label
+              className="block text-xs font-medium text-foreground mb-1"
+              htmlFor="field-GoalModal-componentsbudget-4"
+            >
+              Catatan (opsional)
+            </label>
             <textarea
               rows={2}
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20 resize-none"
+              className="w-full rounded-lg border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20 resize-none"
               placeholder="Catatan singkat..."
               value={form.notes}
-              onChange={(e) => setForm((v) => ({ ...v, notes: e.target.value }))}
+              onChange={(e) =>
+                setForm((v) => ({ ...v, notes: e.target.value }))
+              }
+              id="field-GoalModal-componentsbudget-4"
             />
           </div>
         </div>
@@ -144,7 +201,9 @@ export function GoalModal({
             </Button>
           )}
           <div className="ml-auto flex gap-2">
-            <Button variant="outline" onClick={onClose}>Batal</Button>
+            <Button variant="outline" onClick={onClose}>
+              Batal
+            </Button>
             <Button
               onClick={() => onSave(form)}
               disabled={isSaving || !form.title || form.target_amount <= 0}
@@ -155,6 +214,6 @@ export function GoalModal({
           </div>
         </div>
       </div>
-    </div>
+    </ModalFrame>
   );
 }

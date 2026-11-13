@@ -1,5 +1,7 @@
 "use client";
 
+import { ModalFrame } from "@/components/shared/ModalFrame";
+
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,14 +18,14 @@ import type { CalendarEvent } from "@/types";
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
 const eventSchema = z.object({
-  title:            z.string().min(1, "Judul wajib diisi"),
-  description:      z.string().optional(),
-  start_at:         z.string().min(1, "Waktu mulai wajib diisi"),
-  end_at:           z.string().min(1, "Waktu selesai wajib diisi"),
-  is_all_day:       z.boolean(),
-  type:             z.enum(["general", "school", "medical", "birthday", "vacation"]),
-  color:            z.string(),
-  is_recurring:     z.boolean(),
+  title: z.string().min(1, "Judul wajib diisi"),
+  description: z.string().optional(),
+  start_at: z.string().min(1, "Waktu mulai wajib diisi"),
+  end_at: z.string().min(1, "Waktu selesai wajib diisi"),
+  is_all_day: z.boolean(),
+  type: z.enum(["general", "school", "medical", "birthday", "vacation"]),
+  color: z.string(),
+  is_recurring: z.boolean(),
   reminder_minutes: z.coerce.number().min(0),
 });
 
@@ -32,27 +34,27 @@ export type EventFormValues = z.infer<typeof eventSchema>;
 // ─── Color picker options ─────────────────────────────────────────────────────
 
 const COLOR_OPTIONS = [
-  { value: "sky",     label: "Sky",     dot: "bg-sky-500" },
-  { value: "rose",    label: "Rose",    dot: "bg-rose-500" },
-  { value: "violet",  label: "Violet",  dot: "bg-violet-500" },
-  { value: "amber",   label: "Amber",   dot: "bg-amber-500" },
+  { value: "sky", label: "Sky", dot: "bg-sky-500" },
+  { value: "rose", label: "Rose", dot: "bg-rose-500" },
+  { value: "violet", label: "Violet", dot: "bg-violet-500" },
+  { value: "amber", label: "Amber", dot: "bg-amber-500" },
   { value: "emerald", label: "Emerald", dot: "bg-emerald-500" },
-  { value: "orange",  label: "Orange",  dot: "bg-orange-500" },
-  { value: "pink",    label: "Pink",    dot: "bg-pink-500" },
-  { value: "indigo",  label: "Indigo",  dot: "bg-indigo-500" },
+  { value: "orange", label: "Orange", dot: "bg-orange-500" },
+  { value: "pink", label: "Pink", dot: "bg-pink-500" },
+  { value: "indigo", label: "Indigo", dot: "bg-indigo-500" },
 ];
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface EventModalProps {
-  isOpen:       boolean;
-  onClose:      () => void;
-  onSave:       (values: EventFormValues) => void;
-  onDelete?:    () => void;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (values: EventFormValues) => void;
+  onDelete?: () => void;
   initialDate?: Date;
-  event?:       CalendarEvent | null; // null = create mode
-  isSaving?:    boolean;
-  isDeleting?:  boolean;
+  event?: CalendarEvent | null; // null = create mode
+  isSaving?: boolean;
+  isDeleting?: boolean;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -97,18 +99,18 @@ export function EventModal({
   } = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema),
     defaultValues: {
-      title:            "",
-      description:      "",
-      start_at:         initialDate
+      title: "",
+      description: "",
+      start_at: initialDate
         ? format(initialDate, "yyyy-MM-dd'T'HH:mm")
         : format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-      end_at:           initialDate
+      end_at: initialDate
         ? format(initialDate, "yyyy-MM-dd'T'HH:mm")
         : format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-      is_all_day:       false,
-      type:             "general",
-      color:            "sky",
-      is_recurring:     false,
+      is_all_day: false,
+      type: "general",
+      color: "sky",
+      is_recurring: false,
       reminder_minutes: 0,
     },
   });
@@ -117,77 +119,79 @@ export function EventModal({
   useEffect(() => {
     if (event) {
       reset({
-        title:            event.title,
-        description:      event.description ?? "",
-        start_at:         toDateTimeLocal(event.start_at),
-        end_at:           toDateTimeLocal(event.end_at),
-        is_all_day:       event.is_all_day,
-        type:             event.type,
-        color:            event.color,
-        is_recurring:     event.is_recurring,
+        title: event.title,
+        description: event.description ?? "",
+        start_at: toDateTimeLocal(event.start_at),
+        end_at: toDateTimeLocal(event.end_at),
+        is_all_day: event.is_all_day,
+        type: event.type,
+        color: event.color,
+        is_recurring: event.is_recurring,
         reminder_minutes: event.reminder_minutes,
       });
     } else {
       reset({
-        title:            "",
-        description:      "",
-        start_at:         initialDate
+        title: "",
+        description: "",
+        start_at: initialDate
           ? format(initialDate, "yyyy-MM-dd'T'HH:mm")
           : format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-        end_at:           initialDate
+        end_at: initialDate
           ? format(initialDate, "yyyy-MM-dd'T'HH:mm")
           : format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-        is_all_day:       false,
-        type:             "general",
-        color:            "sky",
-        is_recurring:     false,
+        is_all_day: false,
+        type: "general",
+        color: "sky",
+        is_recurring: false,
         reminder_minutes: 0,
       });
     }
   }, [event, initialDate, reset]);
 
-  const selectedColor  = watch("color");
-  const isAllDay       = watch("is_all_day");
+  const selectedColor = watch("color");
+  const isAllDay = watch("is_all_day");
 
   const onSubmit = (values: EventFormValues) => {
     onSave({
       ...values,
       start_at: toISO(values.start_at),
-      end_at:   toISO(values.end_at),
+      end_at: toISO(values.end_at),
     });
   };
 
   if (!isOpen) return null;
 
   return (
-    <div
+    <ModalFrame
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
       role="dialog"
       aria-modal="true"
+      onClose={onClose}
     >
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/40"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative z-10 w-full sm:max-w-lg bg-white rounded-t-2xl sm:rounded-2xl shadow-xl">
+      <div className="relative z-10 w-full sm:max-w-lg bg-card rounded-t-2xl sm:rounded-2xl shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200">
-          <h2 className="text-base font-semibold text-neutral-900">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+          <h2 className="text-base font-semibold text-foreground">
             {isEditing ? "Edit Event" : "Tambah Event"}
           </h2>
           <button
             onClick={onClose}
-            className="rounded-full p-1 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
+            className="rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label="Tutup"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="px-5 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="px-5 py-4 space-y-4 max-h-[70vh] overflow-y-auto"
+        >
           {/* Title */}
           <div className="space-y-1">
             <Label htmlFor="title">Judul *</Label>
@@ -255,10 +259,12 @@ export function EventModal({
             <select
               id="type"
               {...register("type")}
-              className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+              className="w-full rounded-md border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
             >
               {Object.entries(EVENT_TYPE_LABELS).map(([val, label]) => (
-                <option key={val} value={val}>{label}</option>
+                <option key={val} value={val}>
+                  {label}
+                </option>
               ))}
             </select>
           </div>
@@ -275,7 +281,9 @@ export function EventModal({
                   onClick={() => setValue("color", value)}
                   className={cn(
                     "flex h-7 w-7 items-center justify-center rounded-full transition-transform",
-                    selectedColor === value ? "scale-125 ring-2 ring-offset-1 ring-neutral-400" : "hover:scale-110"
+                    selectedColor === value
+                      ? "scale-125 ring-2 ring-offset-1 ring-neutral-400"
+                      : "hover:scale-110",
                   )}
                 >
                   <span className={cn("h-5 w-5 rounded-full", dot)} />
@@ -290,7 +298,7 @@ export function EventModal({
             <select
               id="reminder_minutes"
               {...register("reminder_minutes")}
-              className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+              className="w-full rounded-md border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
             >
               <option value={0}>Tidak ada</option>
               <option value={5}>5 menit</option>
@@ -304,7 +312,7 @@ export function EventModal({
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-neutral-200 px-5 py-4">
+        <div className="flex items-center justify-between border-t border-border px-5 py-4">
           {isEditing && onDelete ? (
             <button
               type="button"
@@ -342,6 +350,6 @@ export function EventModal({
           </div>
         </div>
       </div>
-    </div>
+    </ModalFrame>
   );
 }

@@ -2,19 +2,23 @@ import withPWA from "next-pwa";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Isolate production QA from a concurrently running development server.
+  distDir: process.env.NEXT_BUILD_DIR || ".next",
   // Output standalone — dibutuhkan agar Docker image bisa jalan tanpa node_modules penuh
   output: "standalone",
 
   // Izinkan ngrok dan domain eksternal lain saat development
   // Tambah domain ngrok kamu di sini jika berubah, atau pakai wildcard *.ngrok-free.app
-  allowedDevOrigins: [
-    "*.ngrok-free.app",
-    "*.ngrok.io",
-  ],
+  allowedDevOrigins: ["*.ngrok-free.app", "*.ngrok.io"],
   images: {
     remotePatterns: [
       // MinIO dev
-      { protocol: "http",  hostname: "localhost", port: "9000", pathname: "/**" },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "9000",
+        pathname: "/**",
+      },
       // Cloudflare R2 / custom CDN — tambah domain production di sini
       // { protocol: "https", hostname: "*.r2.dev",            pathname: "/**" },
       // { protocol: "https", hostname: "media.keluarga.app",  pathname: "/**" },
@@ -25,19 +29,24 @@ const nextConfig = {
 const config = withPWA({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
-  register: true,
+  register: false, // Registered explicitly by the App Router root layout.
+  importScripts: ["/sw-push.js"],
+  buildExcludes: [/app-build-manifest\.json$/],
+  cacheStartUrl: false,
+  fallbacks: { document: "/offline.html" },
   skipWaiting: true,
   // Cache strategy — gunakan StaleWhileRevalidate untuk halaman utama
   runtimeCaching: [
     {
-      // API calls — NetworkFirst: selalu coba network, fallback ke cache
+      urlPattern: ({ request }) => request.mode === "navigate",
+      handler: "NetworkOnly",
+      options: { cacheName: "navigation" },
+    },
+    {
+      // Family data is loaded from the network; offline navigation uses the explicit fallback.
       urlPattern: /^https?:\/\/.*\/api\/.*/i,
-      handler: "NetworkFirst",
-      options: {
-        cacheName: "api-cache",
-        expiration: { maxEntries: 50, maxAgeSeconds: 60 },
-        networkTimeoutSeconds: 10,
-      },
+      handler: "NetworkOnly",
+      options: { cacheName: "api-network" },
     },
     {
       // Foto dari MinIO / storage — CacheFirst

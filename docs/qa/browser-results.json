@@ -1,0 +1,1037 @@
+{
+  "results": [
+    {
+      "route": "/dashboard",
+      "width": 375,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Halo, Nadia."
+    },
+    {
+      "route": "/tasks",
+      "width": 375,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Tugas"
+    },
+    {
+      "route": "/calendar",
+      "width": 375,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Kalender"
+    },
+    {
+      "route": "/meals",
+      "width": 375,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Jadwal Makan"
+    },
+    {
+      "route": "/budget",
+      "width": 375,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Keuangan"
+    },
+    {
+      "route": "/kids",
+      "width": 375,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Anak"
+    },
+    {
+      "route": "/memories",
+      "width": 375,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Kenangan"
+    },
+    {
+      "route": "/documents",
+      "width": 375,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Dokumen"
+    },
+    {
+      "route": "/settings",
+      "width": 375,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Pengaturan"
+    },
+    {
+      "route": "/trips",
+      "width": 375,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Liburan"
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 375,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Akhir pekan di Yogyakarta"
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Halo, Nadia."
+    },
+    {
+      "route": "/tasks",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Tugas"
+    },
+    {
+      "route": "/calendar",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Kalender"
+    },
+    {
+      "route": "/meals",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Jadwal Makan"
+    },
+    {
+      "route": "/budget",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Keuangan"
+    },
+    {
+      "route": "/kids",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Anak"
+    },
+    {
+      "route": "/memories",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Kenangan"
+    },
+    {
+      "route": "/documents",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Dokumen"
+    },
+    {
+      "route": "/settings",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Pengaturan"
+    },
+    {
+      "route": "/trips",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Liburan"
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Akhir pekan di Yogyakarta"
+    },
+    {
+      "route": "/dashboard",
+      "width": 768,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Halo, Nadia."
+    },
+    {
+      "route": "/tasks",
+      "width": 768,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Tugas"
+    },
+    {
+      "route": "/calendar",
+      "width": 768,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Kalender"
+    },
+    {
+      "route": "/meals",
+      "width": 768,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Jadwal Makan"
+    },
+    {
+      "route": "/budget",
+      "width": 768,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Keuangan"
+    },
+    {
+      "route": "/kids",
+      "width": 768,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Anak"
+    },
+    {
+      "route": "/memories",
+      "width": 768,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Kenangan"
+    },
+    {
+      "route": "/documents",
+      "width": 768,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Dokumen"
+    },
+    {
+      "route": "/settings",
+      "width": 768,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Pengaturan"
+    },
+    {
+      "route": "/trips",
+      "width": 768,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Liburan"
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 768,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Akhir pekan di Yogyakarta"
+    },
+    {
+      "route": "/dashboard",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Halo, Nadia."
+    },
+    {
+      "route": "/tasks",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Tugas"
+    },
+    {
+      "route": "/calendar",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Kalender"
+    },
+    {
+      "route": "/meals",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Jadwal Makan"
+    },
+    {
+      "route": "/budget",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Keuangan"
+    },
+    {
+      "route": "/kids",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Anak"
+    },
+    {
+      "route": "/memories",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Kenangan"
+    },
+    {
+      "route": "/documents",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Dokumen"
+    },
+    {
+      "route": "/settings",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Pengaturan"
+    },
+    {
+      "route": "/trips",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Liburan"
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Akhir pekan di Yogyakarta"
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Halo, Nadia."
+    },
+    {
+      "route": "/budget",
+      "width": 1440,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Keuangan"
+    },
+    {
+      "route": "/tasks",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Tugas"
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Halo, Nadia."
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 390,
+      "heading": "Halo, Nadia."
+    },
+    {
+      "route": "/tasks",
+      "width": 390,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 390,
+      "heading": "Tugas"
+    },
+    {
+      "route": "/calendar",
+      "width": 390,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 390,
+      "heading": "Kalender"
+    },
+    {
+      "route": "/meals",
+      "width": 390,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 390,
+      "heading": "Jadwal Makan"
+    },
+    {
+      "route": "/budget",
+      "width": 390,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 390,
+      "heading": "Keuangan"
+    },
+    {
+      "route": "/kids",
+      "width": 390,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 390,
+      "heading": "Anak"
+    },
+    {
+      "route": "/memories",
+      "width": 390,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 390,
+      "heading": "Kenangan"
+    },
+    {
+      "route": "/documents",
+      "width": 390,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 390,
+      "heading": "Dokumen"
+    },
+    {
+      "route": "/trips",
+      "width": 390,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 390,
+      "heading": "Liburan"
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "light",
+      "mode": "error",
+      "scroll": 390,
+      "heading": "Halo, Nadia."
+    },
+    {
+      "route": "/tasks",
+      "width": 390,
+      "theme": "light",
+      "mode": "error",
+      "scroll": 390,
+      "heading": "Tugas"
+    },
+    {
+      "route": "/calendar",
+      "width": 390,
+      "theme": "light",
+      "mode": "error",
+      "scroll": 390,
+      "heading": "Kalender"
+    },
+    {
+      "route": "/meals",
+      "width": 390,
+      "theme": "light",
+      "mode": "error",
+      "scroll": 390,
+      "heading": "Jadwal Makan"
+    },
+    {
+      "route": "/budget",
+      "width": 390,
+      "theme": "light",
+      "mode": "error",
+      "scroll": 390,
+      "heading": "Keuangan"
+    },
+    {
+      "route": "/kids",
+      "width": 390,
+      "theme": "light",
+      "mode": "error",
+      "scroll": 390
+    },
+    {
+      "route": "/memories",
+      "width": 390,
+      "theme": "light",
+      "mode": "error",
+      "scroll": 390,
+      "heading": "Kenangan"
+    },
+    {
+      "route": "/documents",
+      "width": 390,
+      "theme": "light",
+      "mode": "error",
+      "scroll": 390,
+      "heading": "Dokumen"
+    },
+    {
+      "route": "/settings",
+      "width": 390,
+      "theme": "light",
+      "mode": "error",
+      "scroll": 390,
+      "heading": "Pengaturan"
+    },
+    {
+      "route": "/trips",
+      "width": 390,
+      "theme": "light",
+      "mode": "error",
+      "scroll": 390,
+      "heading": "Liburan"
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 390,
+      "theme": "light",
+      "mode": "error",
+      "scroll": 390
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Halo, Nadia."
+    },
+    {
+      "route": "/tasks",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Tugas"
+    },
+    {
+      "route": "/calendar",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Kalender"
+    },
+    {
+      "route": "/meals",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Jadwal Makan"
+    },
+    {
+      "route": "/budget",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Keuangan"
+    },
+    {
+      "route": "/kids",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Anak"
+    },
+    {
+      "route": "/memories",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Kenangan"
+    },
+    {
+      "route": "/documents",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Dokumen"
+    },
+    {
+      "route": "/settings",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Pengaturan"
+    },
+    {
+      "route": "/trips",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Liburan"
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Akhir pekan di Yogyakarta"
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Halo, Nadia."
+    },
+    {
+      "route": "/tasks",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Tugas"
+    },
+    {
+      "route": "/calendar",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Kalender"
+    },
+    {
+      "route": "/meals",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Jadwal Makan"
+    },
+    {
+      "route": "/budget",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Keuangan"
+    },
+    {
+      "route": "/kids",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Anak"
+    },
+    {
+      "route": "/memories",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Kenangan"
+    },
+    {
+      "route": "/documents",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Dokumen"
+    },
+    {
+      "route": "/settings",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Pengaturan"
+    },
+    {
+      "route": "/trips",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Liburan"
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Akhir pekan di Yogyakarta"
+    },
+    {
+      "route": "/calendar",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Kalender"
+    },
+    {
+      "route": "/budget",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Keuangan"
+    },
+    {
+      "route": "/memories",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Kenangan"
+    },
+    {
+      "route": "/trips",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Liburan"
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Akhir pekan di Yogyakarta"
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Akhir pekan di Yogyakarta"
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Akhir pekan di Yogyakarta"
+    },
+    {
+      "route": "/tasks",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Tugas"
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Halo, Nadia."
+    },
+    {
+      "route": "/meals",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Jadwal Makan"
+    },
+    {
+      "route": "/login",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Lebih teratur.Lebih banyak waktuuntuk bersama."
+    },
+    {
+      "route": "/login",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Lebih teratur.Lebih banyak waktuuntuk bersama."
+    },
+    {
+      "route": "/register",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Lebih teratur.Lebih banyak waktuuntuk bersama."
+    },
+    {
+      "route": "/register",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Lebih teratur.Lebih banyak waktuuntuk bersama."
+    },
+    {
+      "route": "/onboarding",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Lebih teratur.Lebih banyak waktuuntuk bersama."
+    },
+    {
+      "route": "/onboarding",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Lebih teratur.Lebih banyak waktuuntuk bersama."
+    },
+    {
+      "route": "/login",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Lebih teratur.Lebih banyak waktuuntuk bersama."
+    }
+  ],
+  "errors": [],
+  "mutations": [
+    {
+      "path": "/tasks",
+      "method": "POST",
+      "body": "{\"title\":\"Tugas uji tampilan\",\"description\":\"\",\"assigned_to\":null,\"points\":0,\"status\":\"pending\",\"due_date\":null}"
+    },
+    {
+      "path": "/tasks",
+      "method": "POST"
+    },
+    {
+      "path": "/tasks/task-1/complete",
+      "method": "PATCH"
+    },
+    {
+      "path": "/tasks/task-1/complete",
+      "method": "PATCH"
+    },
+    {
+      "path": "/auth/login",
+      "method": "POST",
+      "body": "[QA credentials omitted]"
+    }
+  ],
+  "axeResults": [
+    {
+      "route": "/dashboard",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "route": "/tasks",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "route": "/calendar",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "route": "/meals",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "route": "/budget",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "route": "/kids",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "route": "/memories",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "route": "/documents",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "route": "/settings",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "route": "/trips",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "route": "/trips/trip-1",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "route": "/dashboard",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "route": "/tasks",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "route": "/calendar",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "route": "/meals",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "route": "/budget",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "route": "/kids",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "route": "/memories",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "route": "/documents",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "route": "/settings",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "route": "/trips",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "route": "/trips/trip-1",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "route": "/calendar",
+      "theme": "light",
+      "dialog": "Buat Acara",
+      "violations": []
+    },
+    {
+      "route": "/budget",
+      "theme": "light",
+      "dialog": "Catat pengeluaran",
+      "violations": []
+    },
+    {
+      "route": "/memories",
+      "theme": "light",
+      "dialog": "Tambah Kenangan",
+      "violations": []
+    },
+    {
+      "route": "/trips",
+      "theme": "light",
+      "dialog": "Rencanakan liburan",
+      "violations": []
+    },
+    {
+      "route": "/trips/trip-1",
+      "theme": "light",
+      "dialog": "Edit Liburan",
+      "violations": []
+    },
+    {
+      "route": "/trips/trip-1",
+      "theme": "light",
+      "dialog": "Anggota",
+      "violations": []
+    },
+    {
+      "route": "/trips/trip-1",
+      "theme": "light",
+      "dialog": "Tambah Aktivitas",
+      "violations": []
+    }
+  ]
+}

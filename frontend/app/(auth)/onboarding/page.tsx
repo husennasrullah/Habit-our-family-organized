@@ -28,13 +28,16 @@ export default function OnboardingPage() {
   const router = useRouter();
   const setUser = useAuthStore((s) => s.setUser);
 
-  const createForm = useForm<CreateForm>({ resolver: zodResolver(createSchema) });
+  const createForm = useForm<CreateForm>({
+    resolver: zodResolver(createSchema),
+  });
   const joinForm = useForm<JoinForm>({ resolver: zodResolver(joinSchema) });
 
   const refreshAndRedirect = async () => {
     try {
       const { data: refreshRes } = await authApi.refresh();
-      const newToken = (refreshRes as { data: { access_token: string } }).data.access_token;
+      const newToken = (refreshRes as { data: { access_token: string } }).data
+        .access_token;
       if (newToken) {
         localStorage.setItem("access_token", newToken);
         document.cookie = `access_token=${newToken}; path=/; max-age=${15 * 60}; SameSite=Lax`;
@@ -55,7 +58,7 @@ export default function OnboardingPage() {
     } catch (err: unknown) {
       setServerError(
         (err as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message ?? "Gagal membuat keluarga"
+          ?.message ?? "Gagal membuat keluarga",
       );
     }
   };
@@ -68,26 +71,28 @@ export default function OnboardingPage() {
     } catch (err: unknown) {
       setServerError(
         (err as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message ?? "Gagal bergabung ke keluarga"
+          ?.message ?? "Gagal bergabung ke keluarga",
       );
     }
   };
 
   return (
     <div className="w-full space-y-6">
-
       {/* Heading */}
       <div>
-        <h2 className="text-2xl font-black tracking-tight text-[#172033]">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Satu langkah lagi! 🎉
-        </h2>
-        <p className="text-sm text-slate-500 mt-1.5 leading-relaxed">
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
           Buat keluarga baru atau bergabung dengan kode undangan untuk mulai.
         </p>
       </div>
 
       {serverError && (
-        <p className="rounded-xl bg-red-50 border border-red-100 px-3.5 py-2.5 text-sm text-red-600">
+        <p
+          role="alert"
+          className="rounded-xl bg-red-50 border border-red-100 px-3.5 py-2.5 text-sm text-red-600"
+        >
           {serverError}
         </p>
       )}
@@ -97,27 +102,31 @@ export default function OnboardingPage() {
         <div className="space-y-3">
           <button
             onClick={() => setMode("create")}
-            className="w-full flex items-center gap-4 rounded-2xl border-2 border-slate-200 bg-white p-5 text-left hover:border-teal-400 hover:bg-teal-50/50 transition-all group"
+            className="w-full flex items-center gap-4 rounded-2xl border-2 border-border bg-card p-5 text-left hover:border-primary-400 hover:bg-primary-50/50 transition-all group"
           >
-            <div className="h-12 w-12 rounded-xl bg-teal-100 flex items-center justify-center flex-shrink-0 group-hover:bg-teal-200 transition-colors">
-              <Users className="h-6 w-6 text-teal-600" />
+            <div className="h-12 w-12 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0 group-hover:bg-primary-200 transition-colors">
+              <Users className="h-6 w-6 text-primary-600" />
             </div>
             <div>
-              <p className="font-bold text-[#172033]">Buat Keluarga Baru</p>
-              <p className="text-sm text-slate-500 mt-0.5">Jadilah admin dan undang anggota keluarga</p>
+              <p className="font-bold text-foreground">Buat Keluarga Baru</p>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Jadilah admin dan undang anggota keluarga
+              </p>
             </div>
           </button>
 
           <button
             onClick={() => setMode("join")}
-            className="w-full flex items-center gap-4 rounded-2xl border-2 border-slate-200 bg-white p-5 text-left hover:border-purple-400 hover:bg-purple-50/50 transition-all group"
+            className="w-full flex items-center gap-4 rounded-2xl border-2 border-border bg-card p-5 text-left hover:border-purple-400 hover:bg-purple-50/50 transition-all group"
           >
             <div className="h-12 w-12 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0 group-hover:bg-purple-200 transition-colors">
               <UserPlus className="h-6 w-6 text-purple-600" />
             </div>
             <div>
-              <p className="font-bold text-[#172033]">Gabung Keluarga</p>
-              <p className="text-sm text-slate-500 mt-0.5">Masukkan kode undangan dari admin keluarga</p>
+              <p className="font-bold text-foreground">Gabung Keluarga</p>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Masukkan kode undangan dari admin keluarga
+              </p>
             </div>
           </button>
         </div>
@@ -126,35 +135,46 @@ export default function OnboardingPage() {
       {/* Mode: create */}
       {mode === "create" && (
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-sm text-slate-500">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <button
               onClick={() => setMode("choose")}
-              className="flex items-center gap-1 hover:text-teal-600 transition-colors font-medium"
+              className="flex items-center gap-1 hover:text-primary-600 transition-colors font-medium"
             >
               <ArrowLeft className="h-3.5 w-3.5" /> Kembali
             </button>
           </div>
 
-          <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+          <form
+            onSubmit={createForm.handleSubmit(onCreateSubmit)}
+            className="space-y-4"
+          >
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-600 uppercase tracking-wide">Nama Keluarga</label>
+              <label
+                className="text-xs font-bold text-foreground uppercase tracking-wide"
+                htmlFor="field-page-authonboarding-0"
+              >
+                Nama Keluarga
+              </label>
               <div className="relative">
-                <Home className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                <Home className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <input
                   placeholder='contoh: "Keluarga Budi"'
                   {...createForm.register("name")}
-                  className="w-full h-[50px] rounded-xl bg-slate-50 border border-slate-200 pl-10 pr-4 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 focus:bg-white transition-all"
+                  className="w-full h-[50px] rounded-xl bg-muted border border-border pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 focus:bg-card transition-all"
+                  id="field-page-authonboarding-0"
                 />
               </div>
               {createForm.formState.errors.name && (
-                <p className="text-xs text-red-500">{createForm.formState.errors.name.message}</p>
+                <p className="text-xs text-red-500">
+                  {createForm.formState.errors.name.message}
+                </p>
               )}
             </div>
 
             <Button
               type="submit"
               loading={createForm.formState.isSubmitting}
-              className="w-full h-[50px] font-bold rounded-xl text-sm bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-md shadow-teal-200 border-0"
+              className="w-full h-[50px] font-bold rounded-xl text-sm bg-primary-600 hover:bg-primary-700 shadow-sm border-0"
             >
               Buat Keluarga →
             </Button>
@@ -165,7 +185,7 @@ export default function OnboardingPage() {
       {/* Mode: join */}
       {mode === "join" && (
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-sm text-slate-500">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <button
               onClick={() => setMode("choose")}
               className="flex items-center gap-1 hover:text-purple-600 transition-colors font-medium"
@@ -174,33 +194,43 @@ export default function OnboardingPage() {
             </button>
           </div>
 
-          <form onSubmit={joinForm.handleSubmit(onJoinSubmit)} className="space-y-4">
+          <form
+            onSubmit={joinForm.handleSubmit(onJoinSubmit)}
+            className="space-y-4"
+          >
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-600 uppercase tracking-wide">Kode Undangan</label>
+              <label
+                className="text-xs font-bold text-foreground uppercase tracking-wide"
+                htmlFor="field-page-authonboarding-1"
+              >
+                Kode Undangan
+              </label>
               <div className="relative">
-                <Key className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                <Key className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <input
                   placeholder="contoh: ABCD-1234"
-                  className="w-full h-[50px] rounded-xl bg-slate-50 border border-slate-200 pl-10 pr-4 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-white transition-all uppercase tracking-widest font-mono"
+                  className="w-full h-[50px] rounded-xl bg-muted border border-border pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 focus:bg-card transition-all uppercase tracking-widest font-mono"
                   {...joinForm.register("invite_code")}
+                  id="field-page-authonboarding-1"
                 />
               </div>
               {joinForm.formState.errors.invite_code && (
-                <p className="text-xs text-red-500">{joinForm.formState.errors.invite_code.message}</p>
+                <p className="text-xs text-red-500">
+                  {joinForm.formState.errors.invite_code.message}
+                </p>
               )}
             </div>
 
             <Button
               type="submit"
               loading={joinForm.formState.isSubmitting}
-              className="w-full h-[50px] font-bold rounded-xl text-sm bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 shadow-md shadow-purple-200 border-0"
+              className="w-full h-[50px] font-bold rounded-xl text-sm bg-primary-600 hover:bg-primary-700 shadow-sm border-0"
             >
               Gabung Keluarga →
             </Button>
           </form>
         </div>
       )}
-
     </div>
   );
 }

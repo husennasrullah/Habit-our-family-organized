@@ -15,20 +15,27 @@ interface GoalCardProps {
 
 function formatRp(n: number) {
   return new Intl.NumberFormat("id-ID", {
-    style: "currency", currency: "IDR", maximumFractionDigits: 0,
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
   }).format(n);
 }
 
 export function GoalCard({ goal, onEdit, onDelete, onAddFund }: GoalCardProps) {
-  const pct = goal.target_amount > 0
-    ? Math.min((goal.current_amount / goal.target_amount) * 100, 100)
-    : 0;
+  const pct =
+    goal.target_amount > 0
+      ? Math.min((goal.current_amount / goal.target_amount) * 100, 100)
+      : 0;
 
   return (
-    <div className={cn(
-      "group relative rounded-2xl border bg-white p-4 transition-shadow hover:shadow-md",
-      goal.is_achieved ? "border-emerald-200 bg-emerald-50/40" : "border-neutral-200"
-    )}>
+    <div
+      className={cn(
+        "group relative rounded-2xl border bg-card p-4 transition-shadow hover:shadow-md",
+        goal.is_achieved
+          ? "border-emerald-200 bg-emerald-50/40"
+          : "border-border",
+      )}
+    >
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="min-w-0">
@@ -36,31 +43,38 @@ export function GoalCard({ goal, onEdit, onDelete, onAddFund }: GoalCardProps) {
             {goal.is_achieved && (
               <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-emerald-500" />
             )}
-            <p className={cn(
-              "text-sm font-semibold truncate",
-              goal.is_achieved ? "text-emerald-700" : "text-neutral-900"
-            )}>
+            <p
+              className={cn(
+                "text-sm font-semibold truncate",
+                goal.is_achieved ? "text-emerald-700" : "text-foreground",
+              )}
+            >
               {goal.title}
             </p>
           </div>
           {goal.deadline && (
-            <p className="mt-0.5 text-xs text-neutral-400">
-              Deadline: {format(parseISO(goal.deadline), "d MMM yyyy", { locale: dateLocale })}
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Deadline:{" "}
+              {format(parseISO(goal.deadline), "d MMM yyyy", {
+                locale: dateLocale,
+              })}
             </p>
           )}
         </div>
 
         {/* Action buttons */}
-        <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex gap-1 flex-shrink-0 opacity-100 transition-opacity">
           <button
             onClick={() => onEdit(goal)}
-            className="rounded-full bg-neutral-100 p-1.5 text-neutral-600 hover:bg-neutral-200 transition-colors"
+            className="rounded-full bg-muted p-1.5 text-foreground hover:bg-neutral-200 transition-colors"
+            aria-label="Edit"
           >
             <Pencil className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => onDelete(goal)}
-            className="rounded-full bg-neutral-100 p-1.5 text-red-500 hover:bg-red-50 transition-colors"
+            className="rounded-full bg-muted p-1.5 text-red-500 hover:bg-red-50 transition-colors"
+            aria-label="Hapus"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
@@ -69,30 +83,34 @@ export function GoalCard({ goal, onEdit, onDelete, onAddFund }: GoalCardProps) {
 
       {/* Progress bar */}
       <div className="mb-2">
-        <div className="flex justify-between text-xs text-neutral-500 mb-1">
+        <div className="flex justify-between text-xs text-muted-foreground mb-1">
           <span>{formatRp(goal.current_amount)}</span>
           <span>{formatRp(goal.target_amount)}</span>
         </div>
-        <div className="h-2 w-full rounded-full bg-neutral-100 overflow-hidden">
+        <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
           <div
             className={cn(
               "h-full rounded-full transition-all duration-500",
-              goal.is_achieved ? "bg-emerald-500" : "bg-primary-500"
+              goal.is_achieved ? "bg-emerald-500" : "bg-primary-500",
             )}
             style={{ width: `${pct}%` }}
           />
         </div>
-        <p className={cn(
-          "mt-1 text-right text-xs font-medium",
-          goal.is_achieved ? "text-emerald-600" : "text-neutral-500"
-        )}>
+        <p
+          className={cn(
+            "mt-1 text-right text-xs font-medium",
+            goal.is_achieved ? "text-emerald-600" : "text-muted-foreground",
+          )}
+        >
           {goal.is_achieved ? "Tercapai ✓" : `${Math.round(pct)}%`}
         </p>
       </div>
 
       {/* Notes */}
       {goal.notes && (
-        <p className="mb-3 text-xs text-neutral-400 line-clamp-2">{goal.notes}</p>
+        <p className="mb-3 text-xs text-muted-foreground line-clamp-2">
+          {goal.notes}
+        </p>
       )}
 
       {/* Tambah Dana button */}

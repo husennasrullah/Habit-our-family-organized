@@ -95,3 +95,9 @@ cd frontend && npm install && npm run dev
 | FASE 8 — Documents | ✅ Selesai |
 | FASE 9 — Dashboard + PWA | ✅ Selesai |
 | FASE 10 — Testing & Deploy | ⏳ Belum dimulai |
+
+## Redesign HABIT — November 2026
+
+Seluruh halaman memakai fondasi sage/minimalis, ilustrasi 2D, navigasi mobile, tema terang/gelap, serta dialog bersama. Ringkasan dashboard memakai data dan tanggal aktual. PWA memakai registrasi worker App Router dan fallback offline.
+
+Lihat [roadmap](docs/ui-redesign-roadmap.md), [hasil QA dan screenshot](docs/ui-redesign-qa.md), serta [inventaris ilustrasi/prompt](docs/illustrations.md). Build, lint, TypeScript dan tes logika lulus; batas pengujian backend nyata/perangkat fisik dijelaskan pada laporan QA.

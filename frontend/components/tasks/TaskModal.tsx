@@ -1,5 +1,7 @@
 "use client";
 
+import { ModalFrame } from "@/components/shared/ModalFrame";
+
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,24 +16,24 @@ import type { Task, FamilyMember } from "@/types";
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
 const taskSchema = z.object({
-  title:       z.string().min(1, "Judul wajib diisi"),
+  title: z.string().min(1, "Judul wajib diisi"),
   description: z.string().optional(),
   assigned_to: z.string().optional(),
-  points:      z.coerce.number().min(0).max(1000),
-  status:      z.enum(["pending", "in_progress", "done"]),
-  due_date:    z.string().optional(),
+  points: z.coerce.number().min(0).max(1000),
+  status: z.enum(["pending", "in_progress", "done"]),
+  due_date: z.string().optional(),
 });
 
 export type TaskFormValues = z.infer<typeof taskSchema>;
 
 interface TaskModalProps {
-  isOpen:      boolean;
-  onClose:     () => void;
-  onSave:      (values: TaskFormValues) => void;
-  onDelete?:   () => void;
-  task?:       Task | null;
-  members:     FamilyMember[];
-  isSaving?:   boolean;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (values: TaskFormValues) => void;
+  onDelete?: () => void;
+  task?: Task | null;
+  members: FamilyMember[];
+  isSaving?: boolean;
   isDeleting?: boolean;
 }
 
@@ -55,29 +57,33 @@ export function TaskModal({
   } = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
-      title:       "",
+      title: "",
       description: "",
       assigned_to: "",
-      points:      0,
-      status:      "pending",
-      due_date:    "",
+      points: 0,
+      status: "pending",
+      due_date: "",
     },
   });
 
   useEffect(() => {
     if (task) {
       reset({
-        title:       task.title,
+        title: task.title,
         description: task.description ?? "",
         assigned_to: task.assigned_to ?? "",
-        points:      task.points,
-        status:      task.status,
-        due_date:    task.due_date ?? "",
+        points: task.points,
+        status: task.status,
+        due_date: task.due_date ?? "",
       });
     } else {
       reset({
-        title: "", description: "", assigned_to: "",
-        points: 0, status: "pending", due_date: "",
+        title: "",
+        description: "",
+        assigned_to: "",
+        points: 0,
+        status: "pending",
+        due_date: "",
       });
     }
   }, [task, reset]);
@@ -85,18 +91,24 @@ export function TaskModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" role="dialog" aria-modal="true">
+    <ModalFrame
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+      onClose={onClose}
+    >
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
-      <div className="relative z-10 w-full sm:max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-xl">
+      <div className="relative z-10 w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200">
-          <h2 className="text-base font-semibold text-neutral-900">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+          <h2 className="text-base font-semibold text-foreground">
             {isEditing ? "Edit Tugas" : "Tambah Tugas"}
           </h2>
           <button
             onClick={onClose}
-            className="rounded-full p-1 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
+            className="rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label="Tutup"
           >
             <X className="h-5 w-5" />
           </button>
@@ -141,11 +153,13 @@ export function TaskModal({
               <select
                 id="task-assign"
                 {...register("assigned_to")}
-                className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+                className="w-full rounded-md border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
               >
                 <option value="">Siapapun</option>
                 {members.map((m) => (
-                  <option key={m.id} value={m.id}>{m.name}</option>
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -169,7 +183,7 @@ export function TaskModal({
               <select
                 id="task-status"
                 {...register("status")}
-                className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+                className="w-full rounded-md border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
               >
                 <option value="pending">Pending</option>
                 <option value="in_progress">Berjalan</option>
@@ -179,17 +193,13 @@ export function TaskModal({
 
             <div className="space-y-1">
               <Label htmlFor="task-due">Tenggat</Label>
-              <Input
-                id="task-due"
-                type="date"
-                {...register("due_date")}
-              />
+              <Input id="task-due" type="date" {...register("due_date")} />
             </div>
           </div>
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-neutral-200 px-5 py-4">
+        <div className="flex items-center justify-between border-t border-border px-5 py-4">
           {isEditing && onDelete ? (
             <button
               type="button"
@@ -197,13 +207,21 @@ export function TaskModal({
               disabled={isDeleting}
               className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-error-600 hover:bg-error-50 transition-colors disabled:opacity-50"
             >
-              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
               Hapus
             </button>
-          ) : <div />}
+          ) : (
+            <div />
+          )}
 
           <div className="flex gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>Batal</Button>
+            <Button type="button" variant="outline" onClick={onClose}>
+              Batal
+            </Button>
             <Button
               type="submit"
               form="task-form"
@@ -216,6 +234,6 @@ export function TaskModal({
           </div>
         </div>
       </div>
-    </div>
+    </ModalFrame>
   );
 }

@@ -15,7 +15,8 @@ interface BeforeInstallPromptEvent extends Event {
  * 3. App belum terinstall (tidak running standalone)
  */
 export function InstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -57,17 +58,19 @@ export function InstallPrompt() {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-[72px] left-3 right-3 z-50 flex items-center gap-3 rounded-2xl border border-primary-200 bg-white px-4 py-3 shadow-lg lg:bottom-4 lg:left-auto lg:right-4 lg:max-w-sm">
+    <div className="fixed bottom-[calc(80px+env(safe-area-inset-bottom,0px))] left-3 right-3 z-20 flex items-center gap-3 rounded-2xl border border-primary-200 bg-card px-4 py-3 shadow-lg lg:bottom-4 lg:left-auto lg:right-4 lg:max-w-sm">
       {/* App icon */}
       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary-500">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icons/icon-192.png" alt="Keluarga" className="h-8 w-8 rounded-lg" />
+        <img src="/icons/habit-v2-192.png" alt="" className="h-8 w-8 rounded-lg" />
       </div>
 
       {/* Text */}
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-neutral-900">Install Keluarga Hub</p>
-        <p className="text-xs text-neutral-500">Akses lebih cepat dari home screen</p>
+        <p className="text-sm font-semibold text-foreground">Pasang HABIT</p>
+        <p className="text-xs text-muted-foreground">
+          Buka ruang keluarga dari layar utama.
+        </p>
       </div>
 
       {/* Actions */}
@@ -77,11 +80,12 @@ export function InstallPrompt() {
           className="flex items-center gap-1 rounded-lg bg-primary-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary-600 transition-colors"
         >
           <Download className="h-3.5 w-3.5" />
-          Install
+          Pasang
         </button>
         <button
           onClick={handleDismiss}
-          className="rounded-full p-1.5 text-neutral-400 hover:bg-neutral-100 transition-colors"
+          className="rounded-full p-1.5 text-muted-foreground hover:bg-muted transition-colors"
+          aria-label="Tutup"
         >
           <X className="h-4 w-4" />
         </button>

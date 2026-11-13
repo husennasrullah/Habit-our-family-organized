@@ -1,5 +1,7 @@
 "use client";
 
+import { PageHeader } from "@/components/shared/PageHeader";
+import { QueryError } from "@/components/shared/QueryError";
 import { useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -7,7 +9,10 @@ import { CalendarHeader } from "@/components/calendar/CalendarHeader";
 import { MonthView } from "@/components/calendar/MonthView";
 import { WeekView } from "@/components/calendar/WeekView";
 import { DayView } from "@/components/calendar/DayView";
-import { EventModal, type EventFormValues } from "@/components/calendar/EventModal";
+import {
+  EventModal,
+  type EventFormValues,
+} from "@/components/calendar/EventModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   useEvents,
@@ -22,9 +27,11 @@ import type { CalendarEvent } from "@/types";
 
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [view, setView]               = useState<CalendarView>("month");
-  const [modalOpen, setModalOpen]     = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [view, setView] = useState<CalendarView>("month");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null,
+  );
   const [initialDate, setInitialDate] = useState<Date | undefined>();
 
   const queryClient = useQueryClient();
@@ -33,15 +40,22 @@ export default function CalendarPage() {
   const { from, to } = getApiDateRange(currentDate, view);
 
   // ─── Data fetching ──────────────────────────────────────────────────────────
-  const { data: events = [], isLoading } = useEvents(from, to);
-  const createEvent  = useCreateEvent();
-  const updateEvent  = useUpdateEvent();
-  const deleteEvent  = useDeleteEvent();
+  const {
+    data: events = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useEvents(from, to);
+  const createEvent = useCreateEvent();
+  const updateEvent = useUpdateEvent();
+  const deleteEvent = useDeleteEvent();
 
   // ─── WebSocket real-time sync ───────────────────────────────────────────────
   useWebSocket({
     onMessage: (msg) => {
-      if (["event_created", "event_updated", "event_deleted"].includes(msg.type)) {
+      if (
+        ["event_created", "event_updated", "event_deleted"].includes(msg.type)
+      ) {
         queryClient.invalidateQueries({ queryKey: eventKeys.all });
       }
     },
@@ -49,11 +63,14 @@ export default function CalendarPage() {
 
   // ─── Handlers ───────────────────────────────────────────────────────────────
 
-  const handleAddEvent = useCallback((date?: Date) => {
-    setSelectedEvent(null);
-    setInitialDate(date ?? currentDate);
-    setModalOpen(true);
-  }, [currentDate]);
+  const handleAddEvent = useCallback(
+    (date?: Date) => {
+      setSelectedEvent(null);
+      setInitialDate(date ?? currentDate);
+      setModalOpen(true);
+    },
+    [currentDate],
+  );
 
   const handleEventClick = useCallback((event: CalendarEvent) => {
     setSelectedEvent(event);
@@ -77,7 +94,7 @@ export default function CalendarPage() {
   };
 
   const handleDelete = async () => {
-    if (!selectedEvent) return;
+    if (!selectedEvent || !window.confirm("Hapus agenda ini?")) return;
     try {
       await deleteEvent.mutateAsync(selectedEvent.id);
       toast.success("Event berhasil dihapus");
@@ -90,7 +107,11 @@ export default function CalendarPage() {
   // ─── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      <PageHeader
+        title="Kalender"
+        description="Waktu untuk yang penting. Atur agenda keluarga bersama."
+      />
       <CalendarHeader
         currentDate={currentDate}
         view={view}
@@ -105,6 +126,8 @@ export default function CalendarPage() {
           <Skeleton className="h-8 w-full rounded-lg" />
           <Skeleton className="h-[480px] w-full rounded-xl" />
         </div>
+      ) : isError ? (
+        <QueryError retry={() => void refetch()} />
       ) : (
         <>
           {view === "month" && (

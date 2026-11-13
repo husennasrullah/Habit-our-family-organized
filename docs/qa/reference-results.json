@@ -1,0 +1,652 @@
+{
+  "results": [
+    {
+      "route": "/dashboard",
+      "width": 375,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 375,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 1174.34375,
+        "sidebarWidth": 256,
+        "contentLeft": 16,
+        "contentRight": 359
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 390,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 1174.34375,
+        "sidebarWidth": 256,
+        "contentLeft": 16,
+        "contentRight": 374
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 768,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 768,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 745.453125,
+        "sidebarWidth": 256,
+        "contentLeft": 20,
+        "contentRight": 748
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 1040,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 1040,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 731.203125,
+        "sidebarWidth": 208,
+        "contentLeft": 232,
+        "contentRight": 1016
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 1440,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 1440,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 731.203125,
+        "sidebarWidth": 208,
+        "contentLeft": 232,
+        "contentRight": 1416
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 375,
+      "theme": "dark",
+      "mode": "empty",
+      "scroll": 375,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 1174.34375,
+        "sidebarWidth": 256,
+        "contentLeft": 16,
+        "contentRight": 359
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "dark",
+      "mode": "empty",
+      "scroll": 390,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 1174.34375,
+        "sidebarWidth": 256,
+        "contentLeft": 16,
+        "contentRight": 374
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 768,
+      "theme": "dark",
+      "mode": "empty",
+      "scroll": 768,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 745.453125,
+        "sidebarWidth": 256,
+        "contentLeft": 20,
+        "contentRight": 748
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 1040,
+      "theme": "dark",
+      "mode": "empty",
+      "scroll": 1040,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 731.203125,
+        "sidebarWidth": 208,
+        "contentLeft": 232,
+        "contentRight": 1016
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 1440,
+      "theme": "dark",
+      "mode": "empty",
+      "scroll": 1440,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 731.203125,
+        "sidebarWidth": 208,
+        "contentLeft": 232,
+        "contentRight": 1416
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 375,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 1127.984375,
+        "sidebarWidth": 256,
+        "contentLeft": 16,
+        "contentRight": 359
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 1127.984375,
+        "sidebarWidth": 256,
+        "contentLeft": 16,
+        "contentRight": 374
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 768,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 721.671875,
+        "sidebarWidth": 256,
+        "contentLeft": 20,
+        "contentRight": 748
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 1040,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1040,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 707.421875,
+        "sidebarWidth": 208,
+        "contentLeft": 232,
+        "contentRight": 1016
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 707.421875,
+        "sidebarWidth": 208,
+        "contentLeft": 232,
+        "contentRight": 1416
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 375,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 375,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 1127.984375,
+        "sidebarWidth": 256,
+        "contentLeft": 16,
+        "contentRight": 359
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 1127.984375,
+        "sidebarWidth": 256,
+        "contentLeft": 16,
+        "contentRight": 374
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 768,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 768,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 721.671875,
+        "sidebarWidth": 256,
+        "contentLeft": 20,
+        "contentRight": 748
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 1040,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 1040,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 707.421875,
+        "sidebarWidth": 208,
+        "contentLeft": 232,
+        "contentRight": 1016
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 1440,
+      "theme": "dark",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Halo, Nadia.",
+      "layout": {
+        "font": "__jakarta_96cf8b, __jakarta_Fallback_96cf8b, system-ui, sans-serif",
+        "fontSize": "13px",
+        "headerHeadings": 0,
+        "mainHeadings": 1,
+        "summaryBottom": 707.421875,
+        "sidebarWidth": 208,
+        "contentLeft": 232,
+        "contentRight": 1416
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 1040,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 1040,
+      "heading": "Halo, Nadia.",
+      "compact": {
+        "width": 1040,
+        "height": 600,
+        "bottom": 598.90625
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 1228,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 1228,
+      "heading": "Halo, Nadia.",
+      "compact": {
+        "width": 1228,
+        "height": 620,
+        "bottom": 598.90625
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 1366,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 1366,
+      "heading": "Halo, Nadia.",
+      "compact": {
+        "width": 1366,
+        "height": 768,
+        "bottom": 598.90625
+      }
+    },
+    {
+      "route": "/dashboard",
+      "width": 1440,
+      "theme": "light",
+      "mode": "empty",
+      "scroll": 1440,
+      "heading": "Halo, Nadia.",
+      "compact": {
+        "width": 1440,
+        "height": 900,
+        "bottom": 731.203125
+      }
+    },
+    {
+      "route": "/tasks",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Tugas"
+    },
+    {
+      "route": "/tasks",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Tugas"
+    },
+    {
+      "route": "/calendar",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Kalender"
+    },
+    {
+      "route": "/calendar",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Kalender"
+    },
+    {
+      "route": "/budget",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Keuangan"
+    },
+    {
+      "route": "/budget",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Keuangan"
+    },
+    {
+      "route": "/meals",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Jadwal Makan"
+    },
+    {
+      "route": "/meals",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Jadwal Makan"
+    },
+    {
+      "route": "/kids",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Anak"
+    },
+    {
+      "route": "/kids",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Anak"
+    },
+    {
+      "route": "/memories",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Kenangan"
+    },
+    {
+      "route": "/memories",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Kenangan"
+    },
+    {
+      "route": "/documents",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Dokumen"
+    },
+    {
+      "route": "/documents",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Dokumen"
+    },
+    {
+      "route": "/settings",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Pengaturan"
+    },
+    {
+      "route": "/settings",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Pengaturan"
+    },
+    {
+      "route": "/trips",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Liburan"
+    },
+    {
+      "route": "/trips",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Liburan"
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Akhir pekan di Yogyakarta"
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Akhir pekan di Yogyakarta"
+    },
+    {
+      "route": "/dashboard",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Halo, Nadia."
+    },
+    {
+      "route": "/dashboard",
+      "width": 1440,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1440,
+      "heading": "Halo, Nadia."
+    }
+  ],
+  "errors": [],
+  "mutations": [],
+  "axeResults": [
+    {
+      "route": "/dashboard",
+      "theme": "light",
+      "width": 390,
+      "fixture": "empty",
+      "violations": []
+    },
+    {
+      "route": "/dashboard",
+      "theme": "light",
+      "width": 1440,
+      "fixture": "empty",
+      "violations": []
+    },
+    {
+      "route": "/dashboard",
+      "theme": "dark",
+      "width": 390,
+      "fixture": "empty",
+      "violations": []
+    },
+    {
+      "route": "/dashboard",
+      "theme": "dark",
+      "width": 1440,
+      "fixture": "empty",
+      "violations": []
+    },
+    {
+      "route": "/dashboard",
+      "theme": "light",
+      "width": 390,
+      "fixture": "data",
+      "violations": []
+    },
+    {
+      "route": "/dashboard",
+      "theme": "light",
+      "width": 1440,
+      "fixture": "data",
+      "violations": []
+    },
+    {
+      "route": "/dashboard",
+      "theme": "dark",
+      "width": 390,
+      "fixture": "data",
+      "violations": []
+    },
+    {
+      "route": "/dashboard",
+      "theme": "dark",
+      "width": 1440,
+      "fixture": "data",
+      "violations": []
+    }
+  ]
+}

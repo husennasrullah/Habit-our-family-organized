@@ -1,5 +1,7 @@
 "use client";
 
+import { ModalFrame } from "@/components/shared/ModalFrame";
+
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,52 +11,70 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { useUploadPhotos, useDeletePhoto } from "@/hooks/useMemories";
-import { toast } from "sonner";
+import { useDeletePhoto } from "@/hooks/useMemories";
 import type { Memory } from "@/types";
 
 const memorySchema = z.object({
-  title:   z.string().min(1, "Judul wajib diisi"),
+  title: z.string().min(1, "Judul wajib diisi"),
   content: z.string().optional(),
-  date:    z.string().min(1, "Tanggal wajib diisi"),
+  date: z.string().min(1, "Tanggal wajib diisi"),
 });
 
 export type MemoryFormValues = z.infer<typeof memorySchema>;
 
 interface MemoryModalProps {
-  isOpen:      boolean;
-  onClose:     () => void;
-  onSave:      (values: MemoryFormValues, pendingFiles: File[]) => void;
-  onDelete?:   () => void;
-  memory?:     Memory | null;
-  isSaving?:   boolean;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (values: MemoryFormValues, pendingFiles: File[]) => void;
+  onDelete?: () => void;
+  memory?: Memory | null;
+  isSaving?: boolean;
   isDeleting?: boolean;
 }
 
 export function MemoryModal({
-  isOpen, onClose, onSave, onDelete, memory, isSaving, isDeleting,
+  isOpen,
+  onClose,
+  onSave,
+  onDelete,
+  memory,
+  isSaving,
+  isDeleting,
 }: MemoryModalProps) {
   const isEditing = !!memory;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
 
-  const uploadPhotos = useUploadPhotos();
-  const deletePhoto  = useDeletePhoto();
+  const deletePhoto = useDeletePhoto();
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<MemoryFormValues>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<MemoryFormValues>({
     resolver: zodResolver(memorySchema),
     defaultValues: {
-      title: "", content: "",
+      title: "",
+      content: "",
       date: new Date().toISOString().slice(0, 10),
     },
   });
 
   useEffect(() => {
     if (memory) {
-      reset({ title: memory.title, content: memory.content ?? "", date: memory.date.slice(0, 10) });
+      reset({
+        title: memory.title,
+        content: memory.content ?? "",
+        date: memory.date.slice(0, 10),
+      });
     } else {
-      reset({ title: "", content: "", date: new Date().toISOString().slice(0, 10) });
+      reset({
+        title: "",
+        content: "",
+        date: new Date().toISOString().slice(0, 10),
+      });
     }
     setPendingFiles([]);
     setPreviews([]);
@@ -78,48 +98,60 @@ export function MemoryModal({
     await onSave(values, pendingFiles);
   };
 
-  const handleUploadPending = async (memoryId: string) => { // eslint-disable-line @typescript-eslint/no-unused-vars
-    if (!pendingFiles.length) return;
-    try {
-      await uploadPhotos.mutateAsync({ memoryId, files: pendingFiles });
-      setPendingFiles([]);
-      previews.forEach((u) => URL.revokeObjectURL(u));
-      setPreviews([]);
-    } catch {
-      toast.error("Gagal upload foto");
-    }
-  };
-
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" role="dialog" aria-modal="true">
+    <ModalFrame
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+      onClose={onClose}
+    >
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
-      <div className="relative z-10 w-full sm:max-w-lg bg-white rounded-t-2xl sm:rounded-2xl shadow-xl">
+      <div className="relative z-10 w-full sm:max-w-lg bg-card rounded-t-2xl sm:rounded-2xl shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200">
-          <h2 className="text-base font-semibold text-neutral-900">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+          <h2 className="text-base font-semibold text-foreground">
             {isEditing ? "Edit Kenangan" : "Tambah Kenangan"}
           </h2>
-          <button onClick={onClose} className="rounded-full p-1 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors">
+          <button
+            onClick={onClose}
+            className="rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label="Tutup"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <form id="memory-form" onSubmit={handleSubmit(onSubmit)} className="px-5 py-4 space-y-4 max-h-[65vh] overflow-y-auto">
+        <form
+          id="memory-form"
+          onSubmit={handleSubmit(onSubmit)}
+          className="px-5 py-4 space-y-4 max-h-[65vh] overflow-y-auto"
+        >
           {/* Title */}
           <div className="space-y-1">
             <Label htmlFor="mem-title">Judul *</Label>
-            <Input id="mem-title" placeholder="Nama kenangan" {...register("title")}
-              className={cn(errors.title && "border-error-500")} />
-            {errors.title && <p className="text-xs text-error-500">{errors.title.message}</p>}
+            <Input
+              id="mem-title"
+              placeholder="Nama kenangan"
+              {...register("title")}
+              className={cn(errors.title && "border-error-500")}
+            />
+            {errors.title && (
+              <p className="text-xs text-error-500">{errors.title.message}</p>
+            )}
           </div>
 
           {/* Date */}
           <div className="space-y-1">
             <Label htmlFor="mem-date">Tanggal *</Label>
-            <Input id="mem-date" type="date" {...register("date")} className={cn(errors.date && "border-error-500")} />
+            <Input
+              id="mem-date"
+              type="date"
+              {...register("date")}
+              className={cn(errors.date && "border-error-500")}
+            />
           </div>
 
           {/* Content */}
@@ -149,8 +181,14 @@ export function MemoryModal({
                     />
                     <button
                       type="button"
-                      onClick={() => deletePhoto.mutate({ memoryId: memory.id, photoId: photo.id })}
-                      className="absolute -top-1.5 -right-1.5 hidden group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-error-500 text-white"
+                      onClick={() =>
+                        deletePhoto.mutate({
+                          memoryId: memory.id,
+                          photoId: photo.id,
+                        })
+                      }
+                      className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-error-500 text-white"
+                      aria-label="Tutup"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -175,11 +213,16 @@ export function MemoryModal({
               {previews.map((url, idx) => (
                 <div key={idx} className="group relative">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt="" className="h-16 w-16 rounded-lg object-cover" />
+                  <img
+                    src={url}
+                    alt=""
+                    className="h-16 w-16 rounded-lg object-cover"
+                  />
                   <button
                     type="button"
                     onClick={() => removePending(idx)}
                     className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-error-500 text-white"
+                    aria-label="Tutup"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -188,7 +231,8 @@ export function MemoryModal({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex h-16 w-16 items-center justify-center rounded-lg border-2 border-dashed border-neutral-300 text-neutral-400 hover:border-primary-400 hover:text-primary-400 transition-colors"
+                aria-label="Tambah foto"
+                className="flex h-16 w-16 items-center justify-center rounded-lg border-2 border-dashed border-neutral-300 text-muted-foreground hover:border-primary-400 hover:text-primary-400 transition-colors"
               >
                 <ImagePlus className="h-6 w-6" />
               </button>
@@ -197,29 +241,41 @@ export function MemoryModal({
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-neutral-200 px-5 py-4">
+        <div className="flex items-center justify-between border-t border-border px-5 py-4">
           {isEditing && onDelete ? (
-            <button type="button" onClick={onDelete} disabled={isDeleting}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-error-600 hover:bg-error-50 transition-colors disabled:opacity-50">
-              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+            <button
+              type="button"
+              onClick={onDelete}
+              disabled={isDeleting}
+              className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-error-600 hover:bg-error-50 transition-colors disabled:opacity-50"
+            >
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
               Hapus
             </button>
-          ) : <div />}
+          ) : (
+            <div />
+          )}
 
           <div className="flex gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>Batal</Button>
+            <Button type="button" variant="outline" onClick={onClose}>
+              Batal
+            </Button>
             <Button
               type="submit"
               form="memory-form"
-              disabled={isSaving || uploadPhotos.isPending}
+              disabled={isSaving}
               className="bg-primary-500 hover:bg-primary-600"
             >
-              {(isSaving || uploadPhotos.isPending) && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
+              {isSaving && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
               {isEditing ? "Simpan" : "Buat Kenangan"}
             </Button>
           </div>
         </div>
       </div>
-    </div>
+    </ModalFrame>
   );
 }

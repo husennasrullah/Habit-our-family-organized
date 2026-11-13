@@ -1,5 +1,9 @@
 "use client";
 
+import { QueryError } from "@/components/shared/QueryError";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { ModalFrame } from "@/components/shared/ModalFrame";
+
 import { useState, useCallback } from "react";
 import { format, getMonth, getYear } from "date-fns";
 import { id as dateLocale } from "date-fns/locale";
@@ -8,7 +12,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { ExpenseModal, type ExpenseFormValues, EXPENSE_CATEGORIES } from "@/components/budget/ExpenseModal";
+import {
+  ExpenseModal,
+  type ExpenseFormValues,
+  EXPENSE_CATEGORIES,
+} from "@/components/budget/ExpenseModal";
 import { BudgetProgress } from "@/components/budget/BudgetProgress";
 import { ShoppingList } from "@/components/budget/ShoppingList";
 import { GoalCard } from "@/components/budget/GoalCard";
@@ -36,24 +44,26 @@ import type { Expense, FinancialGoal } from "@/types";
 
 const MAIN_TABS = [
   { value: "keuangan", label: "Keuangan Keluarga" },
-  { value: "target",   label: "Target Keluarga" },
+  { value: "target", label: "Target Keluarga" },
 ] as const;
-type MainTabValue = typeof MAIN_TABS[number]["value"];
+type MainTabValue = (typeof MAIN_TABS)[number]["value"];
 
 // ─── Sub-tab (dalam Keuangan Keluarga) ───────────────────────────────────────
 
 const SUB_TABS = [
-  { value: "expenses",  label: "Pengeluaran" },
-  { value: "budgets",   label: "Target Budget" },
-  { value: "shopping",  label: "Belanja" },
+  { value: "expenses", label: "Pengeluaran" },
+  { value: "budgets", label: "Target Budget" },
+  { value: "shopping", label: "Belanja" },
 ] as const;
-type SubTabValue = typeof SUB_TABS[number]["value"];
+type SubTabValue = (typeof SUB_TABS)[number]["value"];
 
 // ─── Format helpers ───────────────────────────────────────────────────────────
 
 function formatRp(n: number) {
   return new Intl.NumberFormat("id-ID", {
-    style: "currency", currency: "IDR", maximumFractionDigits: 0,
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
   }).format(n);
 }
 
@@ -67,38 +77,42 @@ export default function BudgetPage() {
 
   // ── Keuangan sub-tab state
   const [currentDate, setCurrentDate] = useState(now);
-  const [subTab, setSubTab]           = useState<SubTabValue>("expenses");
-  const [catFilter, setCatFilter]     = useState("");
-  const [modalOpen, setModalOpen]     = useState(false);
+  const [subTab, setSubTab] = useState<SubTabValue>("expenses");
+  const [catFilter, setCatFilter] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
-  const [budgetModal, setBudgetModal]       = useState(false);
-  const [editCategory, setEditCategory]     = useState("");
-  const [editBudgetAmt, setEditBudgetAmt]   = useState(0);
+  const [budgetModal, setBudgetModal] = useState(false);
+  const [editCategory, setEditCategory] = useState("");
+  const [editBudgetAmt, setEditBudgetAmt] = useState(0);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [editBudgetId, setEditBudgetId]     = useState<string | undefined>();
+  const [editBudgetId, setEditBudgetId] = useState<string | undefined>();
 
   // ── Target keluarga state
-  const [goalModalOpen, setGoalModalOpen]       = useState(false);
-  const [selectedGoal, setSelectedGoal]         = useState<FinancialGoal | null>(null);
-  const [addFundGoal, setAddFundGoal]           = useState<FinancialGoal | null>(null);
+  const [goalModalOpen, setGoalModalOpen] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<FinancialGoal | null>(null);
+  const [addFundGoal, setAddFundGoal] = useState<FinancialGoal | null>(null);
 
   const month = getMonth(currentDate) + 1;
-  const year  = getYear(currentDate);
+  const year = getYear(currentDate);
 
   // ── Keuangan hooks
-  const { data: expenses = [], isLoading: expLoading } = useExpenses(month, year, catFilter);
-  const { data: summary }                               = useBudgetSummary(month, year);
-  const { data: budgets = [] }                          = useBudgets(month, year);
+  const expensesQuery = useExpenses(month, year, catFilter);
+  const { data: expenses = [], isLoading: expLoading } = expensesQuery;
+  const summaryQuery = useBudgetSummary(month, year);
+  const { data: summary } = summaryQuery;
+  const budgetsQuery = useBudgets(month, year);
+  const { data: budgets = [] } = budgetsQuery;
   const createExpense = useCreateExpense();
   const updateExpense = useUpdateExpense();
   const deleteExpense = useDeleteExpense();
-  const upsertBudget  = useUpsertBudget();
+  const upsertBudget = useUpsertBudget();
 
   // ── Target hooks
-  const { data: goals = [], isLoading: goalsLoading } = useFinancialGoals();
+  const goalsQuery = useFinancialGoals();
+  const { data: goals = [], isLoading: goalsLoading } = goalsQuery;
   const createGoal = useCreateGoal();
   const updateGoal = useUpdateGoal();
-  const addFund    = useAddFund();
+  const addFund = useAddFund();
   const deleteGoal = useDeleteGoal();
 
   const navigateMonth = (dir: -1 | 1) => {
@@ -122,7 +136,7 @@ export default function BudgetPage() {
   };
 
   const handleDeleteExpense = async () => {
-    if (!selectedExpense) return;
+    if (!selectedExpense || !window.confirm("Hapus pengeluaran ini?")) return;
     try {
       await deleteExpense.mutateAsync(selectedExpense.id);
       toast.success("Pengeluaran dihapus");
@@ -132,16 +146,24 @@ export default function BudgetPage() {
     }
   };
 
-  const handleOpenBudgetEdit = useCallback((category: string, currentAmount: number, budgetId?: string) => {
-    setEditCategory(category);
-    setEditBudgetAmt(currentAmount);
-    setEditBudgetId(budgetId);
-    setBudgetModal(true);
-  }, []);
+  const handleOpenBudgetEdit = useCallback(
+    (category: string, currentAmount: number, budgetId?: string) => {
+      setEditCategory(category);
+      setEditBudgetAmt(currentAmount);
+      setEditBudgetId(budgetId);
+      setBudgetModal(true);
+    },
+    [],
+  );
 
   const handleSaveBudget = async () => {
     try {
-      await upsertBudget.mutateAsync({ category: editCategory, amount: editBudgetAmt, month, year });
+      await upsertBudget.mutateAsync({
+        category: editCategory,
+        amount: editBudgetAmt,
+        month,
+        year,
+      });
       toast.success("Target budget disimpan");
       setBudgetModal(false);
     } catch {
@@ -179,7 +201,7 @@ export default function BudgetPage() {
   };
 
   const handleDeleteGoal = async () => {
-    if (!selectedGoal) return;
+    if (!selectedGoal || !window.confirm("Hapus target tabungan ini?")) return;
     try {
       await deleteGoal.mutateAsync(selectedGoal.id);
       toast.success("Target dihapus");
@@ -207,35 +229,43 @@ export default function BudgetPage() {
   return (
     <div className="space-y-5">
       {/* ── Header ──────────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Wallet className="h-5 w-5 text-primary-500" />
-          <h1 className="text-xl font-bold text-neutral-900">Keuangan Keluarga</h1>
-        </div>
-        {mainTab === "keuangan" && (
-          <Button
-            onClick={() => { setSelectedExpense(null); setModalOpen(true); }}
-            size="sm"
-            className="gap-1.5 bg-primary-500 hover:bg-primary-600"
-          >
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Catat</span>
-          </Button>
-        )}
-        {mainTab === "target" && (
-          <Button
-            onClick={() => { setSelectedGoal(null); setGoalModalOpen(true); }}
-            size="sm"
-            className="gap-1.5 bg-primary-500 hover:bg-primary-600"
-          >
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Tambah Target</span>
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        title="Keuangan"
+        description="Catat kebutuhan hari ini, wujudkan rencana esok."
+        action={
+          <>
+            {mainTab === "keuangan" && (
+              <Button
+                onClick={() => {
+                  setSelectedExpense(null);
+                  setModalOpen(true);
+                }}
+                size="sm"
+                className="gap-1.5 bg-primary-500 hover:bg-primary-600"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Catat pengeluaran</span>
+              </Button>
+            )}
+            {mainTab === "target" && (
+              <Button
+                onClick={() => {
+                  setSelectedGoal(null);
+                  setGoalModalOpen(true);
+                }}
+                size="sm"
+                className="gap-1.5 bg-primary-500 hover:bg-primary-600"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah target</span>
+              </Button>
+            )}
+          </>
+        }
+      />
 
       {/* ── Main Tabs ───────────────────────────────────────────────────────── */}
-      <div className="flex gap-1 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-1">
+      <div className="flex gap-1 rounded-xl border border-border dark:border-border bg-card dark:bg-card p-1">
         {MAIN_TABS.map(({ value, label }) => (
           <button
             key={value}
@@ -244,7 +274,7 @@ export default function BudgetPage() {
               "flex-1 rounded-lg py-2 text-sm font-medium transition-colors",
               mainTab === value
                 ? "bg-primary-500 text-white shadow-sm"
-                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-100"
+                : "text-muted-foreground dark:text-muted-foreground hover:text-foreground dark:hover:text-neutral-100",
             )}
           >
             {label}
@@ -252,44 +282,89 @@ export default function BudgetPage() {
         ))}
       </div>
 
+      {(mainTab === "target"
+        ? goalsQuery.isError
+        : expensesQuery.isError ||
+          summaryQuery.isError ||
+          budgetsQuery.isError) && (
+        <QueryError
+          retry={() => {
+            void expensesQuery.refetch();
+            void summaryQuery.refetch();
+            void budgetsQuery.refetch();
+            void goalsQuery.refetch();
+          }}
+        />
+      )}
       {/* ══════════════════════════════════════════════════════════════════════
           TAB 1 — KEUANGAN KELUARGA
       ══════════════════════════════════════════════════════════════════════ */}
       {mainTab === "keuangan" && (
         <div className="space-y-5">
           {/* Month navigator + summary */}
-          <div className="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-4">
+          <div className="rounded-xl border border-border dark:border-border bg-card dark:bg-card p-4">
             <div className="flex items-center justify-between mb-3">
-              <button onClick={() => navigateMonth(-1)} className="rounded-lg p-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700">
+              <button
+                onClick={() => navigateMonth(-1)}
+                className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                aria-label="Sebelumnya"
+              >
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <h2 className="text-base font-semibold text-neutral-800 capitalize">
+              <h2 className="text-base font-semibold text-foreground capitalize">
                 {format(currentDate, "MMMM yyyy", { locale: dateLocale })}
               </h2>
-              <button onClick={() => navigateMonth(1)} className="rounded-lg p-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700">
+              <button
+                onClick={() => navigateMonth(1)}
+                className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                aria-label="Berikutnya"
+              >
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <div className="rounded-lg bg-neutral-50 dark:bg-neutral-800 p-3 text-center">
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Total Pengeluaran</p>
-                <p className="text-base font-bold text-neutral-900 dark:text-neutral-50">{formatRp(summary?.total ?? 0)}</p>
+              <div className="rounded-lg bg-muted dark:bg-muted p-3 text-center">
+                <p className="text-xs text-muted-foreground dark:text-muted-foreground mb-1">
+                  Total Pengeluaran
+                </p>
+                <p className="text-base font-bold text-foreground dark:text-neutral-50">
+                  {summaryQuery.isError
+                    ? "Tidak tersedia"
+                    : summaryQuery.isPending
+                      ? "Memuat…"
+                      : formatRp(summary?.total ?? 0)}
+                </p>
               </div>
-              <div className="rounded-lg bg-neutral-50 dark:bg-neutral-800 p-3 text-center">
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Transaksi</p>
-                <p className="text-base font-bold text-neutral-900 dark:text-neutral-50">{expenses.length}</p>
+              <div className="rounded-lg bg-muted dark:bg-muted p-3 text-center">
+                <p className="text-xs text-muted-foreground dark:text-muted-foreground mb-1">
+                  Transaksi
+                </p>
+                <p className="text-base font-bold text-foreground dark:text-neutral-50">
+                  {summaryQuery.isError
+                    ? "—"
+                    : summaryQuery.isPending
+                      ? "…"
+                      : (summary?.by_category?.reduce(
+                          (total, category) => total + category.count,
+                          0,
+                        ) ?? 0)}
+                </p>
               </div>
               <div className="col-span-2 sm:col-span-1 rounded-lg bg-primary-50 p-3 text-center">
-                <p className="text-xs text-primary-600 mb-1">Kategori terbesar</p>
+                <p className="text-xs text-primary-600 mb-1">
+                  Kategori terbesar
+                </p>
                 <p className="text-base font-bold text-primary-700 truncate">
-                  {summary?.by_category?.[0]?.category ?? "—"}
+                  {summary?.by_category
+                    ?.slice()
+                    .sort((a, b) => b.total - a.total)[0]?.category ?? "—"}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Sub-tabs */}
-          <div className="flex gap-1 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-1">
+          <div className="flex gap-1 rounded-xl border border-border dark:border-border bg-card dark:bg-card p-1">
             {SUB_TABS.map(({ value, label }) => (
               <button
                 key={value}
@@ -298,7 +373,7 @@ export default function BudgetPage() {
                   "flex-1 rounded-lg py-1.5 text-sm font-medium transition-colors",
                   subTab === value
                     ? "bg-primary-500 text-white shadow-sm"
-                    : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-100"
+                    : "text-muted-foreground dark:text-muted-foreground hover:text-foreground dark:hover:text-neutral-100",
                 )}
               >
                 {label}
@@ -314,7 +389,9 @@ export default function BudgetPage() {
                   onClick={() => setCatFilter("")}
                   className={cn(
                     "rounded-full px-3 py-1 text-xs font-medium transition-colors",
-                    !catFilter ? "bg-primary-500 text-white" : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                    !catFilter
+                      ? "bg-primary-500 text-white"
+                      : "bg-muted text-foreground hover:bg-neutral-200",
                   )}
                 >
                   Semua
@@ -325,7 +402,9 @@ export default function BudgetPage() {
                     onClick={() => setCatFilter(catFilter === cat ? "" : cat)}
                     className={cn(
                       "rounded-full px-3 py-1 text-xs font-medium transition-colors",
-                      catFilter === cat ? "bg-primary-500 text-white" : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                      catFilter === cat
+                        ? "bg-primary-500 text-white"
+                        : "bg-muted text-foreground hover:bg-neutral-200",
                     )}
                   >
                     {cat}
@@ -334,25 +413,42 @@ export default function BudgetPage() {
               </div>
 
               {expLoading ? (
-                <div className="space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16 rounded-xl" />)}</div>
+                <div className="space-y-2">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Skeleton key={i} className="h-16 rounded-xl" />
+                  ))}
+                </div>
+              ) : expensesQuery.isError ? (
+                <QueryError retry={() => void expensesQuery.refetch()} />
               ) : expenses.length === 0 ? (
-                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 py-14 text-center">
+                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border dark:border-border bg-card dark:bg-card py-14 text-center">
                   <Wallet className="mb-3 h-10 w-10 text-neutral-200" />
-                  <p className="text-sm font-medium text-neutral-500">Belum ada pengeluaran bulan ini</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Belum ada pengeluaran bulan ini
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-2">
                   {expenses.map((expense) => (
                     <button
                       key={expense.id}
-                      onClick={() => { setSelectedExpense(expense); setModalOpen(true); }}
-                      className="w-full flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-4 py-3 text-left hover:shadow-sm transition-shadow"
+                      onClick={() => {
+                        setSelectedExpense(expense);
+                        setModalOpen(true);
+                      }}
+                      className="w-full flex items-center justify-between rounded-xl border border-border dark:border-border bg-card dark:bg-card px-4 py-3 text-left hover:shadow-sm transition-shadow"
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-100 truncate">{expense.category}</p>
-                        <p className="text-xs text-neutral-400 truncate">{expense.description || expense.date.slice(0, 10)}</p>
+                        <p className="text-sm font-semibold text-foreground dark:text-foreground truncate">
+                          {expense.category}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {expense.description || expense.date.slice(0, 10)}
+                        </p>
                       </div>
-                      <p className="ml-3 flex-shrink-0 text-sm font-bold text-neutral-900 dark:text-neutral-50">{formatRp(expense.amount)}</p>
+                      <p className="ml-3 flex-shrink-0 text-sm font-bold text-foreground dark:text-neutral-50">
+                        {formatRp(expense.amount)}
+                      </p>
                     </button>
                   ))}
                 </div>
@@ -379,14 +475,22 @@ export default function BudgetPage() {
         <div className="space-y-4">
           {goalsLoading ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-48 rounded-2xl" />)}
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-48 rounded-2xl" />
+              ))}
             </div>
+          ) : goalsQuery.isError ? (
+            <QueryError retry={() => void goalsQuery.refetch()} />
           ) : goals.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 py-20 text-center px-8">
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border dark:border-border bg-card dark:bg-card py-20 text-center px-8">
               <Target className="mb-4 h-12 w-12 text-neutral-200" />
-              <p className="text-base font-semibold text-neutral-700">Belum ada target keuangan</p>
-              <p className="mt-1.5 text-sm text-neutral-400 max-w-xs">
-                Klik <strong>&quot;Tambah Target&quot;</strong> untuk mulai menetapkan tujuan keuangan keluarga — dana darurat, liburan, beli rumah, dan lainnya.
+              <p className="text-base font-semibold text-foreground">
+                Belum ada target keuangan
+              </p>
+              <p className="mt-1.5 text-sm text-muted-foreground max-w-xs">
+                Klik <strong>&quot;Tambah Target&quot;</strong> untuk mulai
+                menetapkan tujuan keuangan keluarga — dana darurat, liburan,
+                beli rumah, dan lainnya.
               </p>
             </div>
           ) : (
@@ -395,8 +499,14 @@ export default function BudgetPage() {
                 <GoalCard
                   key={goal.id}
                   goal={goal}
-                  onEdit={(g) => { setSelectedGoal(g); setGoalModalOpen(true); }}
-                  onDelete={(g) => { setSelectedGoal(g); setGoalModalOpen(true); }}
+                  onEdit={(g) => {
+                    setSelectedGoal(g);
+                    setGoalModalOpen(true);
+                  }}
+                  onDelete={(g) => {
+                    setSelectedGoal(g);
+                    setGoalModalOpen(true);
+                  }}
                   onAddFund={(g) => setAddFundGoal(g)}
                 />
               ))}
@@ -418,22 +528,36 @@ export default function BudgetPage() {
 
       {/* ── Budget target inline modal ────────────────────────────────────── */}
       {budgetModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setBudgetModal(false)} />
-          <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white dark:bg-neutral-900 p-6 shadow-xl">
-            <h3 className="mb-4 text-base font-semibold text-neutral-900 dark:text-neutral-50">
+        <ModalFrame
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          onClose={() => setBudgetModal(false)}
+        >
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setBudgetModal(false)}
+          />
+          <div className="relative z-10 w-full max-w-sm rounded-2xl bg-card dark:bg-card p-6 shadow-xl">
+            <h3 className="mb-4 text-base font-semibold text-foreground dark:text-neutral-50">
               Target Budget — {editCategory}
             </h3>
-            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Nominal (Rp)</label>
+            <label
+              className="block text-sm font-medium text-foreground dark:text-foreground mb-1"
+              htmlFor="field-page-dashboardbudget-0"
+            >
+              Nominal (Rp)
+            </label>
             <input
               type="number"
               min={0}
               value={editBudgetAmt}
               onChange={(e) => setEditBudgetAmt(Number(e.target.value))}
-              className="w-full rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20 mb-4"
+              className="w-full rounded-md border border-neutral-300 dark:border-border bg-card dark:bg-muted text-foreground dark:text-foreground px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20 mb-4"
+              id="field-page-dashboardbudget-0"
             />
             <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => setBudgetModal(false)}>Batal</Button>
+              <Button variant="outline" onClick={() => setBudgetModal(false)}>
+                Batal
+              </Button>
               <Button
                 onClick={handleSaveBudget}
                 disabled={upsertBudget.isPending}
@@ -443,7 +567,7 @@ export default function BudgetPage() {
               </Button>
             </div>
           </div>
-        </div>
+        </ModalFrame>
       )}
 
       {/* ── Goal modal ────────────────────────────────────────────────────── */}
@@ -467,4 +591,3 @@ export default function BudgetPage() {
     </div>
   );
 }
-

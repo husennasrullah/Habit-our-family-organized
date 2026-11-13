@@ -1,5 +1,7 @@
 "use client";
 
+import { ModalFrame } from "@/components/shared/ModalFrame";
+
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,33 +27,46 @@ export const EXPENSE_CATEGORIES = [
 ];
 
 const expenseSchema = z.object({
-  amount:      z.coerce.number().min(1, "Nominal harus lebih dari 0"),
-  category:    z.string().min(1, "Kategori wajib dipilih"),
+  amount: z.coerce.number().min(1, "Nominal harus lebih dari 0"),
+  category: z.string().min(1, "Kategori wajib dipilih"),
   description: z.string().optional(),
-  date:        z.string().min(1, "Tanggal wajib diisi"),
+  date: z.string().min(1, "Tanggal wajib diisi"),
 });
 
 export type ExpenseFormValues = z.infer<typeof expenseSchema>;
 
 interface ExpenseModalProps {
-  isOpen:      boolean;
-  onClose:     () => void;
-  onSave:      (values: ExpenseFormValues) => void;
-  onDelete?:   () => void;
-  expense?:    Expense | null;
-  isSaving?:   boolean;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (values: ExpenseFormValues) => void;
+  onDelete?: () => void;
+  expense?: Expense | null;
+  isSaving?: boolean;
   isDeleting?: boolean;
 }
 
 export function ExpenseModal({
-  isOpen, onClose, onSave, onDelete, expense, isSaving, isDeleting,
+  isOpen,
+  onClose,
+  onSave,
+  onDelete,
+  expense,
+  isSaving,
+  isDeleting,
 }: ExpenseModalProps) {
   const isEditing = !!expense;
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<ExpenseFormValues>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
-      amount: 0, category: "", description: "",
+      amount: 0,
+      category: "",
+      description: "",
       date: new Date().toISOString().slice(0, 10),
     },
   });
@@ -59,32 +74,50 @@ export function ExpenseModal({
   useEffect(() => {
     if (expense) {
       reset({
-        amount:      expense.amount,
-        category:    expense.category,
+        amount: expense.amount,
+        category: expense.category,
         description: expense.description ?? "",
-        date:        expense.date.slice(0, 10),
+        date: expense.date.slice(0, 10),
       });
     } else {
-      reset({ amount: 0, category: "", description: "", date: new Date().toISOString().slice(0, 10) });
+      reset({
+        amount: 0,
+        category: "",
+        description: "",
+        date: new Date().toISOString().slice(0, 10),
+      });
     }
   }, [expense, reset]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" role="dialog" aria-modal="true">
+    <ModalFrame
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+      onClose={onClose}
+    >
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative z-10 w-full sm:max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-xl">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200">
-          <h2 className="text-base font-semibold text-neutral-900">
+      <div className="relative z-10 w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl shadow-xl">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+          <h2 className="text-base font-semibold text-foreground">
             {isEditing ? "Edit Pengeluaran" : "Tambah Pengeluaran"}
           </h2>
-          <button onClick={onClose} className="rounded-full p-1 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors">
+          <button
+            onClick={onClose}
+            className="rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label="Tutup"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <form id="expense-form" onSubmit={handleSubmit(onSave)} className="px-5 py-4 space-y-4">
+        <form
+          id="expense-form"
+          onSubmit={handleSubmit(onSave)}
+          className="px-5 py-4 space-y-4"
+        >
           {/* Amount */}
           <div className="space-y-1">
             <Label htmlFor="exp-amount">Nominal (Rp) *</Label>
@@ -96,7 +129,9 @@ export function ExpenseModal({
               {...register("amount")}
               className={cn(errors.amount && "border-error-500")}
             />
-            {errors.amount && <p className="text-xs text-error-500">{errors.amount.message}</p>}
+            {errors.amount && (
+              <p className="text-xs text-error-500">{errors.amount.message}</p>
+            )}
           </div>
 
           {/* Category */}
@@ -106,48 +141,80 @@ export function ExpenseModal({
               id="exp-cat"
               {...register("category")}
               className={cn(
-                "w-full rounded-md border bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20",
-                errors.category ? "border-error-500" : "border-neutral-300"
+                "w-full rounded-md border bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20",
+                errors.category ? "border-error-500" : "border-neutral-300",
               )}
             >
               <option value="">Pilih kategori...</option>
               {EXPENSE_CATEGORIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
             </select>
-            {errors.category && <p className="text-xs text-error-500">{errors.category.message}</p>}
+            {errors.category && (
+              <p className="text-xs text-error-500">
+                {errors.category.message}
+              </p>
+            )}
           </div>
 
           {/* Description + Date */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="exp-desc">Keterangan</Label>
-              <Input id="exp-desc" placeholder="Opsional" {...register("description")} />
+              <Input
+                id="exp-desc"
+                placeholder="Opsional"
+                {...register("description")}
+              />
             </div>
             <div className="space-y-1">
               <Label htmlFor="exp-date">Tanggal *</Label>
-              <Input id="exp-date" type="date" {...register("date")} className={cn(errors.date && "border-error-500")} />
+              <Input
+                id="exp-date"
+                type="date"
+                {...register("date")}
+                className={cn(errors.date && "border-error-500")}
+              />
             </div>
           </div>
         </form>
 
-        <div className="flex items-center justify-between border-t border-neutral-200 px-5 py-4">
+        <div className="flex items-center justify-between border-t border-border px-5 py-4">
           {isEditing && onDelete ? (
-            <button type="button" onClick={onDelete} disabled={isDeleting}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-error-600 hover:bg-error-50 transition-colors disabled:opacity-50">
-              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+            <button
+              type="button"
+              onClick={onDelete}
+              disabled={isDeleting}
+              className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-error-600 hover:bg-error-50 transition-colors disabled:opacity-50"
+            >
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
               Hapus
             </button>
-          ) : <div />}
+          ) : (
+            <div />
+          )}
           <div className="flex gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>Batal</Button>
-            <Button type="submit" form="expense-form" disabled={isSaving} className="bg-primary-500 hover:bg-primary-600">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Batal
+            </Button>
+            <Button
+              type="submit"
+              form="expense-form"
+              disabled={isSaving}
+              className="bg-primary-500 hover:bg-primary-600"
+            >
               {isSaving && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
               {isEditing ? "Simpan" : "Tambah"}
             </Button>
           </div>
         </div>
       </div>
-    </div>
+    </ModalFrame>
   );
 }

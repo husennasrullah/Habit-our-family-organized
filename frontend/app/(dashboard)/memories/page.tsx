@@ -1,5 +1,9 @@
 "use client";
 
+import { ContentState } from "@/components/shared/ContentState";
+import { EmptyIllustration } from "@/components/shared/EmptyIllustration";
+import { QueryError } from "@/components/shared/QueryError";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { useState, useCallback } from "react";
 import { Plus, Heart } from "lucide-react";
 import { toast } from "sonner";
@@ -7,7 +11,10 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { MemoryCard } from "@/components/memories/MemoryCard";
-import { MemoryModal, type MemoryFormValues } from "@/components/memories/MemoryModal";
+import {
+  MemoryModal,
+  type MemoryFormValues,
+} from "@/components/memories/MemoryModal";
 import { PhotoLightbox } from "@/components/memories/PhotoLightbox";
 import {
   useMemories,
@@ -30,30 +37,37 @@ export default function MemoriesPage() {
   const [lightboxMemory, setLightboxMemory] = useState<Memory | null>(null);
   const [photoIdx, setPhotoIdx] = useState(0);
 
-  const { data: memories = [], isLoading } = useMemories(yearFilter, undefined, favFilter || undefined);
+  const {
+    data: memories = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useMemories(yearFilter, undefined, favFilter || undefined);
   const createMemory = useCreateMemory();
   const updateMemory = useUpdateMemory();
   const deleteMemory = useDeleteMemory();
   const uploadPhotos = useUploadPhotos();
 
-  const handleSave = async (values: MemoryFormValues, pendingFiles?: File[]) => {
+  const handleSave = async (
+    values: MemoryFormValues,
+    pendingFiles?: File[],
+  ) => {
     try {
-      if (selectedMemory) {
-        await updateMemory.mutateAsync({ id: selectedMemory.id, ...values });
-        toast.success("Kenangan diperbarui");
-        setModalOpen(false);
-      } else {
-        const created = await createMemory.mutateAsync(values);
-        // Selalu close modal dulu, upload foto di background
-        setModalOpen(false);
-        toast.success("Kenangan ditambahkan 🎉");
-        // Upload foto jika ada — error tidak blokir modal close
-        if (pendingFiles?.length && created?.id) {
-          try {
-            await uploadPhotos.mutateAsync({ memoryId: created.id, files: pendingFiles });
-          } catch {
-            toast.error("Kenangan tersimpan tapi foto gagal diupload — coba upload lagi dari edit kenangan");
-          }
+      const saved = selectedMemory
+        ? await updateMemory.mutateAsync({ id: selectedMemory.id, ...values })
+        : await createMemory.mutateAsync(values);
+      setModalOpen(false);
+      toast.success(
+        selectedMemory ? "Kenangan diperbarui" : "Kenangan ditambahkan",
+      );
+      const memoryId = selectedMemory?.id ?? saved?.id;
+      if (pendingFiles?.length && memoryId) {
+        try {
+          await uploadPhotos.mutateAsync({ memoryId, files: pendingFiles });
+        } catch {
+          toast.error(
+            "Kenangan tersimpan, tetapi foto belum terunggah. Tambahkan kembali melalui Edit kenangan.",
+          );
         }
       }
     } catch {
@@ -63,7 +77,7 @@ export default function MemoriesPage() {
 
   const handleDelete = async (memoryToDelete?: Memory | null) => {
     const target = memoryToDelete ?? selectedMemory;
-    if (!target) return;
+    if (!target || !window.confirm(`Hapus kenangan "${target.title}"?`)) return;
     try {
       await deleteMemory.mutateAsync(target.id);
       toast.success("Kenangan dihapus");
@@ -77,7 +91,9 @@ export default function MemoriesPage() {
     if (!memory.photos.length) return;
     // Fetch detail memory untuk mendapatkan semua foto (list hanya load 1 cover)
     try {
-      const { data } = await import("@/lib/api").then(m => m.api.get<{ data: Memory }>(`/memories/${memory.id}`));
+      const { data } = await import("@/lib/api").then((m) =>
+        m.api.get<{ data: Memory }>(`/memories/${memory.id}`),
+      );
       setLightboxMemory(data.data);
     } catch {
       setLightboxMemory(memory);
@@ -85,30 +101,41 @@ export default function MemoriesPage() {
     setPhotoIdx(idx);
   }, []);
 
-  const handleToggleFavorite = useCallback(async (memory: Memory) => {
-    try {
-      await updateMemory.mutateAsync({ id: memory.id, is_favorite: !memory.is_favorite });
-    } catch {
-      toast.error("Gagal memperbarui favorit");
-    }
-  }, [updateMemory]);
+  const handleToggleFavorite = useCallback(
+    async (memory: Memory) => {
+      try {
+        await updateMemory.mutateAsync({
+          id: memory.id,
+          is_favorite: !memory.is_favorite,
+        });
+      } catch {
+        toast.error("Gagal memperbarui favorit");
+      }
+    },
+    [updateMemory],
+  );
 
   return (
     <div className="space-y-5">
       {/* ── Header ──────────────────────────────────────────────── */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Kenangan Keluarga</h1>
-          <p className="mt-0.5 text-sm text-neutral-500">Simpan momen berharga yang tumbuh bersama.</p>
-        </div>
-        <button
-          onClick={() => { setSelectedMemory(null); setModalOpen(true); }}
-          className="flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors shadow-sm"
-        >
-          <Plus className="h-4 w-4" />
-          Tambah Kenangan
-        </button>
-      </div>
+      <PageHeader
+        title="Kenangan"
+        description="Cerita kecil hari ini, kenangan berharga nanti."
+        action={
+          <>
+            <button
+              onClick={() => {
+                setSelectedMemory(null);
+                setModalOpen(true);
+              }}
+              className="flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors shadow-sm"
+            >
+              <Plus className="h-4 w-4" />
+              Tambah Kenangan
+            </button>
+          </>
+        }
+      />
 
       {/* ── Filters — sesuai mockup: tab pill ───────────────────── */}
       <div className="flex flex-wrap items-center gap-2">
@@ -119,7 +146,7 @@ export default function MemoriesPage() {
             "flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium border transition-colors",
             favFilter
               ? "bg-primary-600 text-white border-primary-600"
-              : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300"
+              : "bg-card dark:bg-card text-foreground dark:text-foreground border-border dark:border-border hover:border-neutral-300",
           )}
         >
           <Heart className={cn("h-3.5 w-3.5", favFilter && "fill-current")} />
@@ -133,7 +160,7 @@ export default function MemoriesPage() {
             "rounded-full px-4 py-1.5 text-sm font-medium border transition-colors",
             !yearFilter
               ? "bg-primary-600 text-white border-primary-600"
-              : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300"
+              : "bg-card dark:bg-card text-foreground dark:text-foreground border-border dark:border-border hover:border-neutral-300",
           )}
         >
           Semua
@@ -146,7 +173,7 @@ export default function MemoriesPage() {
               "rounded-full px-4 py-1.5 text-sm font-medium border transition-colors",
               yearFilter === y
                 ? "bg-primary-600 text-white border-primary-600"
-                : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300"
+                : "bg-card dark:bg-card text-foreground dark:text-foreground border-border dark:border-border hover:border-neutral-300",
             )}
           >
             {y}
@@ -156,36 +183,45 @@ export default function MemoriesPage() {
 
       {/* Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 8 }).map((_, i) => (
             <Skeleton key={i} className="h-64 rounded-2xl" />
           ))}
         </div>
+      ) : isError ? (
+        <QueryError retry={() => void refetch()} />
       ) : memories.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-900 py-20 text-center px-8">
-          {/* Ilustrasi tree sederhana sesuai mockup */}
-          <div className="mb-5 flex flex-col items-center">
-            <svg width="80" height="80" viewBox="0 0 80 80" fill="none" className="text-teal-200">
-              <ellipse cx="40" cy="28" rx="22" ry="18" fill="currentColor" opacity="0.5" />
-              <ellipse cx="25" cy="22" rx="13" ry="10" fill="currentColor" opacity="0.4" />
-              <ellipse cx="55" cy="20" rx="11" ry="9" fill="currentColor" opacity="0.3" />
-              <line x1="40" y1="44" x2="40" y2="68" stroke="#9CA3AF" strokeWidth="3" strokeLinecap="round" />
-              <line x1="40" y1="54" x2="30" y2="46" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" />
-              <line x1="40" y1="50" x2="50" y2="44" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </div>
-          <p className="text-base font-semibold text-neutral-700">Belum ada kenangan</p>
-          <p className="mt-1.5 text-sm text-neutral-400 max-w-xs">
-            Klik <strong>&quot;Tambah Kenangan&quot;</strong> untuk mencatat momen pertama keluarga — foto, catatan, atau cerita singkat.
-          </p>
-        </div>
+        <ContentState
+          illustration={<EmptyIllustration name="album" />}
+          title={
+            yearFilter || favFilter
+              ? "Belum ada kenangan di pilihan ini"
+              : "Cerita pertama dimulai di sini"
+          }
+          description="Foto, cerita singkat, atau momen sederhana. Simpan agar bisa dikenang bersama."
+          action={
+            <button
+              onClick={() => {
+                setSelectedMemory(null);
+                setModalOpen(true);
+              }}
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-600 px-4 text-sm font-medium text-white"
+            >
+              <Plus size={16} />
+              Tambah kenangan
+            </button>
+          }
+        />
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {memories.map((memory) => (
             <MemoryCard
               key={memory.id}
               memory={memory}
-              onEdit={(m) => { setSelectedMemory(m); setModalOpen(true); }}
+              onEdit={(m) => {
+                setSelectedMemory(m);
+                setModalOpen(true);
+              }}
               onDelete={(m) => handleDelete(m)}
               onOpen={(m) => openLightbox(m, 0)}
               onToggleFavorite={handleToggleFavorite}

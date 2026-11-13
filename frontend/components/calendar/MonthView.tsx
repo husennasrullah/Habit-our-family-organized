@@ -25,13 +25,13 @@ export function MonthView({
   const MAX_VISIBLE = 3;
 
   return (
-    <div className="flex flex-col rounded-xl border border-neutral-200 bg-white overflow-hidden">
+    <div className="flex flex-col rounded-xl border border-border bg-card overflow-hidden">
       {/* Weekday header */}
-      <div className="grid grid-cols-7 border-b border-neutral-200">
+      <div className="grid grid-cols-7 border-b border-border">
         {WEEKDAY_HEADERS.map((d) => (
           <div
             key={d}
-            className="py-2 text-center text-xs font-semibold uppercase tracking-wide text-neutral-400"
+            className="py-2 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
           >
             {d}
           </div>
@@ -50,27 +50,33 @@ export function MonthView({
             <div
               key={idx}
               onClick={() => onDayClick(day)}
+
               className={cn(
-                "group relative min-h-[90px] cursor-pointer p-1 transition-colors hover:bg-neutral-50",
-                !isCurrentMonth && "bg-neutral-50/50",
-                idx % 7 !== 0 && "border-l border-neutral-100",
-                idx >= 7 && "border-t border-neutral-100"
+                "group relative min-h-[90px] cursor-pointer p-1 transition-colors hover:bg-muted",
+                !isCurrentMonth && "bg-muted/50",
+                idx % 7 !== 0 && "border-l border-border",
+                idx >= 7 && "border-t border-border",
               )}
             >
               {/* Day number */}
               <div className="mb-1 flex justify-end">
-                <span
+                <button
+                  aria-label={`${format(day, "d MMMM yyyy")}, ${dayEvents.length} agenda`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onDayClick(day);
+                  }}
                   className={cn(
                     "flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium",
                     today
                       ? "bg-primary-500 text-white"
                       : isCurrentMonth
-                      ? "text-neutral-700"
-                      : "text-neutral-300"
+                        ? "text-foreground"
+                        : "text-muted-foreground",
                   )}
                 >
                   {format(day, "d")}
-                </span>
+                </button>
               </div>
 
               {/* Event badges */}
@@ -89,7 +95,7 @@ export function MonthView({
                       e.stopPropagation();
                       onDayClick(day);
                     }}
-                    className="w-full rounded px-1.5 text-left text-xs font-medium text-neutral-500 hover:text-neutral-700"
+                    className="w-full rounded px-1.5 text-left text-xs font-medium text-muted-foreground hover:text-foreground"
                   >
                     +{overflow} lainnya
                   </button>

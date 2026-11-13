@@ -10,9 +10,10 @@ interface UIState {
 }
 
 export const useUIStore = create<UIState>()((set) => ({
-  sidebarOpen: true,
+  sidebarOpen: false,
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
   setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
   sidebarCollapsed: false,
-  toggleCollapsed: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+  toggleCollapsed: () =>
+    set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 }));

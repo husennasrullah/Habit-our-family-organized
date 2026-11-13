@@ -2,12 +2,16 @@
 
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { navigateDate, getViewLabel, type CalendarView } from "@/lib/calendarUtils";
+import {
+  navigateDate,
+  getViewLabel,
+  type CalendarView,
+} from "@/lib/calendarUtils";
 
 const VIEW_OPTIONS: { value: CalendarView; label: string }[] = [
-  { value: "day",   label: "Hari"   },
-  { value: "week",  label: "Minggu" },
-  { value: "month", label: "Bulan"  },
+  { value: "day", label: "Hari" },
+  { value: "week", label: "Minggu" },
+  { value: "month", label: "Bulan" },
 ];
 
 interface CalendarHeaderProps {
@@ -30,29 +34,33 @@ export function CalendarHeader({
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       {/* Kiri — bulan/tahun + navigasi hari ini */}
-      <div className="flex items-center gap-3">
-        <h2 className="text-xl font-bold text-neutral-900 capitalize">
+      <div className="flex flex-wrap items-center gap-3">
+        <h2 className="text-xl font-bold text-foreground capitalize">
           {getViewLabel(currentDate, view)}
         </h2>
 
         {/* Nav: < Hari Ini > — sesuai mockup */}
-        <div className="flex items-center rounded-lg border border-neutral-200 bg-white overflow-hidden">
+        <div className="flex items-center rounded-lg border border-border bg-card overflow-hidden">
           <button
-            onClick={() => onDateChange(navigateDate(currentDate, "prev", view))}
-            className="px-2 py-1.5 text-neutral-500 hover:bg-neutral-50 transition-colors border-r border-neutral-200"
+            onClick={() =>
+              onDateChange(navigateDate(currentDate, "prev", view))
+            }
+            className="px-2 py-1.5 text-muted-foreground hover:bg-muted transition-colors border-r border-border"
             aria-label="Sebelumnya"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             onClick={onToday}
-            className="px-3 py-1.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+            className="px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
           >
             Hari Ini
           </button>
           <button
-            onClick={() => onDateChange(navigateDate(currentDate, "next", view))}
-            className="px-2 py-1.5 text-neutral-500 hover:bg-neutral-50 transition-colors border-l border-neutral-200"
+            onClick={() =>
+              onDateChange(navigateDate(currentDate, "next", view))
+            }
+            className="px-2 py-1.5 text-muted-foreground hover:bg-muted transition-colors border-l border-border"
             aria-label="Berikutnya"
           >
             <ChevronRight className="h-4 w-4" />
@@ -61,18 +69,19 @@ export function CalendarHeader({
       </div>
 
       {/* Kanan — view toggle + tambah */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {/* View switcher sesuai mockup */}
-        <div className="flex rounded-lg border border-neutral-200 bg-white overflow-hidden">
+        <div className="flex rounded-lg border border-border bg-card overflow-hidden">
           {VIEW_OPTIONS.map(({ value, label }) => (
             <button
               key={value}
               onClick={() => onViewChange(value)}
+              aria-pressed={view === value}
               className={cn(
                 "px-4 py-1.5 text-sm font-medium transition-colors",
                 view === value
-                  ? "bg-neutral-100 text-neutral-900 font-semibold"
-                  : "text-neutral-500 hover:bg-neutral-50"
+                  ? "bg-muted text-foreground font-semibold"
+                  : "text-muted-foreground hover:bg-muted",
               )}
             >
               {label}

@@ -17,7 +17,8 @@ const BASE_URL =
  * Jika refresh gagal (token benar-benar expired) → clearAuth + redirect login.
  */
 function AuthSync() {
-  const { accessToken, isAuthenticated, setAccessToken, clearAuth } = useAuthStore();
+  const { accessToken, isAuthenticated, setAccessToken, clearAuth } =
+    useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -25,14 +26,15 @@ function AuthSync() {
 
     // Coba refresh untuk mendapatkan token baru (sekaligus memperpanjang cookie)
     // Kirim refresh_token di body sebagai fallback saat cross-origin (ngrok dev)
-    const storedRefresh = typeof window !== "undefined"
-      ? localStorage.getItem("refresh_token")
-      : null;
+    const storedRefresh =
+      typeof window !== "undefined"
+        ? localStorage.getItem("refresh_token")
+        : null;
     axios
       .post(
         `${BASE_URL}/auth/refresh`,
         storedRefresh ? { refresh_token: storedRefresh } : {},
-        { withCredentials: false }
+        { withCredentials: false },
       )
       .then(({ data }) => {
         const newToken: string = data.data.access_token;
@@ -60,16 +62,17 @@ export function Providers({ children }: { children: ReactNode }) {
             retry: 1,
           },
         },
-      })
+      }),
   );
 
   return (
     <QueryClientProvider client={queryClient}>
       <AuthSync />
       {children}
-      {process.env.NODE_ENV === "development" && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
+      {process.env.NODE_ENV === "development" &&
+        process.env.NEXT_PUBLIC_QUERY_DEVTOOLS === "true" && (
+          <ReactQueryDevtools initialIsOpen={false} />
+        )}
     </QueryClientProvider>
   );
 }

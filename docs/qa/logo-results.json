@@ -1,0 +1,111 @@
+{
+  "pages": [
+    {
+      "route": "/login",
+      "width": 390,
+      "theme": "light",
+      "logos": [
+        {
+          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "loaded": true
+        },
+        {
+          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "loaded": true
+        }
+      ]
+    },
+    {
+      "route": "/login",
+      "width": 1440,
+      "theme": "light",
+      "logos": [
+        {
+          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "loaded": true
+        },
+        {
+          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "loaded": true
+        }
+      ]
+    },
+    {
+      "route": "/login",
+      "width": 390,
+      "theme": "dark",
+      "logos": [
+        {
+          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "loaded": true
+        },
+        {
+          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "loaded": true
+        }
+      ]
+    },
+    {
+      "route": "/login",
+      "width": 1440,
+      "theme": "dark",
+      "logos": [
+        {
+          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "loaded": true
+        },
+        {
+          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "loaded": true
+        }
+      ]
+    },
+    {
+      "route": "/dashboard",
+      "width": 1440,
+      "logo": {
+        "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=32&q=75",
+        "loaded": true
+      }
+    }
+  ],
+  "errors": [],
+  "icons": [
+    {
+      "src": "/icons/habit-v2-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any",
+      "status": 200
+    },
+    {
+      "src": "/icons/habit-v2-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any",
+      "status": 200
+    },
+    {
+      "src": "/icons/habit-v2-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable",
+      "status": 200
+    },
+    {
+      "src": "/icons/habit-v2-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable",
+      "status": 200
+    }
+  ],
+  "favicon": {
+    "status": 200,
+    "sizes": [
+      16,
+      32,
+      48
+    ]
+  }
+}

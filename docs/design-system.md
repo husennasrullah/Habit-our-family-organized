@@ -1,5 +1,20 @@
 # Family Hub — Design System
 
+> Revisi aktif v3 — 2026-11-13: Plus Jakarta Sans lokal, body 13 px/token sm 13/base14, emerald #007F5B, latar dingin pucat, sidebar 208/80 px, kontrol/tombol lebih ringkas dan satu judul halaman. Detail serta screenshot: `dashboard-reference-refresh.md`. Bagian v2/v1 di bawah merekam desain sebelumnya.
+
+> Pembaruan arah redesign — 2026-11-12: acuan aktif adalah [`ui-art-direction.md`](ui-art-direction.md) dan [`ui-redesign-roadmap.md`](ui-redesign-roadmap.md), mengikuti preferensi pengguna untuk UI minimalis dengan ilustrasi pencil art / 2D dan palet awal sage. Spesifikasi versi 1.0 di bawah adalah catatan lama; token sage, label 14 px/caption 12 px, shell 240/80 px, fokus keyboard, dan navigasi konsisten sudah diterapkan pada batch pertama. Kontrak data dan susunan halaman aktif: [`ui-baseline.md`](ui-baseline.md). Komponen halaman akan dimigrasikan bertahap. Nama produk saat ini HABIT, dan font implementasi saat ini Inter. Klaim kontras pada dokumen lama perlu diuji ulang, bukan dianggap hasil verifikasi.
+
+## Spesifikasi aktif v2 — 2026-11-13
+
+- Primary: sage `#426653`; canvas hangat, card putih, teks utama tinta gelap; teks sekunder dipergelap setelah audit kontras. Token CSS aktif ada di `frontend/app/globals.css`, skala warna di `frontend/tailwind.config.ts`.
+- Font: Inter variable lokal berlisensi OFL; mono: Geist Mono lokal existing. Tidak mengambil Google Fonts saat build. Isi 15 px, label 14 px, caption 12 px, judul 22/28 px; bobot umum 400/500/600.
+- Sidebar 240 px atau 80 px; konten maksimum 1440 px; padding 16/24/32 px; gap bagian 24–32 px; kartu radius 16–24 px, border tipis. Mobile satu kolom dan navigasi bawah 80 px ditambah safe area.
+- `PageHeader`, `ContentState`, `QueryError`, `EmptyIllustration`, `ModalFrame`, `ThemeToggle` adalah komponen bersama aktif. Primitive `components/ui` dipertahankan.
+- Fokus terlihat, target kontrol umum 44 px, drawer/dialog mengunci fokus dan background, Escape menutup, fokus kembali. Tema gelap aktif melalui next-themes dan tombol pengguna.
+- Logo aktif: monogram H/rumah sage–ivory, URL aset berversi v2, termasuk favicon dan PWA maskable. Spesifikasi/prompt: `logo.md`.
+- Aset 2D di `frontend/public/illustrations/`; inventaris/prompt ada di `illustrations.md`. Ilustrasi dekoratif memakai alt kosong.
+- Hasil audit dan batas pemeriksaan: `ui-redesign-qa.md`. Bagian v1 di bawah tetap menjadi arsip.
+
 > Versi: 1.0  
 > Status: Task 0.1 ✅  
 > Terakhir diperbarui: 2025

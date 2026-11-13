@@ -1,43 +1,47 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { navigation, isNavigationActive } from "@/lib/navigation";
 
-const BOTTOM_NAV_ITEMS = [
-  { href: "/dashboard", label: "Home",    img: "/icons/assets-habit/menu-dashboard.png" },
-  { href: "/calendar",  label: "Kalender",img: "/icons/assets-habit/menu-calendar.png" },
-  { href: "/tasks",     label: "Tugas",   img: "/icons/assets-habit/menu-tugas.png" },
-  { href: "/budget",    label: "Dompet",  img: "/icons/assets-habit/menu-keuangan.png" },
-  { href: "/meals",     label: "Menu",    img: "/icons/assets-habit/menu-jadwalmakan.png" },
-];
+const items = ["/dashboard", "/calendar", "/tasks", "/budget", "/meals"].map(
+  (href) => navigation.find((item) => item.href === href)!,
+);
 
 export function BottomNav() {
   const pathname = usePathname();
-
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 pb-safe lg:hidden">
-      <ul className="flex items-center justify-around">
-        {BOTTOM_NAV_ITEMS.map(({ href, label, img }) => {
-          const isActive = pathname === href || pathname.startsWith(href + "/");
+    <nav
+      aria-label="Navigasi cepat"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 pb-safe shadow-[0_-3px_18px_rgba(32,45,80,0.04)] backdrop-blur-lg dark:bg-card/95 lg:hidden"
+    >
+      <ul className="flex px-1">
+        {items.map(({ href, label, icon: Icon }) => {
+          const active = isNavigationActive(pathname, href);
           return (
-            <li key={href} className="flex-1">
+            <li key={href} className="min-w-0 flex-1">
               <Link
                 href={href}
+                aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex flex-col items-center gap-0.5 py-2 text-xs font-medium transition-colors",
-                  isActive ? "text-primary-600" : "text-neutral-400"
+                  "flex min-h-[72px] flex-col items-center justify-center gap-1 px-0.5 text-xs font-medium",
+                  active
+                    ? "text-primary-700 dark:text-primary-200"
+                    : "text-muted-foreground",
                 )}
               >
-                <Image
-                  src={img}
-                  alt={label}
-                  width={22}
-                  height={22}
-                  className={cn("object-contain", !isActive && "opacity-40")}
-                />
-                <span>{label}</span>
+                <span
+                  className={cn(
+                    "flex h-7 w-12 items-center justify-center rounded-xl",
+                    active && "bg-primary-600 text-white shadow-sm",
+                  )}
+                >
+                  <Icon size={20} strokeWidth={1.7} />
+                </span>
+                <span className="flex h-8 max-w-full items-center justify-center text-center leading-tight">
+                  {label}
+                </span>
               </Link>
             </li>
           );

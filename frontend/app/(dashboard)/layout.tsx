@@ -11,21 +11,25 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   const sidebarCollapsed = useUIStore((s) => s.sidebarCollapsed);
 
   return (
-    <div className="min-h-screen bg-[#F6F8FB] dark:bg-neutral-950 text-neutral-800 dark:text-neutral-100">
+    <div className="app-shell min-h-screen text-foreground">
       <Sidebar />
 
-      {/* Main area — offset ikut sidebar collapsed/expanded */}
-      <div className={sidebarCollapsed ? "lg:pl-16" : "lg:pl-64"} style={{ transition: "padding-left 300ms" }}>
-        <Topbar />
+      <div id="dashboard-background">
+        {/* Main area — offset ikut sidebar collapsed/expanded */}
+        <div
+          className={`app-content${sidebarCollapsed ? " is-sidebar-collapsed" : ""}`}
+        >
+          <Topbar />
 
-        {/* pb-24 mobile = ruang untuk bottom nav + safe area */}
-        <main className="p-4 pb-24 lg:p-8 lg:pb-12">
-          {children}
-        </main>
+          {/* pb-24 mobile = ruang untuk bottom nav + safe area */}
+          <main className="app-main">
+            {children}
+          </main>
+        </div>
+
+        <BottomNav />
+        <InstallPrompt />
       </div>
-
-      <BottomNav />
-      <InstallPrompt />
     </div>
   );
 }

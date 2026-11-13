@@ -1,5 +1,7 @@
 # Dashboard Redesign Plan — Modern UI
 
+> Status 2026-11-13: rencana historis ini telah digantikan oleh `docs/ui-redesign-roadmap.md` dan `docs/ui-art-direction.md`. Redesign menyeluruh kini memakai sage/minimalis dan ilustrasi 2D. Checklist di bawah merekam rancangan lama; notifikasi palsu, tombol tanpa aksi, progress buatan, dan banner dekoratif bukan target implementasi aktif. Lihat `docs/ui-redesign-qa.md` untuk hasil implementasi dan verifikasi terbaru.
+
 ## Overview
 
 Redesign tampilan aplikasi HABIT agar sesuai mockup modern yang diberikan.

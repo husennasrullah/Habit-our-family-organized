@@ -1,547 +1,734 @@
 "use client";
 
-import { useState } from "react";
-import { format, getDayOfYear } from "date-fns";
-import { id as dateLocale } from "date-fns/locale";
-import {
-  ListChecks,
-  CalendarDays,
-  Wallet,
-  Sparkles,
-  ChevronLeft,
-  ChevronRight,
-  MoreVertical,
-  Check,
-  Syringe,
-  Heart,
-} from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+import {
+  ArrowUpRight,
+  ArrowRight,
+  CheckSquare2,
+  LayoutGrid,
+  Sprout,
+  CalendarDays,
+  Check,
+  Clock3,
+  Images,
+  ListChecks,
+  Loader2,
+  Plus,
+  Syringe,
+  UtensilsCrossed,
+  Wallet,
+} from "lucide-react";
+import { toast } from "sonner";
 import { useAuthStore } from "@/stores/authStore";
 import { useTasks, useCompleteTask } from "@/hooks/useTasks";
-import { useBudgetSummary } from "@/hooks/useBudget";
-import { useVaccines, useKids } from "@/hooks/useKids";
 import { useEvents } from "@/hooks/useEvents";
+import { useBudgets, useBudgetSummary } from "@/hooks/useBudget";
+import { useMealPlans } from "@/hooks/useMealPlans";
+import { cn } from "@/lib/utils";
 import { useMemories } from "@/hooks/useMemories";
-import { familyApi } from "@/lib/auth-api";
-import { useQuery } from "@tanstack/react-query";
-import { getApiDateRange } from "@/lib/calendarUtils";
+import { useKids, useVaccines } from "@/hooks/useKids";
+import { EmptyIllustration } from "@/components/shared/EmptyIllustration";
+import { ContentState } from "@/components/shared/ContentState";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { CalendarEvent, AuthUser } from "@/types";
+import {
+  budgetOverview,
+  dateKey,
+  dayRange,
+  eventsForDay,
+  groupTasks,
+  localDateKey,
+} from "@/lib/dashboard";
+import type { KidProfile } from "@/types";
 
-function formatRp(n: number) {
-  return new Intl.NumberFormat("id-ID", {
+const rupiah = (value: number) =>
+  new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0,
-  }).format(n);
+  }).format(value);
+const dateLabel = (value: string) =>
+  format(new Date(`${dateKey(value)}T12:00:00`), "d MMM", { locale: id });
+const actionClass = "dashboard-btn";
+
+function Section({
+  title,
+  href,
+  children,
+  icon,
+  variant,
+}: {
+  title: string;
+  href: string;
+  children: ReactNode;
+  icon: ReactNode;
+  variant?: "agenda" | "tasks";
+}) {
+  return (
+    <section
+      className={cn(
+        "dashboard-panel",
+        variant && "dashboard-focus-card",
+        variant === "agenda" && "dashboard-focus-agenda",
+        variant === "tasks" && "dashboard-focus-tasks",
+      )}
+    >
+      <div className="dashboard-panel-heading">
+        <h2 className="flex min-w-0 items-center gap-2.5 text-sm font-bold">
+          {icon}
+          {title}
+        </h2>
+        <Link
+          href={href}
+          aria-label={`Lihat semua ${title.toLowerCase()}`}
+          className="dashboard-link"
+        >
+          Lihat semua
+          <ArrowRight size={14} />
+        </Link>
+      </div>
+      {children}
+    </section>
+  );
 }
 
-// ── Tips harian ──────────────────────────────────────────────────────────────
-const DAILY_TIPS = [
-  "Minum air putih yang cukup dan jangan lupa tersenyum! 😊",
-  "Luangkan 10 menit untuk berbicara dengan anggota keluarga hari ini 💬",
-  "Sarapan bersama keluarga bisa meningkatkan kebahagiaan rumah tangga 🍽️",
-  "Apresiasi hal kecil yang dilakukan pasangan atau anak-anakmu hari ini ❤️",
-  "Kurangi screen time dan nikmati momen bersama keluarga 📵",
-  "Rencanakan satu aktivitas seru bersama keluarga minggu ini 🎉",
-  "Jangan lupa cek jadwal vaksin dan kesehatan anak 💉",
-  "Buat anggaran belanja hari ini agar keuangan lebih terkontrol 💰",
-  "Ceritakan satu hal positif yang terjadi hari ini kepada keluargamu 🌟",
-  "Masak bersama bisa jadi momen bonding yang menyenangkan 👨‍🍳",
-];
-
-export default function DashboardPage() {
-  const user = useAuthStore((s) => s.user);
-  const now = new Date();
-
-  const [calDate, setCalDate] = useState(new Date());
-
-  const { from, to } = getApiDateRange(now, "week");
-  const { data: weekEvents = [], isLoading: evLoading } = useEvents(from, to);
-
-  const { data: pendingTasks = [], isLoading: taskLoading } = useTasks({ status: "pending" });
-  const { data: inProgressTasks = [] } = useTasks({ status: "in_progress" });
-  const { data: allTasks = [] } = useTasks();
-  const completeTaskMutation = useCompleteTask();
-
-  const urgentCount = pendingTasks.filter((t) => !!t.due_date).length;
-  const totalTasks = pendingTasks.length + inProgressTasks.length;
-
-  const month = now.getMonth() + 1;
-  const year = now.getFullYear();
-  const { data: summary, isLoading: budgetLoading } = useBudgetSummary(month, year);
-
-  const { data: memories = [], isLoading: memLoading } = useMemories();
-  const recentMemories = memories.slice(0, 4);
-
-  const { data: kids = [] } = useKids();
-  const { data: vaccines = [] } = useVaccines(kids[0]?.id ?? "");
-  const upcomingVaccines = vaccines.filter((v) => v.status !== "given").slice(0, 3);
-
-  const { data: members = [] } = useQuery({
-    queryKey: ["family-members"],
-    queryFn: () => familyApi.getMembers().then((r) => r.data.data),
-    enabled: !!user?.family_id,
-  });
-
-  const totalBudget = summary?.by_category?.reduce((s, c) => s + (c.total ?? 0), 0) ?? 0;
-  const budgetUsedPct = totalBudget > 0 ? Math.min(100, Math.round((totalBudget / 3000000) * 100)) : 40;
-
-  const upcomingEvents = weekEvents
-    .filter((e) => new Date(e.start_at) >= now)
-    .slice(0, 2);
-
-  const todayTip = DAILY_TIPS[getDayOfYear(now) % DAILY_TIPS.length];
-
+function LoadingBlock() {
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
-      {/* ── Greeting Topbar ────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl lg:text-3xl font-black text-neutral-900 dark:text-neutral-100 tracking-tight">
-            Halo, {user?.name?.split(" ")[0] ?? "Keluarga"}! 👋
-          </h1>
-          <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400 capitalize">
-            {format(now, "EEEE, d MMMM yyyy", { locale: dateLocale })} · Semoga harimu menyenangkan.
-          </p>
-        </div>
-      </div>
+    <div role="status" aria-label="Memuat data" className="space-y-3">
+      <Skeleton className="h-16 w-full rounded-xl" />
+      <Skeleton className="h-16 w-full rounded-xl" />
+    </div>
+  );
+}
+function ErrorBlock({ retry }: { retry: () => void }) {
+  return (
+    <ContentState
+      error
+      title="Data belum bisa dimuat"
+      description="Coba muat kembali untuk melihat informasi terbaru."
+      action={
+        <button
+          onClick={retry}
+          className={`${actionClass} border border-border`}
+        >
+          Coba lagi
+        </button>
+      }
+    />
+  );
+}
 
-      {/* ── Hero Section (Command Center) ─────────────────────────────── */}
-      <section className="relative overflow-hidden rounded-3xl border border-teal-100/80 dark:border-neutral-800 bg-gradient-to-r from-white via-[#f8fbff] to-[#e8faf7] dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-950 p-6 lg:p-8 shadow-sm">
-        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-teal-100/40 dark:bg-teal-950/20 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-40 -mb-16 w-56 h-56 rounded-full bg-purple-100/40 dark:bg-purple-950/20 blur-3xl pointer-events-none" />
-
-        <div className="flex items-center justify-between relative z-10">
-          <div className="max-w-2xl space-y-2">
-            <span className="text-[11px] font-black uppercase tracking-wider text-teal-600 dark:text-teal-400">
-              Family command center
+function KidReminders({ kid, today }: { kid: KidProfile; today: string }) {
+  const vaccines = useVaccines(kid.id);
+  if (vaccines.isPending)
+    return <Skeleton className="h-14 w-full rounded-xl" />;
+  if (vaccines.isError)
+    return <ErrorBlock retry={() => void vaccines.refetch()} />;
+  const upcoming = (vaccines.data ?? [])
+    .filter((v) => v.status !== "given" && dateKey(v.scheduled_date))
+    .sort((a, b) => a.scheduled_date.localeCompare(b.scheduled_date))
+    .slice(0, 2);
+  return (
+    <div>
+      <p className="mb-2 text-sm font-medium">{kid.name}</p>
+      {upcoming.length ? (
+        upcoming.map((vaccine) => (
+          <div
+            key={vaccine.id}
+            className="flex items-center justify-between gap-3 border-t border-border py-3"
+          >
+            <span className="min-w-0 break-words text-sm text-muted-foreground">
+              {vaccine.vaccine_name}
             </span>
-            <h2 className="text-xl lg:text-2xl font-black text-neutral-900 dark:text-neutral-100 tracking-tight">
-              Apa yang perlu diperhatikan hari ini?
-            </h2>
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              Ada <b className="text-neutral-900 dark:text-neutral-100 font-bold">{totalTasks} tugas</b> yang perlu diselesaikan,{" "}
-              <b className="text-neutral-900 dark:text-neutral-100 font-bold">{upcomingEvents.length} acara</b> mendatang, dan pengingat keluarga yang perlu kamu cek.
-            </p>
+            <span
+              className={`shrink-0 rounded-lg px-2 py-1 text-xs ${dateKey(vaccine.scheduled_date)! < today ? "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-200" : "bg-muted text-foreground"}`}
+            >
+              {dateKey(vaccine.scheduled_date)! < today ? "Terlambat · " : ""}
+              {dateLabel(vaccine.scheduled_date)}
+            </span>
           </div>
-
-          <div className="hidden md:flex items-center justify-center w-36 h-36 rounded-2xl bg-white/60 dark:bg-neutral-800/60 backdrop-blur-sm border border-teal-100/60 dark:border-neutral-700 shadow-inner text-5xl">
-            🛋️🌿
-          </div>
-        </div>
-      </section>
-
-      {/* ── Summary / Stat Cards (4 Kolom) ─────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Tugas */}
-        <Link
-          href="/tasks"
-          className="group relative overflow-hidden rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 shadow-sm hover:shadow-md transition-all"
-        >
-          <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-teal-50 dark:bg-teal-950/40 pointer-events-none transition-transform group-hover:scale-110" />
-          <div className="flex items-center gap-2.5 text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-            <div className="h-8 w-8 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
-              <ListChecks className="h-4 w-4" />
-            </div>
-            <span>Tugas Hari Ini</span>
-          </div>
-          <div className="mt-3 text-2xl lg:text-3xl font-black text-neutral-900 dark:text-neutral-100 tracking-tight">
-            {taskLoading ? <Skeleton className="h-8 w-12" /> : totalTasks}
-          </div>
-          <p className="mt-1 text-xs font-semibold text-red-500">
-            {urgentCount > 0 ? `${urgentCount} mendesak` : "Semua terkendali"}
-          </p>
-        </Link>
-
-        {/* Acara */}
-        <Link
-          href="/calendar"
-          className="group relative overflow-hidden rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 shadow-sm hover:shadow-md transition-all"
-        >
-          <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-blue-50 dark:bg-blue-950/40 pointer-events-none transition-transform group-hover:scale-110" />
-          <div className="flex items-center gap-2.5 text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-            <div className="h-8 w-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-500 dark:text-blue-400 flex items-center justify-center font-bold">
-              <CalendarDays className="h-4 w-4" />
-            </div>
-            <span>Acara Mendatang</span>
-          </div>
-          <div className="mt-3 text-2xl lg:text-3xl font-black text-neutral-900 dark:text-neutral-100 tracking-tight">
-            {evLoading ? <Skeleton className="h-8 w-12" /> : upcomingEvents.length}
-          </div>
-          <p className="mt-1 text-xs text-neutral-400 font-medium">Minggu ini</p>
-        </Link>
-
-        {/* Anggaran */}
-        <Link
-          href="/budget"
-          className="group relative overflow-hidden rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 shadow-sm hover:shadow-md transition-all"
-        >
-          <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-pink-50 dark:bg-pink-950/40 pointer-events-none transition-transform group-hover:scale-110" />
-          <div className="flex items-center gap-2.5 text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-            <div className="h-8 w-8 rounded-xl bg-pink-50 dark:bg-pink-950/60 text-pink-500 dark:text-pink-400 flex items-center justify-center font-bold">
-              <Wallet className="h-4 w-4" />
-            </div>
-            <span>Sisa Anggaran</span>
-          </div>
-          <div className="mt-3 text-2xl lg:text-3xl font-black text-neutral-900 dark:text-neutral-100 tracking-tight">
-            {budgetLoading ? <Skeleton className="h-8 w-16" /> : formatRp(totalBudget)}
-          </div>
-          <div className="mt-2 h-1.5 w-full bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-pink-500 rounded-full transition-all"
-              style={{ width: `${budgetUsedPct}%` }}
-            />
-          </div>
-        </Link>
-
-        {/* Kenangan */}
-        <Link
-          href="/memories"
-          className="group relative overflow-hidden rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 shadow-sm hover:shadow-md transition-all"
-        >
-          <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-purple-50 dark:bg-purple-950/40 pointer-events-none transition-transform group-hover:scale-110" />
-          <div className="flex items-center gap-2.5 text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-            <div className="h-8 w-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-500 dark:text-purple-400 flex items-center justify-center font-bold">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <span>Kenangan Baru</span>
-          </div>
-          <div className="mt-3 text-2xl lg:text-3xl font-black text-neutral-900 dark:text-neutral-100 tracking-tight">
-            {memLoading ? <Skeleton className="h-8 w-12" /> : memories.length}
-          </div>
-          <p className="mt-1 text-xs text-neutral-400 font-medium">
-            {recentMemories.length > 0 ? `+${recentMemories.length} foto baru` : "Belum ada foto"}
-          </p>
-        </Link>
-      </div>
-
-      {/* ── Content Grid (Left + Right Columns) ─────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Kolom Kiri (7 Kolom) */}
-        <div className="lg:col-span-7 space-y-6">
-          {/* ── Tugas Utama Card ─────────────────────────────── */}
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
-              <div className="flex items-center gap-2">
-                <span className="text-teal-500 font-black">☷</span>
-                <h2 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">Tugas Utama</h2>
-              </div>
-              <Link href="/tasks" className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline">
-                Lihat Semua
-              </Link>
-            </div>
-
-            <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-              {taskLoading ? (
-                <div className="p-6 space-y-3">
-                  {[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 rounded-xl" />)}
-                </div>
-              ) : pendingTasks.length === 0 && inProgressTasks.length === 0 ? (
-                <div className="px-6 py-10 text-center text-sm text-neutral-400">
-                  Semua tugas sudah selesai 🎉
-                </div>
-              ) : (
-                [...pendingTasks, ...inProgressTasks].slice(0, 4).map((task) => {
-                  const isDone = task.status === "done";
-                  const isUrgent = !!task.due_date;
-                  return (
-                    <div key={task.id} className="flex items-center gap-3.5 px-6 py-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50 transition-colors">
-                      <button
-                        onClick={() => completeTaskMutation.mutate(task.id)}
-                        className={`h-5 w-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                          isDone ? "border-teal-500 bg-teal-500 text-white" : "border-neutral-300 hover:border-teal-500"
-                        }`}
-                      >
-                        {isDone && <Check className="h-3 w-3 stroke-[3]" />}
-                      </button>
-
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-bold truncate ${isDone ? "line-through text-neutral-400" : "text-neutral-900 dark:text-neutral-100"}`}>
-                          {task.title}
-                        </p>
-                        <p className="text-xs text-neutral-400 mt-0.5">
-                          {task.status === "in_progress"
-                            ? "Sedang dikerjakan"
-                            : task.due_date
-                            ? `Jatuh tempo: ${task.due_date}`
-                            : "Belum dijadwalkan"}
-                        </p>
-                      </div>
-
-                      <span
-                        className={`flex-shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black tracking-wider uppercase ${
-                          task.status === "in_progress"
-                            ? "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400"
-                            : isUrgent
-                            ? "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400"
-                            : "bg-teal-50 text-teal-600 dark:bg-teal-950/40 dark:text-teal-400"
-                        }`}
-                      >
-                        {task.status === "in_progress" ? "BERJALAN" : isUrgent ? "MENDESAK" : "RUMAH"}
-                      </span>
-
-                      <button className="text-neutral-300 hover:text-neutral-500 p-1">
-                        <MoreVertical className="h-4 w-4" />
-                      </button>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
-
-          {/* ── Pengeluaran Bulan Ini Card ────────────────────── */}
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
-              <div className="flex items-center gap-2">
-                <span className="text-teal-500 font-black">◉</span>
-                <h2 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">Pengeluaran Bulan Ini</h2>
-              </div>
-              <Link href="/budget" className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline">
-                Lihat Detail
-              </Link>
-            </div>
-
-            <div className="p-6">
-              {budgetLoading ? (
-                <Skeleton className="h-32 rounded-xl" />
-              ) : !summary?.by_category?.length ? (
-                <p className="text-sm text-neutral-400 text-center py-6">Belum ada pengeluaran bulan ini</p>
-              ) : (
-                <div className="space-y-4">
-                  {summary.by_category.slice(0, 4).map((c, i) => {
-                    const colors = [
-                      "bg-teal-500",
-                      "bg-blue-500",
-                      "bg-amber-500",
-                      "bg-pink-500",
-                    ];
-                    const color = colors[i % colors.length];
-                    const pct = totalBudget > 0 ? Math.round((c.total / totalBudget) * 100) : 0;
-                    return (
-                      <div key={c.category} className="grid grid-cols-[130px_1fr_90px] items-center gap-3 text-xs">
-                        <span className="font-medium text-neutral-600 dark:text-neutral-300 truncate">{c.category}</span>
-                        <div className="h-2 w-full bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-                          <div className={`h-full ${color} rounded-full`} style={{ width: `${pct}%` }} />
-                        </div>
-                        <span className="text-right font-bold text-neutral-800 dark:text-neutral-200">
-                          {formatRp(c.total)}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Kolom Kanan (5 Kolom) */}
-        <div className="lg:col-span-5 space-y-6">
-          {/* ── Kalender Card ─────────────────────────────────── */}
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm p-5">
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-neutral-100 dark:border-neutral-800">
-              <div className="flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-teal-500" />
-                <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">Kalender</h3>
-              </div>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setCalDate(new Date(calDate.getFullYear(), calDate.getMonth() - 1, 1))}
-                  className="p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-400"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => setCalDate(new Date(calDate.getFullYear(), calDate.getMonth() + 1, 1))}
-                  className="p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-400"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between mb-3 text-xs">
-              <span className="font-bold text-neutral-800 dark:text-neutral-200 capitalize">
-                {format(calDate, "MMMM yyyy", { locale: dateLocale })}
-              </span>
-              <button
-                onClick={() => setCalDate(new Date())}
-                className="text-neutral-400 hover:text-teal-600 font-medium text-[11px]"
-              >
-                Hari ini
-              </button>
-            </div>
-
-            <MiniCalendar currentDate={calDate} events={weekEvents} />
-          </div>
-
-          {/* ── Reminder Vaksin Card ─────────────────────────── */}
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-100 dark:border-neutral-800">
-              <div className="flex items-center gap-2">
-                <span className="text-purple-500 font-bold">✚</span>
-                <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">Reminder Vaksin</h3>
-              </div>
-              <Link href="/kids" className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline">
-                Lihat
-              </Link>
-            </div>
-
-            <div className="divide-y divide-neutral-100 dark:divide-neutral-800 px-5">
-              {upcomingVaccines.length === 0 ? (
-                <div className="py-4 text-center text-xs text-neutral-400">
-                  Tidak ada jadwal vaksin dalam waktu dekat
-                </div>
-              ) : (
-                upcomingVaccines.map((v) => (
-                  <div key={v.id} className="py-3 flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0">
-                      <Syringe className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-neutral-900 dark:text-neutral-100 truncate">{v.vaccine_name}</p>
-                      <p className="text-[10px] text-neutral-400 mt-0.5">
-                        {v.status === "overdue" ? "Perlu perhatian" : "Jadwal berikutnya"}
-                      </p>
-                    </div>
-                    <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        v.status === "overdue"
-                          ? "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400"
-                          : "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
-                      }`}
-                    >
-                      {v.status === "overdue" ? "Terlambat" : v.scheduled_date}
-                    </span>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* ── Family Pulse Card ────────────────────────────── */}
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-100 dark:border-neutral-800">
-              <div className="flex items-center gap-2">
-                <Heart className="h-3.5 w-3.5 text-rose-500 fill-rose-500" />
-                <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">Family Pulse</h3>
-              </div>
-              <Link href="/settings" className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline">
-                Lihat
-              </Link>
-            </div>
-
-            <div className="p-4 space-y-3">
-              {members.length === 0 ? (
-                <div className="text-center text-xs text-neutral-400 py-2">Belum ada data anggota</div>
-              ) : (
-                members.slice(0, 3).map((m: AuthUser) => {
-                  const mTasks = allTasks.filter((t) => t.assigned_to === m.id);
-                  const mDone = mTasks.filter((t) => t.status === "done").length;
-                  return (
-                    <div key={m.id} className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-neutral-100 dark:ring-neutral-800">
-                        <Image
-                          src={
-                            m.avatar_url ||
-                            (m.role === "child"
-                              ? "/icons/assets-habit/logo-user-anak.png"
-                              : "/icons/assets-habit/logo-user-ayah.png")
-                          }
-                          alt={m.name}
-                          width={36}
-                          height={36}
-                          className="h-9 w-9 object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-neutral-900 dark:text-neutral-100 truncate">{m.name}</p>
-                        <p className="text-[10px] text-neutral-400 mt-0.5">
-                          {mTasks.length > 0 ? `${mDone}/${mTasks.length} tugas selesai` : "Belum ada tugas"}
-                        </p>
-                      </div>
-                      <span className="text-[10px] font-black text-teal-600 dark:text-teal-400 uppercase tracking-wider">
-                        {mTasks.length > 0 && mDone === mTasks.length ? "SELESAI" : "AKTIF"}
-                      </span>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Tip Harian Banner ─────────────────────────────────────────── */}
-      <section className="flex items-center gap-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 border border-amber-200/60 dark:border-amber-900/40 p-5 shadow-sm">
-        <div className="text-2xl flex-shrink-0">✨</div>
-        <div>
-          <h4 className="text-xs font-black uppercase tracking-wider text-amber-700 dark:text-amber-400">
-            Tips Hari Ini
-          </h4>
-          <p className="text-sm text-neutral-700 dark:text-neutral-300 mt-0.5">{todayTip}</p>
-        </div>
-      </section>
+        ))
+      ) : (
+        <p className="text-xs text-muted-foreground">
+          Tidak ada jadwal vaksin tertunda.
+        </p>
+      )}
     </div>
   );
 }
 
-// ── Mini Calendar Component ──────────────────────────────────────────────────
-function MiniCalendar({ currentDate, events }: { currentDate: Date; events: CalendarEvent[] }) {
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
-  const today = new Date();
-  const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
-  const todayDate = today.getDate();
+function FocusEmpty({
+  kind,
+  title,
+  description,
+  action,
+}: {
+  kind: "calendar" | "task";
+  title: string;
+  description: string;
+  action: ReactNode;
+}) {
+  return (
+    <div className="dashboard-empty" role="status">
+      <Image
+        src={`/illustrations/${kind === "calendar" ? "calendar" : "task"}-empty-v3.webp`}
+        alt=""
+        width={180}
+        height={120}
+        className="dashboard-empty-art"
+      />
+      <h3>{title}</h3>
+      <p>{description}</p>
+      {action}
+    </div>
+  );
+}
 
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  const eventDays = new Set(events.map((e) => new Date(e.start_at).getDate()));
-
-  const DAY_LABELS = ["MIN", "SEN", "SEL", "RAB", "KAM", "JUM", "SAB"];
-  const startOffset = firstDay;
-
-  const cells: (number | null)[] = [
-    ...Array(startOffset).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+export default function DashboardPage() {
+  const user = useAuthStore((state) => state.user);
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+  const range = dayRange(now);
+  const tasks = useTasks();
+  const events = useEvents(range.from, range.to);
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
+  const summary = useBudgetSummary(month, year);
+  const budgets = useBudgets(month, year);
+  const memories = useMemories();
+  const kids = useKids();
+  const meals = useMealPlans(localDateKey(now), localDateKey(now));
+  const complete = useCompleteTask();
+  const grouped = groupTasks(tasks.data ?? [], now);
+  const agenda = eventsForDay(events.data ?? [], now);
+  const priorityTasks = [...grouped.overdue, ...grouped.today];
+  const pendingCount = (tasks.data ?? []).filter(
+    (task) => task.status !== "done",
+  ).length;
+  const finance = budgetOverview(
+    budgets.data ?? [],
+    summary.data?.total ?? 0,
+    month,
+    year,
+  );
+  const financeError = summary.isError || budgets.isError;
+  const financeLoading = summary.isPending || budgets.isPending;
+  const snapshot = [
+    {
+      title: "Tugas",
+      href: "/tasks",
+      icon: CheckSquare2,
+      color: "snapshot-mint",
+      value: tasks.isPending
+        ? "Memuat…"
+        : tasks.isError
+          ? "Tidak tersedia"
+          : `${pendingCount} tertunda`,
+      note: "Kebutuhan keluarga",
+    },
+    {
+      title: "Agenda",
+      href: "/calendar",
+      icon: CalendarDays,
+      color: "snapshot-violet",
+      value: events.isPending
+        ? "Memuat…"
+        : events.isError
+          ? "Tidak tersedia"
+          : `${agenda.length} hari ini`,
+      note: "Waktu bersama",
+    },
+    {
+      title: "Pengeluaran",
+      href: "/budget",
+      icon: Wallet,
+      color: "snapshot-peach",
+      value: summary.isPending
+        ? "Memuat…"
+        : summary.isError
+          ? "Tidak tersedia"
+          : rupiah(summary.data?.total ?? 0),
+      note: "Bulan ini · IDR",
+    },
+    {
+      title: "Jadwal makan",
+      href: "/meals",
+      icon: UtensilsCrossed,
+      color: "snapshot-pink",
+      value: meals.isPending
+        ? "Memuat…"
+        : meals.isError
+          ? "Tidak tersedia"
+          : meals.data?.length
+            ? `${meals.data.length} menu hari ini`
+            : "Belum diatur",
+      note: "Menu keluarga hari ini",
+    },
   ];
 
   return (
-    <div>
-      <div className="grid grid-cols-7 mb-1 text-center">
-        {DAY_LABELS.map((d) => (
-          <div key={d} className="text-[10px] font-bold text-neutral-400 py-1">
-            {d}
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7 gap-1 text-center">
-        {cells.map((day, i) => {
-          if (!day) return <div key={i} className="h-7" />;
-          const isToday = isCurrentMonth && day === todayDate;
-          const hasEvent = eventDays.has(day);
+    <div className="dashboard-page">
+      <section className="dashboard-hero" aria-labelledby="dashboard-greeting">
+        <div className="dashboard-hero-copy">
+          <p className="dashboard-date">
+            <CalendarDays size={15} />
+            {format(now, "EEEE, d MMMM yyyy", { locale: id })}
+          </p>
+          <h1 id="dashboard-greeting">
+            Halo, <span>{user?.name?.split(" ")[0] ?? "Keluarga"}.</span>
+          </h1>
+          <p className="dashboard-hero-description">
+            Hari yang baik dimulai dari hal kecil.
+            <br />
+            Mari atur hari ini, bersama.
+          </p>
+          <Link
+            href="/calendar"
+            className="dashboard-btn dashboard-btn-primary"
+          >
+            Lihat kalender
+            <ArrowRight size={15} />
+          </Link>
+        </div>
+        <Image
+          src="/illustrations/family-banner-v3.webp"
+          alt=""
+          width={1600}
+          height={534}
+          priority
+          className="dashboard-hero-art"
+        />
+      </section>
 
-          return (
-            <div key={i} className="flex flex-col items-center justify-center h-7 relative">
-              <span
-                className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
-                  isToday
-                    ? "bg-teal-500 text-white font-black shadow-sm"
-                    : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                }`}
-              >
-                {day}
-              </span>
-              {hasEvent && !isToday && (
-                <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-teal-500" />
+      <div className="dashboard-quick-actions">
+        <span>Ruang untuk hari ini</span>
+        <Link href="/tasks" className="dashboard-quick dashboard-quick-mint">
+          <CheckSquare2 size={16} />
+          Kelola tugas
+        </Link>
+        <Link href="/budget" className="dashboard-quick dashboard-quick-peach">
+          <Wallet size={16} />
+          Catat pengeluaran
+        </Link>
+        <Link href="/meals" className="dashboard-quick dashboard-quick-violet">
+          <UtensilsCrossed size={16} />
+          Jadwal makan
+        </Link>
+      </div>
+
+      <div className="dashboard-today-grid">
+        <Section
+          title="Agenda hari ini"
+          href="/calendar"
+          icon={<CalendarDays size={20} />}
+          variant="agenda"
+        >
+          {events.isPending ? (
+            <LoadingBlock />
+          ) : events.isError ? (
+            <ErrorBlock retry={() => void events.refetch()} />
+          ) : agenda.length === 0 ? (
+            <FocusEmpty
+              kind="calendar"
+              title="Ada ruang untuk bersama"
+              description="Belum ada agenda hari ini. Rencanakan waktu untuk keluarga."
+              action={
+                <Link
+                  href="/calendar"
+                  className="dashboard-btn dashboard-btn-soft"
+                >
+                  <Plus size={16} />
+                  Atur agenda
+                </Link>
+              }
+            />
+          ) : (
+            <div className="dashboard-data-list">
+              <p className="dashboard-count">{agenda.length} agenda hari ini</p>
+              <ol>
+                {agenda.slice(0, 4).map((event) => (
+                  <li key={event.id} className="dashboard-event">
+                    <span className="event-time">
+                      {event.is_all_day
+                        ? "Seharian"
+                        : new Date(event.start_at) < range.start
+                          ? "Lintas hari"
+                          : format(new Date(event.start_at), "HH:mm")}
+                    </span>
+                    <div className="min-w-0">
+                      <Link href="/calendar" className="dashboard-item-title">
+                        {event.title}
+                      </Link>
+                      <p className="dashboard-item-note">
+                        {event.is_all_day
+                          ? "Waktu bersama keluarga"
+                          : `${format(new Date(event.start_at), "d MMM, HH:mm", { locale: id })} – ${format(new Date(event.end_at), "d MMM, HH:mm", { locale: id })}`}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              {agenda.length > 4 && (
+                <Link href="/calendar" className="dashboard-link">
+                  +{agenda.length - 4} agenda lainnya
+                  <ArrowRight size={13} />
+                </Link>
               )}
             </div>
-          );
-        })}
+          )}
+        </Section>
+        <Section
+          title="Yang perlu diselesaikan"
+          href="/tasks"
+          icon={<ListChecks size={20} />}
+          variant="tasks"
+        >
+          {tasks.isPending ? (
+            <LoadingBlock />
+          ) : tasks.isError ? (
+            <ErrorBlock retry={() => void tasks.refetch()} />
+          ) : (
+            <>
+              <div className="dashboard-task-badges">
+                <span className="dashboard-count">
+                  {grouped.today.length} hari ini
+                </span>
+                {grouped.overdue.length > 0 && (
+                  <span className="dashboard-count is-overdue">
+                    {grouped.overdue.length} terlambat
+                  </span>
+                )}
+              </div>
+              {priorityTasks.length === 0 ? (
+                <FocusEmpty
+                  kind="task"
+                  title="Tugas hari ini sudah beres"
+                  description="Tidak ada tugas tertunda untuk hari ini. Nikmati waktumu bersama keluarga."
+                  action={
+                    <Link
+                      href="/tasks"
+                      className="dashboard-btn dashboard-btn-soft"
+                    >
+                      Lihat tugas lainnya
+                    </Link>
+                  }
+                />
+              ) : (
+                <ul className="dashboard-task-list">
+                  {priorityTasks.slice(0, 4).map((task) => {
+                    const overdue = dateKey(task.due_date)! < localDateKey(now);
+                    return (
+                      <li key={task.id}>
+                        <button
+                          disabled={complete.isPending}
+                          aria-label={`Selesaikan ${task.title}`}
+                          onClick={() =>
+                            complete.mutate(task.id, {
+                              onSuccess: () =>
+                                toast.success("Tugas selesai. Kerja bagus!"),
+                              onError: () =>
+                                toast.error(
+                                  "Tugas belum berhasil diselesaikan. Coba lagi.",
+                                ),
+                            })
+                          }
+                          className="dashboard-task-check"
+                        >
+                          {complete.isPending &&
+                          complete.variables === task.id ? (
+                            <Loader2 size={16} className="animate-spin" />
+                          ) : (
+                            <Check size={16} />
+                          )}
+                        </button>
+                        <div className="min-w-0">
+                          <Link href="/tasks" className="dashboard-item-title">
+                            {task.title}
+                          </Link>
+                          <p
+                            className={`dashboard-item-note ${overdue ? "text-red-700 dark:text-red-300" : ""}`}
+                          >
+                            {overdue
+                              ? `Terlambat · ${dateLabel(task.due_date!)}`
+                              : "Hari ini"}
+                            {task.status === "in_progress"
+                              ? " · Sedang dikerjakan"
+                              : ""}
+                          </p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              {grouped.unscheduled.length > 0 && (
+                <Link href="/tasks" className="dashboard-unscheduled">
+                  <Clock3 size={13} />
+                  {grouped.unscheduled.length} tugas belum dijadwalkan
+                  <ArrowRight size={13} />
+                </Link>
+              )}
+            </>
+          )}
+        </Section>
+      </div>
+
+      <section
+        className="dashboard-family-summary"
+        aria-labelledby="family-snapshot-title"
+      >
+        <h2 id="family-snapshot-title">
+          <LayoutGrid size={17} />
+          Sekilas keluarga
+        </h2>
+        <div className="dashboard-snapshot-grid">
+          {snapshot.map(({ title, href, icon: Icon, color, value, note }) => (
+            <Link key={href} href={href} className={`snapshot-tile ${color}`}>
+              <span className="snapshot-icon">
+                <Icon size={21} strokeWidth={1.7} />
+              </span>
+              <span className="min-w-0">
+                <span className="snapshot-label">{title}</span>
+                <strong>{value}</strong>
+                <span className="snapshot-note">{note}</span>
+              </span>
+              <ArrowUpRight size={13} className="snapshot-arrow" />
+            </Link>
+          ))}
+        </div>
+        <Sprout
+          size={72}
+          strokeWidth={1.2}
+          className="summary-sprout"
+          aria-hidden="true"
+        />
+      </section>
+
+      <Section
+        title={`Keuangan · ${format(now, "MMMM yyyy", { locale: id })}`}
+        href="/budget"
+        icon={
+          <Wallet
+            size={19}
+            className="text-primary-600 dark:text-primary-200"
+          />
+        }
+      >
+        {financeLoading ? (
+          <LoadingBlock />
+        ) : financeError ? (
+          <ErrorBlock
+            retry={() => {
+              void summary.refetch();
+              void budgets.refetch();
+            }}
+          />
+        ) : (
+          <div className="grid gap-6 lg:grid-cols-[1fr_1fr] lg:gap-10">
+            <div>
+              <p className="text-sm text-muted-foreground">
+                Pengeluaran bulan ini
+              </p>
+              <p className="mt-2 break-words text-2xl font-semibold tracking-tight sm:text-3xl">
+                {rupiah(finance.spent)}
+              </p>
+              {finance.hasBudget ? (
+                <>
+                  <div className="mb-2 mt-5 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground">
+                    <span>Dari anggaran {rupiah(finance.total)}</span>
+                    <span>{finance.percentage}% terpakai</span>
+                  </div>
+                  <div
+                    role="progressbar"
+                    aria-label="Anggaran terpakai"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={finance.barPercentage}
+                    aria-valuetext={`${finance.percentage}% terpakai`}
+                    className="h-2 overflow-hidden rounded-full bg-muted"
+                  >
+                    <div
+                      className={`h-full rounded-full ${finance.remaining! < 0 ? "bg-red-600" : "bg-primary-600"}`}
+                      style={{ width: `${finance.barPercentage}%` }}
+                    />
+                  </div>
+                  <p
+                    className={`mt-3 text-sm ${finance.remaining! < 0 ? "text-red-700 dark:text-red-200" : "text-muted-foreground"}`}
+                  >
+                    {finance.remaining! < 0
+                      ? "Melebihi anggaran"
+                      : "Sisa anggaran"}{" "}
+                    <span className="font-medium">
+                      {rupiah(Math.abs(finance.remaining!))}
+                    </span>
+                  </p>
+                </>
+              ) : (
+                <div className="mt-4 rounded-xl bg-muted p-4">
+                  <p className="text-sm font-medium">Anggaran belum diatur</p>
+                  <Link
+                    href="/budget"
+                    className="mt-1 inline-flex min-h-11 items-center gap-1 text-xs text-primary-700 dark:text-primary-200"
+                  >
+                    Atur anggaran keluarga
+                    <ArrowUpRight size={14} />
+                  </Link>
+                </div>
+              )}
+            </div>
+            <div>
+              {summary.data?.by_category?.length ? (
+                <>
+                  <p className="mb-4 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Pengeluaran per kategori
+                  </p>
+                  <div className="space-y-4">
+                    {[...summary.data.by_category]
+                      .sort((a, b) => b.total - a.total)
+                      .slice(0, 4)
+                      .map((category) => (
+                        <div key={category.category}>
+                          <div className="mb-2 flex flex-wrap justify-between gap-2 text-sm">
+                            <span className="capitalize text-muted-foreground">
+                              {category.category}
+                            </span>
+                            <span className="font-medium">
+                              {rupiah(category.total)}
+                            </span>
+                          </div>
+                          <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                            <div
+                              className="h-full rounded-full bg-primary-300"
+                              style={{
+                                width: `${finance.spent > 0 ? Math.max(0, Math.min(100, (category.total / finance.spent) * 100)) : 0}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </>
+              ) : (
+                <ContentState
+                  title="Belum ada pengeluaran"
+                  description="Catat transaksi untuk melihat ringkasan bulan ini."
+                  action={
+                    <Link href="/budget" className={`${actionClass} bg-muted`}>
+                      Catat pengeluaran
+                    </Link>
+                  }
+                />
+              )}
+            </div>
+          </div>
+        )}
+      </Section>
+
+      <div className="grid items-start gap-4 lg:grid-cols-2">
+        <Section
+          title="Pengingat anak"
+          href="/kids"
+          icon={
+            <Syringe
+              size={19}
+              className="text-primary-600 dark:text-primary-200"
+            />
+          }
+        >
+          {kids.isPending ? (
+            <LoadingBlock />
+          ) : kids.isError ? (
+            <ErrorBlock retry={() => void kids.refetch()} />
+          ) : !kids.data?.length ? (
+            <ContentState
+              title="Temani setiap tumbuh kembangnya"
+              description="Tambahkan profil anak untuk mencatat pertumbuhan dan jadwal vaksin."
+              action={
+                <Link href="/kids" className={`${actionClass} bg-muted`}>
+                  Kelola profil anak
+                </Link>
+              }
+            />
+          ) : (
+            <div className="space-y-5">
+              {kids.data.map((kid) => (
+                <KidReminders
+                  key={kid.id}
+                  kid={kid}
+                  today={localDateKey(now)}
+                />
+              ))}
+            </div>
+          )}
+        </Section>
+        <Section
+          title="Cerita keluarga"
+          href="/memories"
+          icon={
+            <Images
+              size={19}
+              className="text-primary-600 dark:text-primary-200"
+            />
+          }
+        >
+          {memories.isPending ? (
+            <LoadingBlock />
+          ) : memories.isError ? (
+            <ErrorBlock retry={() => void memories.refetch()} />
+          ) : !memories.data?.length ? (
+            <ContentState
+              illustration={<EmptyIllustration name="album" />}
+              title="Hal kecil, kenangan berharga"
+              description="Simpan cerita pertama keluarga. Suatu hari, kalian akan senang membacanya kembali."
+              action={
+                <Link href="/memories" className={`${actionClass} bg-muted`}>
+                  <Plus size={16} />
+                  Simpan kenangan
+                </Link>
+              }
+            />
+          ) : (
+            <>
+              <p className="mb-3 text-xs text-muted-foreground">
+                {memories.data.length} kenangan tersimpan
+              </p>
+              <ul className="divide-y divide-border">
+                {[...memories.data]
+                  .sort((a, b) => b.date.localeCompare(a.date))
+                  .slice(0, 3)
+                  .map((memory) => (
+                    <li key={memory.id}>
+                      <Link
+                        href="/memories"
+                        className="flex min-h-16 items-center justify-between gap-3 py-3"
+                      >
+                        <div className="min-w-0">
+                          <p className="break-words text-sm font-medium">
+                            {memory.title}
+                          </p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {dateKey(memory.date)
+                              ? dateLabel(memory.date)
+                              : "Tanggal belum tersedia"}
+                          </p>
+                        </div>
+                        <ArrowUpRight
+                          size={17}
+                          className="shrink-0 text-muted-foreground"
+                        />
+                      </Link>
+                    </li>
+                  ))}
+              </ul>
+            </>
+          )}
+        </Section>
       </div>
     </div>
   );

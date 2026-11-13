@@ -1,41 +1,16 @@
 "use client";
-
-import { format, isPast, parseISO } from "date-fns";
-import { id as dateLocale } from "date-fns/locale";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
 import {
+  Check,
   CheckCircle2,
-  Circle,
-  Clock,
+  Clock3,
   Loader2,
   Pencil,
   Trash2,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { dateKey, localDateKey } from "@/lib/dashboard";
 import type { Task, FamilyMember } from "@/types";
-
-// ─── Status config ────────────────────────────────────────────────────────────
-
-const STATUS_CONFIG = {
-  pending: {
-    label: "Pending",
-    icon: Circle,
-    classes: "text-neutral-400",
-    badge: "bg-neutral-100 text-neutral-600",
-  },
-  in_progress: {
-    label: "Berjalan",
-    icon: Loader2,
-    classes: "text-info-500",
-    badge: "bg-info-50 text-info-600",
-  },
-  done: {
-    label: "Selesai",
-    icon: CheckCircle2,
-    classes: "text-success-600",
-    badge: "bg-success-50 text-success-600",
-  },
-} as const;
-
 interface TaskCardProps {
   task: Task;
   members: FamilyMember[];
@@ -44,7 +19,6 @@ interface TaskCardProps {
   onDelete: (task: Task) => void;
   isCompleting?: boolean;
 }
-
 export function TaskCard({
   task,
   members,
@@ -53,126 +27,77 @@ export function TaskCard({
   onDelete,
   isCompleting,
 }: TaskCardProps) {
-  const cfg = STATUS_CONFIG[task.status];
-  const StatusIcon = cfg.icon;
-
-  const assignee = members.find((m) => m.id === task.assigned_to);
-  const isDone = task.status === "done";
-
-  const isOverdue =
-    task.due_date &&
-    !isDone &&
-    isPast(parseISO(task.due_date + "T23:59:59"));
-
+  const due = dateKey(task.due_date);
+  const done = task.status === "done";
+  const overdue = !done && due !== null && due < localDateKey(new Date());
+  const member = members.find((item) => item.id === task.assigned_to);
   return (
-    <div
-      className={cn(
-        "group flex items-start gap-3 rounded-xl border bg-white p-4 transition-shadow hover:shadow-sm",
-        isDone ? "border-neutral-100 opacity-60" : "border-neutral-200"
-      )}
+    <article
+      className={`min-w-0 rounded-2xl border bg-card p-4 ${overdue ? "border-red-200 dark:border-red-900" : "border-border"}`}
     >
-      {/* Complete button */}
-      <button
-        onClick={() => !isDone && onComplete(task)}
-        disabled={isDone || isCompleting}
-        className={cn(
-          "mt-0.5 flex-shrink-0 rounded-full transition-colors focus:outline-none",
-          isDone
-            ? "cursor-default text-success-500"
-            : "text-neutral-300 hover:text-primary-500"
-        )}
-        aria-label="Tandai selesai"
-      >
-        {isCompleting ? (
-          <Loader2 className="h-5 w-5 animate-spin text-primary-400" />
-        ) : (
-          <StatusIcon className="h-5 w-5" />
-        )}
-      </button>
-
-      {/* Content */}
-      <div className="min-w-0 flex-1">
-        <p
-          className={cn(
-            "text-sm font-semibold text-neutral-900",
-            isDone && "line-through text-neutral-400"
+      <div className="flex items-start gap-2">
+        <button
+          onClick={() => onComplete(task)}
+          disabled={done || isCompleting}
+          aria-label={`Selesaikan ${task.title}`}
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border text-primary-600 hover:bg-muted dark:text-primary-200 disabled:opacity-60"
+        >
+          {isCompleting ? (
+            <Loader2 size={19} className="animate-spin" />
+          ) : done ? (
+            <CheckCircle2 size={19} />
+          ) : (
+            <Check size={19} />
           )}
+        </button>
+        <button
+          onClick={() => onEdit(task)}
+          className={`min-w-0 flex-1 break-words py-2 text-left text-sm font-semibold ${done ? "text-muted-foreground line-through" : "text-foreground"}`}
         >
           {task.title}
-        </p>
-
-        {task.description && (
-          <p className="mt-0.5 text-xs text-neutral-500 truncate">
-            {task.description}
-          </p>
-        )}
-
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          {/* Status badge */}
-          <span
-            className={cn(
-              "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
-              cfg.badge
-            )}
-          >
-            {cfg.label}
-          </span>
-
-          {/* Poin */}
-          {task.points > 0 && (
-            <span className="inline-flex items-center rounded-full bg-accent-50 px-2 py-0.5 text-xs font-semibold text-accent-600">
-              ⭐ {task.points} poin
-            </span>
-          )}
-
-          {/* Assignee */}
-          {assignee && (
-            <span className="inline-flex items-center gap-1 text-xs text-neutral-500">
-              <span
-                className="inline-block h-4 w-4 rounded-full text-center text-[10px] font-bold leading-4 text-white"
-                style={{ backgroundColor: `var(--member-color, #14b8a6)` }}
-              >
-                {assignee.name[0].toUpperCase()}
-              </span>
-              {assignee.name}
-            </span>
-          )}
-
-          {/* Due date */}
-          {task.due_date && (
-            <span
-              className={cn(
-                "inline-flex items-center gap-1 text-xs",
-                isOverdue ? "font-semibold text-error-600" : "text-neutral-400"
-              )}
-            >
-              <Clock className="h-3 w-3" />
-              {format(parseISO(task.due_date), "d MMM", { locale: dateLocale })}
-              {isOverdue && " (terlambat)"}
-            </span>
-          )}
-        </div>
+        </button>
       </div>
-
-      {/* Actions — visible on hover */}
-      {!isDone && (
-        <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+      {task.description && (
+        <p className="mt-3 line-clamp-3 text-sm text-muted-foreground">
+          {task.description}
+        </p>
+      )}
+      <div className="mt-4 flex flex-wrap gap-2 text-xs">
+        <span
+          className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 ${overdue ? "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-200" : "bg-muted text-muted-foreground"}`}
+        >
+          <Clock3 size={13} />
+          {due
+            ? `${format(new Date(`${due}T12:00:00`), "d MMM", { locale: id })}${overdue ? " · Terlambat" : ""}`
+            : "Belum dijadwalkan"}
+        </span>
+        {task.points > 0 && (
+          <span className="rounded-lg bg-muted px-2 py-1">
+            {task.points} poin
+          </span>
+        )}
+      </div>
+      <div className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-2">
+        <span className="min-w-0 truncate text-xs text-muted-foreground">
+          {member?.name ?? "Belum dibagikan"}
+        </span>
+        <div className="flex shrink-0">
           <button
             onClick={() => onEdit(task)}
-            className="rounded p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
-            aria-label="Edit"
+            aria-label={`Edit ${task.title}`}
+            className="flex w-11 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted"
           >
-            <Pencil className="h-4 w-4" />
+            <Pencil size={15} />
           </button>
           <button
             onClick={() => onDelete(task)}
-            className="rounded p-1 text-neutral-400 hover:bg-error-50 hover:text-error-600 transition-colors"
-            aria-label="Hapus"
+            aria-label={`Hapus ${task.title}`}
+            className="flex w-11 items-center justify-center rounded-xl text-red-600 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 size={15} />
           </button>
         </div>
-      )}
-    </div>
+      </div>
+    </article>
   );
 }

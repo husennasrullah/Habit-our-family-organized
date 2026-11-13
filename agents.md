@@ -12,7 +12,63 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-09-02 (Fix Google OAuth missing refresh token)
+> **Last updated:** 2026-11-13 (Revisi dashboard sesuai referensi, font dan header)
+
+### Pengiriman redesign ke origin — 2026-11-13
+- Pengguna meminta seluruh pekerjaan redesign yang sudah selesai dikirim ke origin.
+- Target: branch `main`, remote `origin`; mencakup redesign semua menu, logo/aset, font, perbaikan PWA, offset sidebar, dokumentasi dan bukti QA. Generated build/cache dan berkas environment tidak disertakan.
+- Verifikasi sebelumnya: build/lint/typecheck, enam tes logika, 46 pemeriksaan browser dan delapan audit axe terpilih lulus. Pengiriman dilakukan dengan commit lalu push biasa, tanpa force push. Next step: pantau hasil CI/CD dan review tampilan setelah pembaruan.
+
+### Perbaikan konten tertutup sidebar — 2026-11-13
+- Pengguna melaporkan dashboard masuk ke bawah sidebar dan terpotong di kanan pada browser lokal.
+- `frontend/app/(dashboard)/layout.tsx` dan `globals.css`: offset desktop dan padding main dipindahkan dari rangkaian utility menjadi aturan `.app-content`/`.app-main` eksplisit, 208 px saat terbuka/80 px saat ringkas; mobile tanpa offset. Main memakai border-box dan min-width 0.
+- `frontend/scripts/ui-qa.cjs`: menambahkan assertion geometri kiri/kanan banner dan viewport 1228x620 sesuai screenshot pengguna. Screenshot hasil: `docs/qa/reference-dashboard-1228x620.png`.
+- Verifikasi ulang lulus: TypeScript, diff whitespace, 46 pemeriksaan browser tanpa overflow/error, dan delapan audit axe terpilih tanpa pelanggaran. Pada 1228x620 konten mulai x232 (208 px sidebar + 24 px gutter) dan berakhir x1204. Belum commit/deploy; perubahan sebelumnya dipertahankan.
+
+### Revisi visual berdasarkan referensi terbaru — 2026-11-13
+- Pengguna menyatakan sidebar/button/dashboard sebelumnya kurang sesuai, memberikan screenshot referensi baru, meminta header ganda di topbar dihapus pada setiap menu, serta font dan skala tampilan bawaan diperkecil.
+- Acuan terbaru: `docs/design-reference/dashboard-nov13.png`; detail implementasi/prompt di `docs/dashboard-reference-refresh.md`. Arah ini menggantikan sage/kertas hangat yang sebelumnya dipakai.
+- Implementasi: sidebar 208/80 px dengan nav aktif emerald, profil dan dekorasi; topbar tanpa judul/caption Ruang keluarga, pengingat tugas aktual dan menu akun; dashboard banner keluarga baru, shortcut pastel, dua kartu agenda/tugas dan strip Sekilas keluarga.
+- Font Plus Jakarta Sans variable lokal + OFL menggantikan Inter aktif. Body 13 px, token sm 13/base14, PageHeader dan tombol/jarak dikompakkan; media query untuk desktop pendek, tanpa CSS zoom. User mengizinkan perbaikan primitive Button lewat permintaan eksplisit tombol.
+- File utama: halaman dashboard, Sidebar/Topbar/BottomNav/layout, root layout, globals.css/tailwind.config, ThemeToggle, PageHeader, Button, navigation, manifest/offline, font/aset dan dokumentasi. Tidak mengubah backend/schema atau menambah dependency runtime.
+- Verifikasi lulus: build produksi 19 halaman, lint/typecheck, enam tes logika; 45 pemeriksaan browser tanpa error dan delapan audit axe terpilih tanpa pelanggaran. Termasuk 20 pemeriksaan menu satu h1, desktop 1040x600/1366x768/1440x900, mobile, drawer, collapse dan popover. Hasil/screenshot: `docs/qa/reference-*`. PWA manifest/worker/offline juga lulus pada sesi ini.
+- Perubahan sesi sebelumnya dipertahankan. Implementasi dan verifikasi revisi selesai; belum commit/deploy. Next step: review visual pengguna pada localhost:3000; integrasi backend nyata/perangkat fisik dapat diperiksa pada lingkungan deployment.
+
+### Logo HABIT v2 — 2026-11-13
+- Permintaan eksplisit pengguna: menyarankan dan mengganti logo. Dipilih monogram H yang menyatu dengan atap rumah, sage–ivory, selaras dengan redesign. Dibuat dengan built-in imagegen; sumber/prompt: `docs/logo.md` dan `docs/brand/`.
+- Aset baru `frontend/public/icons/habit-mark-v2.png`, favicon PNG 32/48, Apple 180, PWA 192/512, dan maskable 192/512. `frontend/app/favicon.ico` diganti dengan ICO multiukuran 16/32/48. URL aset berversi mencegah ketergantungan pada cache URL logo lama; aset lama/avatarnya dipertahankan.
+- Pemakaian diperbarui: Sidebar, auth layout desktop/mobile, root metadata, manifest/shortcut PWA, InstallPrompt, sw-push dan offline.html. Dokumentasi arah visual/design system/ilustrasi diselaraskan. Tidak mengubah dependency, backend atau schema.
+- Script reproduksi: `frontend/scripts/generate-brand-icons.cjs`; pemeriksaan browser terarah: `frontend/scripts/logo-qa.cjs`.
+- Verifikasi: dimensi 8 PNG dan ICO valid; radius simbol maskable 0.314 (192 px) dan 0.312 (512 px), di dalam batas 0.4. Build produksi/lint/typecheck lulus; 5 pemeriksaan browser logo desktop/mobile/light/dark tanpa error, semua 4 ikon manifest HTTP 200, favicon HTTP 200. PWA manifest/worker/offline diuji ulang dan lulus.
+- Bukti: `docs/qa/logo-results.json`, screenshot `logo-login-*`, `logo-dashboard-1440.png`, dan `pwa-results.json`. Generated sw/workbox dibersihkan dari diff setelah build; perubahan working tree redesign sebelumnya dipertahankan. Belum commit/deploy. Next step: review visual pengguna jika ingin varian logo berikutnya.
+
+### Pembacaan konteks — 2026-11-13
+- Membaca struktur proyek, dokumentasi Markdown, dan source inti backend/frontend untuk memahami arsitektur, fitur, serta progres redesign.
+- File yang diubah pada sesi ini hanya `agents.md`, untuk mencatat pembacaan; perubahan working tree yang sudah ada dipertahankan.
+- Acuan status terbaru tetap catatan batch redesign 2026-11-12 dan `docs/ui-redesign-roadmap.md`; status pada README dan rencana lama tidak selalu sinkron dengan implementasi.
+- Tidak menjalankan aplikasi, build, atau tes pada sesi pembacaan ini. Next step implementasi tetap menyelesaikan verifikasi fondasi tahap 2, kemudian dashboard/ilustrasi tahap 3 sesuai scope yang diminta pengguna berikutnya.
+
+### Pemeriksaan rencana dashboard dan perubahan belum commit — 2026-11-13
+- Memeriksa `dashboard-redesign-plan.md`, diff tracked/untracked, serta source navigasi dan dashboard. Plan lama masih seluruhnya pending dan telah digantikan roadmap terbaru; halaman dashboard/auth tidak memiliki diff pada batch saat ini.
+- Batch belum commit berisi fondasi sage, shell/navigasi, wrapper bersama yang belum dipakai halaman, dan dokumentasi. Tidak ada perubahan staged. Commit terakhir `0b75ede` adalah perbaikan penyimpanan budget itinerary.
+- Verifikasi ulang: `npm run lint` lulus dengan dua warning img existing di trips; `npx --no-install tsc --noEmit --incremental false` lulus. Build dan browser QA tidak dijalankan ulang.
+- Temuan source: metrik dashboard lama masih memakai denominator Rp3 juta/fallback 40%, tugas mendesak berdasarkan keberadaan due_date, dan jumlah entri kenangan sebagai foto baru. Drawer belum menyinkronkan scroll lock saat breakpoint berubah dan background belum inert saat drawer terbuka; perlu verifikasi/perbaikan pada tahap 2.
+- File yang diubah dalam pemeriksaan ini hanya `agents.md`. Next step tetap merapikan/verifikasi fondasi tahap 2 sebelum implementasi dashboard tahap 3; belum melakukan commit.
+
+### Fokus Aktif — Redesign UI/UX HABIT
+- Pengguna mengizinkan penyelesaian **seluruh** roadmap pada 2026-11-13, tanpa review/izin ulang antartahap, serta akses penuh hanya untuk pekerjaan terkait proyek ini.
+- Tahap 1–7 selesai untuk implementasi dan QA frontend lokal; hasil final serta batas integrasi nyata dicatat di `docs/ui-redesign-qa.md`.
+- Shell/navigasi sage, header/state/dialog bersama, focus/scroll lock drawer, tema terang/gelap dengan kontrol aktif, dan font Inter lokal sudah diterapkan. Font mono memakai Geist Mono lokal existing. Tidak ada dependency runtime atau perubahan schema/backend.
+- Dashboard baru memakai tanggal lokal untuk tugas/agenda, anggaran kategori aktual, error/loading/empty/pending terpisah, serta satu ilustrasi keluarga 2D. Ilustrasi empty state tersedia untuk kalender, album, dokumen, dan liburan.
+- Seluruh modul memakai fondasi yang sama. Tugas: filter anggota dan status mobile, tidak ada progress/kategori buatan. Makan: tampilan harian di HP dan mingguan desktop. Keuangan/target, liburan/detail, anak, kenangan, dokumen, pengaturan dan auth diperbarui.
+- Modal per modul memakai `ModalFrame` dengan portal, nama dialog, Escape, focus trap, inert background, dan pengembalian fokus. Label form dan nama tombol ikon diperbaiki, aksi tersedia tanpa hover, hapus memakai konfirmasi.
+- Font Inter resmi dan lisensinya disimpan di `frontend/app/fonts/`; gambar built-in imagegen disimpan di `frontend/public/illustrations/`. Prompt dan inventaris aset: `docs/illustrations.md`.
+- Perbaikan terkait yang ditemukan: pending foto pada edit kenangan kini diteruskan ke upload, fungsi upload tak terpakai di modal dihapus, devtools query menjadi opt-in agar tidak menutupi bottom nav, metadata PWA memakai sage.
+- Verifikasi final: lint tanpa warning/error, typecheck dan build produksi lulus (19 halaman), enam tes logika lulus. Browser: 107 pemeriksaan tanpa error runtime/overflow; 29 audit axe terpilih (22 halaman/tema + 7 dialog) bersih. Screenshot/JSON ada di `docs/qa/`.
+- File yang diubah mencakup seluruh halaman dashboard/auth, komponen modul/layout, `globals.css`, root layout/providers, `tailwind.config.ts`, manifest, `package.json`, CI, dokumentasi. File baru: helper/tes dashboard, komponen bersama, font/lisensi lokal dan ilustrasi.
+- PWA tambahan: `ServiceWorkerRegistration.tsx`, `offline.html`, `next.config.mjs`; worker eksplisit untuk App Router, import handler push existing, fallback offline dan API network-only. Manifest tanpa error, worker mengontrol halaman, offline fallback HTTP 200 dari worker terverifikasi di Chrome. `NEXT_BUILD_DIR` mengisolasi QA dari server dev lain; generated sw/workbox dikembalikan ke kondisi awal setelah verifikasi.
+- Script QA tersimpan di `frontend/scripts/ui-qa.cjs` dan `pwa-qa.cjs`; tooling QA hanya di `/tmp`, bukan dependency runtime.
+- Perubahan working tree awal dipertahankan; belum membuat commit, push, atau deployment. Next step opsional: review hasil dan smoke test integrasi backend/Google OAuth/push pada deployment serta perangkat fisik.
 
 ### ✅ Sudah Selesai (semua fase)
 

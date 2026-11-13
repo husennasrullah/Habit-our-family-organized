@@ -4,24 +4,23 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-[background-color,box-shadow,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700",
+          "bg-primary-600 text-white shadow-[0_3px_8px_rgba(0,127,91,0.12)] hover:bg-primary-700 hover:shadow-[0_4px_12px_rgba(0,127,91,0.18)] active:translate-y-px active:bg-primary-800",
         secondary:
           "bg-secondary-500 text-white hover:bg-secondary-600 active:bg-secondary-700",
         outline:
-          "border border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100",
+          "border border-border bg-card text-foreground shadow-sm hover:border-primary-200 hover:bg-primary-50",
         ghost:
-          "bg-transparent text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900",
-        destructive:
-          "bg-error-500 text-white hover:bg-error-600",
+          "bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
+        destructive: "bg-error-500 text-white hover:bg-error-600",
         link: "text-primary-600 underline-offset-4 hover:underline bg-transparent",
       },
       size: {
-        sm: "h-8 px-3 text-xs",
+        sm: "h-9 px-3 text-xs",
         default: "h-10 px-4",
         lg: "h-11 px-6 text-base",
         icon: "h-10 w-10",
@@ -31,18 +30,31 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, loading, children, disabled, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      loading,
+      children,
+      disabled,
+      ...props
+    },
+    ref,
+  ) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
@@ -61,7 +73,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       </Comp>
     );
-  }
+  },
 );
 Button.displayName = "Button";
 
