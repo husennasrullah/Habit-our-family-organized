@@ -41,9 +41,7 @@ func (h *TaskHandler) GetTasks(c *fiber.Ctx) error {
 
 	tasks, err := h.taskService.GetTasks(req, familyID)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "gagal mengambil data task",
-		})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
 
 	return c.JSON(fiber.Map{"data": tasks, "message": "success"})

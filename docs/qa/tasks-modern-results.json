@@ -1,0 +1,134 @@
+{
+  "checks": [
+    "responsive-1440",
+    "responsive-1024",
+    "responsive-390",
+    "responsive-375",
+    "search",
+    "member and overdue filters",
+    "start complete reopen",
+    "clear assignee and due date",
+    "create modal reset",
+    "reject whitespace title",
+    "create trimmed task",
+    "failed save preserves form",
+    "delete",
+    "empty state",
+    "leaderboard error",
+    "members error preserves assignee",
+    "tasks error"
+  ],
+  "errors": [],
+  "audits": [
+    {
+      "name": "tasks-1440",
+      "violations": []
+    },
+    {
+      "name": "modal-1440",
+      "violations": []
+    },
+    {
+      "name": "tasks-1024",
+      "violations": []
+    },
+    {
+      "name": "modal-1024",
+      "violations": []
+    },
+    {
+      "name": "tasks-390",
+      "violations": []
+    },
+    {
+      "name": "modal-390",
+      "violations": []
+    },
+    {
+      "name": "tasks-375",
+      "violations": []
+    },
+    {
+      "name": "modal-375",
+      "violations": []
+    },
+    {
+      "name": "dark",
+      "violations": []
+    }
+  ],
+  "mutations": [
+    {
+      "path": "/tasks/task-1",
+      "method": "PUT",
+      "body": {
+        "status": "in_progress"
+      }
+    },
+    {
+      "path": "/tasks/task-1/complete",
+      "method": "PATCH",
+      "body": {}
+    },
+    {
+      "path": "/tasks/task-1",
+      "method": "PUT",
+      "body": {
+        "status": "pending"
+      }
+    },
+    {
+      "path": "/tasks/task-1",
+      "method": "PUT",
+      "body": {
+        "title": "Siapkan bekal untuk piknik",
+        "description": "Buah, air minum, dan camilan untuk keluarga.",
+        "assigned_to": null,
+        "points": 15,
+        "status": "pending",
+        "due_date": null
+      }
+    },
+    {
+      "path": "/tasks",
+      "method": "POST",
+      "body": {
+        "title": "Tugas baru",
+        "description": "",
+        "assigned_to": null,
+        "points": 0,
+        "status": "pending",
+        "due_date": null
+      }
+    },
+    {
+      "path": "/tasks/new-1794564338696",
+      "method": "PUT",
+      "body": {
+        "title": "Tidak tersimpan",
+        "description": "",
+        "assigned_to": null,
+        "points": 0,
+        "status": "pending",
+        "due_date": null
+      }
+    },
+    {
+      "path": "/tasks/new-1794564338696",
+      "method": "DELETE",
+      "body": {}
+    },
+    {
+      "path": "/tasks/task-2",
+      "method": "PUT",
+      "body": {
+        "title": "Rapikan ruang bermain",
+        "description": "Simpan mainan kembali ke tempatnya.",
+        "assigned_to": "33333333-3333-4333-8333-333333333333",
+        "points": 10,
+        "status": "in_progress",
+        "due_date": "2026-11-12"
+      }
+    }
+  ]
+}

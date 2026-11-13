@@ -1771,3 +1771,89 @@
   .dark .calendar-day-number.is-selected-number { color: #6ee7b7; }
   .dark .calendar-agenda-add { border-color: #6ee7b766; }
 }
+
+/* Family task board */
+@layer components {
+ .task-add-button { display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;border-radius:11px;background:#007f5b;color:#fff;padding:8px 14px;font-size:12px;font-weight:600; }
+ .task-add-button:hover { background:#006b4d; }
+ .task-summary { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px; }
+ .task-summary-card { display:flex;align-items:center;gap:12px;padding:16px;border-radius:16px;border:1px solid hsl(var(--border) / .7);background:hsl(var(--card)); }
+ .task-summary-icon { display:flex;align-items:center;justify-content:center;width:40px;height:40px;flex-shrink:0;border-radius:13px;background:#ecfdf5;color:#047857; }
+ .task-summary-icon.is-today { background:#eff6ff;color:#1d4ed8; }
+ .task-summary-icon.is-overdue { background:#fff7ed;color:#c2410c; }
+ .task-summary-icon.is-done { background:#f5f3ff;color:#6d28d9; }
+ .task-toolbar { display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:12px;border:1px solid hsl(var(--border) / .7);border-radius:16px;background:hsl(var(--card)); }
+ .task-search { display:flex;align-items:center;gap:9px;flex:1;min-width:180px;padding:0 11px;border-radius:10px;background:hsl(var(--muted) / .65); }
+ .task-search input { min-width:0;width:100%;height:36px;background:transparent;border:0;outline:0;font-size:12px; }
+ .task-search:focus-within { box-shadow:0 0 0 2px hsl(var(--ring)); }
+ .task-filter-fields { display:flex;gap:8px; }
+ .task-filter-fields select { min-width:0;max-width:200px;border:1px solid hsl(var(--border));border-radius:10px;min-height:36px;background:hsl(var(--card));padding:6px 10px;font-size:12px; }
+ .task-reset { padding:8px;font-size:11px;color:hsl(var(--muted-foreground));text-decoration:underline;text-underline-offset:3px; }
+ .task-workspace { display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:16px;align-items:start; }
+ .task-board-caption { display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:0 2px 12px;font-size:10px;color:hsl(var(--muted-foreground)); }
+ .task-board { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start; }
+ .task-column { min-width:0;padding:10px;border:1px solid hsl(var(--border) / .6);border-radius:17px;background:hsl(var(--muted) / .35); }
+ .task-column-header { display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 2px 10px; }
+ .task-column-header h2 { display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600; }
+ .task-status-dot { width:6px;height:6px;border-radius:50%;background:#94a3b8; }
+ .is-progress .task-status-dot { background:#3b82f6; }
+ .is-done .task-status-dot { background:#10b981; }
+ .task-column-count { display:inline-flex;align-items:center;justify-content:center;border-radius:6px;min-width:20px;height:20px;padding:0 4px;background:hsl(var(--card));font-size:10px;color:hsl(var(--muted-foreground)); }
+ .task-card { min-width:0;border:1px solid hsl(var(--border) / .75);border-radius:13px;padding:10px 12px;background:hsl(var(--card));box-shadow:0 2px 3px #00000002; }
+ .task-card.is-overdue { border-color:#fed7aa; }
+ .dark .task-card.is-overdue { border-color:#9a3412; }
+ .task-check-hit { display:flex;align-items:center;justify-content:center;flex-shrink:0;width:30px;height:34px;margin-left:-6px;border-radius:8px; }
+ .task-check { display:flex;align-items:center;justify-content:center;width:17px;height:17px;border:1.5px solid hsl(var(--border));border-radius:6px;color:white; }
+ .task-check-hit:hover .task-check { border-color:#007f5b; }
+ .task-check-hit[aria-pressed="true"] .task-check { background:#007f5b;border-color:#007f5b; }
+ .task-title { padding:7px 0;min-width:0;flex:1;text-align:left;font-size:12px;line-height:1.65;font-weight:600;overflow-wrap:anywhere; }
+ .task-card.is-done .task-title { color:hsl(var(--muted-foreground));text-decoration:line-through; }
+ .task-description { display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;font-size:11px;line-height:1.7;color:hsl(var(--muted-foreground));margin-top:3px; }
+ .task-meta { display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:12px; }
+ .task-due,.task-points { display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:4px 6px;font-size:10px;background:hsl(var(--muted) / .7);color:hsl(var(--muted-foreground)); }
+ .task-due.is-overdue { color:#9a3412;background:#fff7ed; }
+ .dark .task-due.is-overdue { color:#fed7aa;background:#431407; }
+ .task-points { color:#92400e;background:#fffbeb; }
+ .dark .task-points { color:#fde68a;background:#451a03; }
+ .task-card-footer { display:flex;align-items:center;justify-content:space-between;gap:6px;border-top:1px solid hsl(var(--border) / .6);padding-top:8px;margin-top:10px; }
+ .task-member-initial { display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:22px;height:22px;border-radius:50%;font-size:9px;font-weight:600;background:hsl(var(--primary) / .08);color:hsl(var(--foreground)); }
+ .task-icon-button { display:inline-flex;align-items:center;justify-content:center;width:27px;height:30px;border-radius:8px;color:hsl(var(--muted-foreground)); }
+ .task-icon-button:hover { background:hsl(var(--muted));color:hsl(var(--foreground)); }
+ .task-icon-button.is-delete:hover { background:#fff1f2;color:#be123c; }
+ .task-column-empty { display:flex;flex-direction:column;align-items:center;gap:10px;padding:28px 10px;border:1px dashed hsl(var(--border));border-radius:12px;font-size:11px;line-height:1.7;text-align:center;color:hsl(var(--muted-foreground)); }
+ .task-column-empty button { font-weight:600;text-decoration:underline;text-underline-offset:4px; }
+ .task-mobile-tabs { display:none; }
+ .task-leaderboard { min-width:0;border:1px solid hsl(var(--border) / .7);border-radius:17px;background:hsl(var(--card));overflow:hidden; }
+ .task-leaderboard-header { display:flex;align-items:center;gap:10px;padding:16px;border-bottom:1px solid hsl(var(--border) / .6); }
+ .task-trophy { display:flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;height:36px;border-radius:12px;background:#fffbeb;color:#b45309; }
+ .task-ranking-avatar { display:flex;align-items:center;justify-content:center;flex-shrink:0;width:30px;height:30px;border-radius:50%;font-size:11px;font-weight:600;background:hsl(var(--primary) / .08);color:hsl(var(--foreground)); }
+ .task-ranking-empty { padding:28px 20px;text-align:center; }
+ .task-inline-error { display:flex;align-items:center;flex-wrap:wrap;gap:12px;border:1px solid hsl(var(--border));padding:12px;border-radius:12px;font-size:12px;color:hsl(var(--muted-foreground)); }
+ .task-inline-error button { text-decoration:underline;text-underline-offset:4px; }
+ .task-dialog > div:not(.absolute) { max-width:360px; }
+ .task-dialog input,.task-dialog select,.task-dialog textarea { font-size:13px;min-width:0; }
+ .task-dialog input,.task-dialog select { min-height:36px; }
+ .task-dialog label { font-size:12px; }
+ @media (max-width:1279px) { .task-workspace { grid-template-columns:minmax(0,1fr); } }
+ @media (max-width:767px) {
+  .task-summary { grid-template-columns:repeat(2,minmax(0,1fr));gap:8px; }
+  .task-summary-card { padding:12px;gap:9px; }
+  .task-summary-icon { width:32px;height:32px;border-radius:10px; }
+  .task-toolbar { gap:8px; }
+  .task-search { flex-basis:100%; }
+  .task-filter-fields { width:100%; }
+  .task-filter-fields select { flex:1;max-width:100%;width:0; }
+  .task-board { grid-template-columns:minmax(0,1fr); }
+  .task-column.mobile-hidden { display:none; }
+  .task-mobile-tabs { display:flex;gap:4px;padding:4px;margin-bottom:12px;border-radius:12px;background:hsl(var(--muted)); }
+  .task-mobile-tabs button { display:flex;align-items:center;justify-content:center;gap:5px;flex:1;min-width:0;min-height:36px;padding:6px 4px;border-radius:9px;font-size:11px;color:hsl(var(--muted-foreground)); }
+  .task-mobile-tabs button[aria-pressed="true"] { background:hsl(var(--card));font-weight:600;color:hsl(var(--foreground));box-shadow:0 1px 4px #00000008; }
+  .task-mobile-tabs button span { font-size:10px; }
+ }
+ @media (pointer:coarse) {
+  .task-icon-button,.task-check-hit { width:36px;min-height:44px; }
+  .task-add-button,.task-search input,.task-filter-fields select { min-height:44px; }
+  .task-dialog input,.task-dialog select,.task-dialog textarea,.task-search input { font-size:16px; }
+  .task-dialog input,.task-dialog select { min-height:44px; }
+ }
+}

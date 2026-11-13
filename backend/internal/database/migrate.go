@@ -7,6 +7,7 @@ import (
 
 // AutoMigrate menjalankan migrasi semua model GORM
 func AutoMigrate() {
+	hadCompletedAt := DB.Migrator().HasColumn(&models.Task{}, "completed_at")
 	if err := DB.AutoMigrate(
 		&models.Family{},
 		&models.FamilyMember{},
@@ -37,6 +38,12 @@ func AutoMigrate() {
 		&models.TripDocument{},
 	); err != nil {
 		log.Fatalf("AutoMigrate failed: %v", err)
+	}
+	if !hadCompletedAt {
+		// Legacy tasks have no completion timestamp; preserve the best historical estimate once.
+		if err := DB.Exec("UPDATE tasks SET completed_at = updated_at WHERE status = 'done' AND completed_at IS NULL").Error; err != nil {
+			log.Fatalf("Task completion backfill failed: %v", err)
+		}
 	}
 	log.Println("Database migration completed")
 }

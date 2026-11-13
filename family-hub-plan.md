@@ -715,6 +715,8 @@ Membangun tampilan kalender interaktif yang menampilkan event semua anggota kelu
 
 #### [x] Task 4.1 — Backend: Task API
 
+**Pembaruan 2026-11-13:** Validasi input/anggota keluarga, update nullable field, serialisasi perubahan status dan migrasi tambahan 012 untuk completed_at. Leaderboard berdasarkan waktu selesai pada minggu WIB; data lama memakai perkiraan updated_at. Integrasi PostgreSQL terisolasi, go test dan vet lulus.
+
 **Intent:**
 Membangun API manajemen tugas keluarga dengan sistem poin dan reward untuk anak.
 
@@ -736,6 +738,8 @@ Membangun API manajemen tugas keluarga dengan sistem poin dan reward untuk anak.
 ---
 
 #### [x] Task 4.2 — Frontend: Halaman Tasks
+
+**Pembaruan 2026-11-13:** Ringkasan, pencarian, filter anggota/tenggat, kartu/modal ringkas dan aksi mulai/selesai/buka kembali. Memperbaiki reset form, tanggal edit, error/fallback avatar dan grafik nol. 17 tes frontend, build/lint/typecheck, 17 pemeriksaan browser dan sembilan audit axe terarah lulus; bukti docs/qa/tasks-modern-results.json.
 
 **Intent:**
 Membangun halaman manajemen tugas yang intuitif dengan visualisasi poin dan leaderboard keluarga.

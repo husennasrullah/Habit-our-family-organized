@@ -173,6 +173,7 @@ export interface CalendarEvent {
 export type TaskStatus = "pending" | "in_progress" | "done";
 
 export interface Task {
+  completed_at?: string | null;
   id: string;
   family_id: string;
   assigned_to: string | null;

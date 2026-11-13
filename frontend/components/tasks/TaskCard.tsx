@@ -3,98 +3,128 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import {
   Check,
-  CheckCircle2,
   Clock3,
   Loader2,
   Pencil,
+  Play,
+  RotateCcw,
+  Star,
   Trash2,
 } from "lucide-react";
 import { dateKey, localDateKey } from "@/lib/dashboard";
-import type { Task, FamilyMember } from "@/types";
+import type { Task, FamilyMember, TaskStatus } from "@/types";
 interface TaskCardProps {
   task: Task;
   members: FamilyMember[];
   onEdit: (task: Task) => void;
   onComplete: (task: Task) => void;
+  onStatusChange: (task: Task, status: TaskStatus) => void;
   onDelete: (task: Task) => void;
-  isCompleting?: boolean;
+  isBusy?: boolean;
+  isWorking?: boolean;
 }
 export function TaskCard({
   task,
   members,
   onEdit,
   onComplete,
+  onStatusChange,
   onDelete,
-  isCompleting,
+  isBusy,
+  isWorking,
 }: TaskCardProps) {
-  const due = dateKey(task.due_date);
-  const done = task.status === "done";
-  const overdue = !done && due !== null && due < localDateKey(new Date());
+  const due = dateKey(task.due_date),
+    today = localDateKey(new Date());
+  const done = task.status === "done",
+    overdue = !done && due !== null && due < today;
   const member = members.find((item) => item.id === task.assigned_to);
   return (
     <article
-      className={`min-w-0 rounded-2xl border bg-card p-4 ${overdue ? "border-red-200 dark:border-red-900" : "border-border"}`}
+      className={`task-card ${overdue ? "is-overdue" : ""} ${done ? "is-done" : ""}`}
     >
       <div className="flex items-start gap-2">
         <button
-          onClick={() => onComplete(task)}
-          disabled={done || isCompleting}
-          aria-label={`Selesaikan ${task.title}`}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border text-primary-600 hover:bg-muted dark:text-primary-200 disabled:opacity-60"
+          onClick={() =>
+            done ? onStatusChange(task, "pending") : onComplete(task)
+          }
+          disabled={isBusy}
+          aria-label={
+            done ? `Buka kembali ${task.title}` : `Selesaikan ${task.title}`
+          }
+          aria-pressed={done}
+          className="task-check-hit"
         >
-          {isCompleting ? (
-            <Loader2 size={19} className="animate-spin" />
-          ) : done ? (
-            <CheckCircle2 size={19} />
-          ) : (
-            <Check size={19} />
-          )}
+          <span className="task-check">
+            {isWorking ? (
+              <Loader2 size={12} className="animate-spin" />
+            ) : done ? (
+              <Check size={12} />
+            ) : null}
+          </span>
         </button>
         <button
+          disabled={isBusy}
           onClick={() => onEdit(task)}
-          className={`min-w-0 flex-1 break-words py-2 text-left text-sm font-semibold ${done ? "text-muted-foreground line-through" : "text-foreground"}`}
+          className="task-title"
         >
           {task.title}
         </button>
       </div>
       {task.description && (
-        <p className="mt-3 line-clamp-3 text-sm text-muted-foreground">
-          {task.description}
-        </p>
+        <p className="task-description">{task.description}</p>
       )}
-      <div className="mt-4 flex flex-wrap gap-2 text-xs">
-        <span
-          className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 ${overdue ? "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-200" : "bg-muted text-muted-foreground"}`}
-        >
-          <Clock3 size={13} />
+      <div className="task-meta">
+        <span className={`task-due ${overdue ? "is-overdue" : ""}`}>
+          <Clock3 size={12} />
           {due
-            ? `${format(new Date(`${due}T12:00:00`), "d MMM", { locale: id })}${overdue ? " · Terlambat" : ""}`
-            : "Belum dijadwalkan"}
+            ? `${due === today ? "Hari ini" : format(new Date(`${due}T12:00:00`), "d MMM", { locale: id })}${overdue ? " · Terlambat" : ""}`
+            : "Tanpa tenggat"}
         </span>
         {task.points > 0 && (
-          <span className="rounded-lg bg-muted px-2 py-1">
+          <span className="task-points">
+            <Star size={11} />
             {task.points} poin
           </span>
         )}
       </div>
-      <div className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-2">
-        <span className="min-w-0 truncate text-xs text-muted-foreground">
-          {member?.name ?? "Belum dibagikan"}
+      <div className="task-card-footer">
+        <span className="flex min-w-0 items-center gap-1.5">
+          <span className="task-member-initial">
+            {(member?.name ?? "?").slice(0, 1).toUpperCase()}
+          </span>
+          <span className="truncate text-xs text-muted-foreground">
+            {member?.name ??
+              (task.assigned_to ? "Anggota keluarga" : "Belum dibagikan")}
+          </span>
         </span>
-        <div className="flex shrink-0">
+        <div className="flex shrink-0 items-center gap-0.5">
+          {task.status !== "in_progress" && (
+            <button
+              disabled={isBusy}
+              onClick={() =>
+                onStatusChange(task, done ? "pending" : "in_progress")
+              }
+              aria-label={`${done ? "Buka kembali" : "Mulai"} ${task.title}`}
+              className="task-icon-button"
+            >
+              {done ? <RotateCcw size={13} /> : <Play size={13} />}
+            </button>
+          )}
           <button
+            disabled={isBusy}
             onClick={() => onEdit(task)}
             aria-label={`Edit ${task.title}`}
-            className="flex w-11 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted"
+            className="task-icon-button"
           >
-            <Pencil size={15} />
+            <Pencil size={13} />
           </button>
           <button
+            disabled={isBusy}
             onClick={() => onDelete(task)}
             aria-label={`Hapus ${task.title}`}
-            className="flex w-11 items-center justify-center rounded-xl text-red-600 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950"
+            className="task-icon-button is-delete"
           >
-            <Trash2 size={15} />
+            <Trash2 size={13} />
           </button>
         </div>
       </div>

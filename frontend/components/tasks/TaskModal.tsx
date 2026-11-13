@@ -11,17 +11,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import type { Task, FamilyMember } from "@/types";
+import { dateKey } from "@/lib/dashboard";
+import type { Task, FamilyMember, TaskStatus } from "@/types";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
 const taskSchema = z.object({
-  title: z.string().min(1, "Judul wajib diisi"),
+  title: z.string().trim().min(1, "Judul wajib diisi"),
   description: z.string().optional(),
   assigned_to: z.string().optional(),
-  points: z.coerce.number().min(0).max(1000),
+  points: z.coerce
+    .number()
+    .int("Poin harus bilangan bulat")
+    .min(0, "Poin tidak boleh negatif")
+    .max(1000, "Poin maksimal 1000"),
   status: z.enum(["pending", "in_progress", "done"]),
-  due_date: z.string().optional(),
+  due_date: z
+    .string()
+    .refine(
+      (value) => !value || dateKey(value) === value,
+      "Tanggal tenggat tidak valid",
+    )
+    .optional(),
 });
 
 export type TaskFormValues = z.infer<typeof taskSchema>;
@@ -35,6 +46,8 @@ interface TaskModalProps {
   members: FamilyMember[];
   isSaving?: boolean;
   isDeleting?: boolean;
+  initialStatus?: TaskStatus;
+  membersUnavailable?: boolean;
 }
 
 export function TaskModal({
@@ -46,6 +59,8 @@ export function TaskModal({
   members,
   isSaving,
   isDeleting,
+  initialStatus = "pending",
+  membersUnavailable,
 }: TaskModalProps) {
   const isEditing = !!task;
 
@@ -61,7 +76,7 @@ export function TaskModal({
       description: "",
       assigned_to: "",
       points: 0,
-      status: "pending",
+      status: initialStatus,
       due_date: "",
     },
   });
@@ -74,7 +89,7 @@ export function TaskModal({
         assigned_to: task.assigned_to ?? "",
         points: task.points,
         status: task.status,
-        due_date: task.due_date ?? "",
+        due_date: dateKey(task.due_date) ?? "",
       });
     } else {
       reset({
@@ -82,31 +97,34 @@ export function TaskModal({
         description: "",
         assigned_to: "",
         points: 0,
-        status: "pending",
+        status: initialStatus,
         due_date: "",
       });
     }
-  }, [task, reset]);
+  }, [task, reset, isOpen, initialStatus]);
 
   if (!isOpen) return null;
 
   return (
     <ModalFrame
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+      className="task-dialog fixed inset-0 z-50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
-      onClose={onClose}
+      onClose={() => !isSaving && !isDeleting && onClose()}
     >
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/40"
+        onClick={() => !isSaving && !isDeleting && onClose()}
+      />
 
-      <div className="relative z-10 w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl shadow-xl">
+      <div className="relative z-10 w-full sm:max-w-sm bg-card rounded-2xl shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">
             {isEditing ? "Edit Tugas" : "Tambah Tugas"}
           </h2>
           <button
-            onClick={onClose}
+            onClick={() => !isSaving && !isDeleting && onClose()}
             className="rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             aria-label="Tutup"
           >
@@ -120,82 +138,111 @@ export function TaskModal({
           onSubmit={handleSubmit(onSave)}
           className="px-4 py-4 space-y-4 max-h-[65vh] overflow-y-auto"
         >
-          {/* Title */}
-          <div className="space-y-1">
-            <Label htmlFor="task-title">Judul *</Label>
-            <Input
-              id="task-title"
-              placeholder="Nama tugas"
-              {...register("title")}
-              className={cn(errors.title && "border-error-500")}
-            />
-            {errors.title && (
-              <p className="text-xs text-error-500">{errors.title.message}</p>
-            )}
-          </div>
-
-          {/* Description */}
-          <div className="space-y-1">
-            <Label htmlFor="task-desc">Deskripsi</Label>
-            <textarea
-              id="task-desc"
-              rows={2}
-              placeholder="Opsional"
-              {...register("description")}
-              className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm placeholder-neutral-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20 resize-none"
-            />
-          </div>
-
-          {/* Assign + Points */}
-          <div className="grid grid-cols-2 gap-3">
+          <fieldset disabled={isSaving || isDeleting} className="space-y-4">
+            {/* Title */}
             <div className="space-y-1">
-              <Label htmlFor="task-assign">Ditugaskan ke</Label>
-              <select
-                id="task-assign"
-                {...register("assigned_to")}
-                className="w-full rounded-md border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
-              >
-                <option value="">Siapapun</option>
-                {members.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.name}
-                  </option>
-                ))}
-              </select>
+              <Label htmlFor="task-title">Judul *</Label>
+              <Input
+                id="task-title"
+                placeholder="Nama tugas"
+                {...register("title")}
+                className={cn(errors.title && "border-error-500")}
+              />
+              {errors.title && (
+                <p className="text-xs text-error-500">{errors.title.message}</p>
+              )}
             </div>
 
+            {/* Description */}
             <div className="space-y-1">
-              <Label htmlFor="task-points">Poin</Label>
-              <Input
-                id="task-points"
-                type="number"
-                min={0}
-                max={1000}
-                {...register("points")}
+              <Label htmlFor="task-desc">Deskripsi</Label>
+              <textarea
+                id="task-desc"
+                rows={2}
+                placeholder="Opsional"
+                {...register("description")}
+                className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm placeholder-neutral-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20 resize-none"
               />
             </div>
-          </div>
 
-          {/* Status + Due date */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label htmlFor="task-status">Status</Label>
-              <select
-                id="task-status"
-                {...register("status")}
-                className="w-full rounded-md border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+            {/* Assign + Points */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="task-assign">Ditugaskan ke</Label>
+                <select
+                  id="task-assign"
+                  {...register("assigned_to")}
+                  disabled={membersUnavailable || isSaving || isDeleting}
+                  className="w-full rounded-md border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+                >
+                  <option value="">Belum dibagikan</option>
+                  {task?.assigned_to &&
+                    !members.some((m) => m.id === task.assigned_to) && (
+                      <option value={task.assigned_to}>Anggota saat ini</option>
+                    )}
+                  {members.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="task-points">Poin</Label>
+                <Input
+                  id="task-points"
+                  type="number"
+                  min={0}
+                  max={1000}
+                  {...register("points")}
+                />
+              </div>
+            </div>
+
+            {errors.points && (
+              <p
+                role="alert"
+                className="text-xs text-red-600 dark:text-red-300"
               >
-                <option value="pending">Pending</option>
-                <option value="in_progress">Berjalan</option>
-                <option value="done">Selesai</option>
-              </select>
-            </div>
+                {errors.points.message}
+              </p>
+            )}
+            {membersUnavailable && (
+              <p className="text-xs text-muted-foreground">
+                Daftar anggota belum tersedia. Penanggung jawab tetap
+                dipertahankan.
+              </p>
+            )}
+            {/* Status + Due date */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="task-status">Status</Label>
+                <select
+                  id="task-status"
+                  {...register("status")}
+                  className="w-full rounded-md border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
+                >
+                  <option value="pending">Belum dimulai</option>
+                  <option value="in_progress">Berjalan</option>
+                  <option value="done">Selesai</option>
+                </select>
+              </div>
 
-            <div className="space-y-1">
-              <Label htmlFor="task-due">Tenggat</Label>
-              <Input id="task-due" type="date" {...register("due_date")} />
+              <div className="space-y-1">
+                <Label htmlFor="task-due">Tenggat</Label>
+                <Input id="task-due" type="date" {...register("due_date")} />
+              </div>
             </div>
-          </div>
+            {errors.due_date && (
+              <p
+                role="alert"
+                className="text-xs text-red-600 dark:text-red-300"
+              >
+                {errors.due_date.message}
+              </p>
+            )}
+          </fieldset>
         </form>
 
         {/* Footer */}
@@ -204,7 +251,7 @@ export function TaskModal({
             <button
               type="button"
               onClick={onDelete}
-              disabled={isDeleting}
+              disabled={isDeleting || isSaving}
               className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-error-600 hover:bg-error-50 transition-colors disabled:opacity-50"
             >
               {isDeleting ? (
@@ -219,13 +266,17 @@ export function TaskModal({
           )}
 
           <div className="flex gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => !isSaving && !isDeleting && onClose()}
+            >
               Batal
             </Button>
             <Button
               type="submit"
               form="task-form"
-              disabled={isSaving}
+              disabled={isSaving || isDeleting}
               className="bg-primary-500 hover:bg-primary-600"
             >
               {isSaving && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}

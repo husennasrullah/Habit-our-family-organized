@@ -12,7 +12,24 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-13 (Fallback foto profil Pengaturan)
+> **Last updated:** 2026-11-13 (Pembenahan menu Tugas dan pengiriman)
+
+### Pembenahan menu Tugas dan pengiriman — 2026-11-13
+- Pengguna menyetujui seluruh perbaikan hasil review, lalu meminta push ke origin setelah selesai. Backend: TaskField membedakan omitted/null untuk anggota dan tenggat, validasi judul trim/status/poin integer 0–1000/tanggal/anggota keluarga, serta row lock yang menyatukan update/complete/delete. Complete bersifat idempoten.
+- Model Task menambahkan completed_at dan migrasi tambahan 012_task_completion.sql; startup AutoMigrate menambah kolom dan backfill saat pertama kali diperkenalkan. Leaderboard memakai completed_at pada minggu WIB Senin 00:00 hingga Senin berikutnya. Metadata edit tidak mengubah waktu selesai; membuka kembali menghapus completed_at, selesai lagi mencatat waktu baru. Data lama memakai updated_at sebagai perkiraan karena waktu selesai asli belum tersedia; tidak mengubah migrasi lama.
+- Frontend: halaman tasks, TaskCard/TaskModal/Leaderboard, helper tasks dan types/styles. Ringkasan tugas aktif/hari ini/terlambat/selesai mencakup seluruh keluarga; pencarian+filter anggota/tenggat untuk papan. Kartu/ceklis/modal lebih ringkas, aksi mulai/selesai/buka kembali langsung, modal tambah selalu reset, tanggal edit dinormalisasi, validasi poin/tanggal, serta error anggota/leaderboard, fallback avatar ke inisial dan grafik poin nol aman.
+- Tes: go test ./... dan go vet lulus; integrasi PostgreSQL Task pada schema temporer lulus (clear field, anggota asing/family isolation, 10 complete serentak, metadata tugas lama, buka kembali/hapus, migrasi SQL idempoten/backfill). Schema pengujian dibersihkan otomatis; tidak memutasi tugas keluarga asli atau menerapkan migrasi ke database aplikasi lokal sesi ini.
+- Frontend: 17 tes dan build produksi .next-qa/lint/typecheck 19 halaman lulus. Browser fixture: 17 pemeriksaan pada 1440/1024/390/375 px, tanpa overflow/error runtime; sembilan audit axe terarah bersih. Memeriksa filter, mulai/selesai/buka kembali, tanggal, clear anggota/tenggat, reset/validasi modal, create/edit/delete, gagal simpan serta empty/error. Temuan kontras awal terjadi pada toast yang sedang fade saat audit; pemeriksaan ulang memakai toggle tema aplikasi dan menunggu animasi selesai lulus. Bukti docs/qa/tasks-modern-* dan tasks-modal-*; script frontend/scripts/tasks-qa.cjs.
+- File backend utama: model/task.go, services/task_service.go dan task_test.go, repositories/task_repo.go, handlers/task_handler.go, database/migrate.go serta migrations/012_task_completion.sql. Tidak menambah dependency runtime. Tidak mengimplementasikan jadwal tugas berulang atau broadcast WebSocket baru.
+- Pengiriman: commit dan push biasa ke origin/main sesuai permintaan. Next steps: pantau CI/CD; startup backend baru menerapkan penambahan kolom/backfill, lalu review fitur di deployment.
+
+### Review menu Tugas — 2026-11-13
+- Pengguna meminta pemeriksaan menu Tugas. Membaca halaman tasks, TaskCard/TaskModal/Leaderboard, hooks dan service/repository/model/routes backend serta Task 4.1–4.2 pada plan. Tidak mengubah fitur atau data; review berdasarkan source, belum pengujian browser/API baru.
+- Fitur tersedia: papan pending/in_progress/done, tab status mobile, filter anggota, CRUD tugas, tandai selesai, tenggat/terlambat, poin dan leaderboard mingguan. Tampilan masih berupa kartu tinggi dengan tombol ceklis dominan dan belum memiliki ringkasan, pencarian atau filter tenggat.
+- Temuan utama: update AssignedTo/DueDate memakai pointer sehingga nilai null yang dikirim UI untuk menghapus penanggung jawab/tenggat diabaikan; input tanggal edit diisi due_date mentah yang dapat berbentuk timestamp PostgreSQL dan tidak cocok dengan input date. Leaderboard memakai updated_at, bukan waktu penyelesaian, sehingga edit tugas selesai lama dapat menghitungnya ke minggu sekarang.
+- Validasi backend belum mencakup anggota assigned_to dalam keluarga JWT, enum status, rentang poin, judul trim atau format tanggal. Query tugas sendiri sudah membatasi family_id. Tidak menguji akses lintas keluarga.
+- UX tambahan: TaskModal di-reset saat task berubah, tetapi membuka ulang modal tambah setelah ditutup tidak selalu mereset isian; error members/leaderboard belum ditampilkan, avatar leaderboard tanpa fallback jika URL rusak; pembagi grafik nol ketika semua poin nol. Perubahan pending ke in_progress dilakukan melalui modal edit, belum aksi langsung di kartu.
+- Next steps yang direkomendasikan: benahi ketepatan edit/validasi/poin dahulu, lalu modernisasi ringkasan/filter/kartu/modal mengikuti kalender. Menunggu arahan implementasi; sesi ini hanya memperbarui agents.md, belum commit/push.
 
 ### Fallback foto profil Pengaturan — 2026-11-13
 - Pengguna melaporkan foto profil tidak muncul, meminta gambar default bila belum diatur, dan meminta push setelah selesai. Modernisasi kalender sebelumnya sudah terkirim ke origin/main pada be752e7.

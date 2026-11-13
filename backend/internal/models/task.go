@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"time"
 )
 
 // TaskStatus mendefinisikan status sebuah task
@@ -16,6 +17,7 @@ const (
 // Task adalah tugas/chore yang bisa di-assign ke anggota keluarga
 type Task struct {
 	BaseModel
+	CompletedAt    *time.Time `gorm:"index" json:"completed_at"`
 	FamilyID       uuid.UUID  `gorm:"type:uuid;not null;index"    json:"family_id"`
 	CreatedBy      uuid.UUID  `gorm:"type:uuid;not null"          json:"created_by"`
 	AssignedTo     *uuid.UUID `gorm:"type:uuid"                   json:"assigned_to"`
