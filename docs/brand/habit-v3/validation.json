@@ -1,0 +1,16 @@
+{
+  "svg_files": 27,
+  "all_rendered": true,
+  "external_bitmaps": false,
+  "accessible_titles": true,
+  "pwa_foreground_radius_px": 199.51,
+  "pwa_safe_radius_px": 204.8,
+  "checked_symbol_sizes": [
+    16,
+    24,
+    34,
+    64
+  ],
+  "production_app_changed": true,
+  "applied_identity": "Hadir Bersama v3"
+}

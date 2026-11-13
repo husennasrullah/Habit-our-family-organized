@@ -1,0 +1,32 @@
+{
+  "name": "Habit",
+  "concept": "Hadir Bersama",
+  "generated": "2026-11-13",
+  "files": [
+    "habit-hadir-bersama-icon-color.svg",
+    "habit-hadir-bersama-horizontal-color.svg",
+    "habit-hadir-bersama-stacked-color.svg",
+    "habit-hadir-bersama-wordmark-color.svg",
+    "habit-hadir-bersama-app-color.svg",
+    "habit-hadir-bersama-icon-dark.svg",
+    "habit-hadir-bersama-horizontal-dark.svg",
+    "habit-hadir-bersama-stacked-dark.svg",
+    "habit-hadir-bersama-wordmark-dark.svg",
+    "habit-hadir-bersama-app-dark.svg",
+    "habit-hadir-bersama-icon-mono.svg",
+    "habit-hadir-bersama-horizontal-mono.svg",
+    "habit-hadir-bersama-stacked-mono.svg",
+    "habit-hadir-bersama-wordmark-mono.svg",
+    "habit-hadir-bersama-app-mono.svg",
+    "habit-hadir-bersama-icon-white.svg",
+    "habit-hadir-bersama-horizontal-white.svg",
+    "habit-hadir-bersama-stacked-white.svg",
+    "habit-hadir-bersama-wordmark-white.svg",
+    "habit-hadir-bersama-app-white.svg",
+    "habit-alternatif-ritme-rumah-icon.svg",
+    "habit-alternatif-ritme-rumah-horizontal.svg",
+    "habit-alternatif-tumbuh-bersama-icon.svg",
+    "habit-alternatif-tumbuh-bersama-horizontal.svg",
+    "habit-hadir-bersama-pwa.svg"
+  ]
+}

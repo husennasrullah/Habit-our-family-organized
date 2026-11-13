@@ -59,7 +59,7 @@ export default function RegisterPage() {
           Buat akun baru 🏠
         </h1>
         <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-          Mulai kelola kehidupan keluarga bersama HABIT.
+          Mulai kelola kehidupan keluarga bersama Habit.
         </p>
       </div>
 
@@ -201,7 +201,7 @@ export default function RegisterPage() {
           loading={isSubmitting}
           className="w-full h-[50px] font-bold rounded-xl text-sm bg-primary-600 hover:bg-primary-700 shadow-sm border-0"
         >
-          Daftar ke HABIT →
+          Daftar ke Habit →
         </Button>
 
         {/* Divider */}

@@ -14,7 +14,7 @@ export function ServiceWorkerRegistration() {
     navigator.serviceWorker
       .register("/sw.js", { scope: "/", updateViaCache: "none" })
       .catch((error: unknown) => {
-        console.warn("HABIT service worker could not be registered", error);
+        console.warn("Habit service worker could not be registered", error);
       });
   }, []);
   return null;

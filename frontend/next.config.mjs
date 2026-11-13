@@ -7,7 +7,7 @@ const nextConfig = {
   // Output standalone — dibutuhkan agar Docker image bisa jalan tanpa node_modules penuh
   output: "standalone",
   async headers() {
-    return ["/manifest.json", "/sw.js"].map((source) => ({
+    return ["/manifest.json", "/sw.js", "/sw-push.js", "/favicon.ico"].map((source) => ({
       source,
       headers: [{ key: "Cache-Control", value: "no-cache, must-revalidate" }],
     }));

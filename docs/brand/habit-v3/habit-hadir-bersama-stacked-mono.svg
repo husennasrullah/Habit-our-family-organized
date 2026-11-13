@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 208" width="240" height="208" role="img" aria-labelledby="title desc"><title id="title">Habit — Hadir Bersama</title><desc id="desc">Huruf H yang saling merangkul, dengan titik hangat di tengah. Identitas aplikasi keseharian keluarga.</desc><g transform="translate(72 14) scale(1.5)"><g fill="none" stroke="#183C32" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"><path d="M14 20v30M50 20v30"/><path d="M14 32c9 13 27 13 36 0"/></g><circle cx="32" cy="18" r="5.5" fill="#183C32"/></g><g transform="translate(30 135) scale(.34)"><g fill="#183C32">
+        <path d="M8 14H38Q46 14 46 22V61Q46 66 51 66H84Q89 66 89 61V22Q89 14 97 14H127Q135 14 135 22V146Q135 154 127 154H97Q89 154 89 146V106Q89 101 84 101H51Q46 101 46 106V146Q46 154 38 154H8Q0 154 0 146V22Q0 14 8 14Z" />
+        <path
+          fill-rule="evenodd"
+          d="M135 100C135 69 158 47 188 47C200 47 211 50 219 57V56Q219 49 226 49H247Q255 49 255 57V146Q255 154 247 154H226Q219 154 219 147V145C210 151 200 154 188 154C158 154 135 132 135 100ZM175 100C175 112 183 120 195 120C207 120 215 112 215 100C215 88 207 80 195 80C183 80 175 88 175 100Z"
+        />
+        <path
+          fill-rule="evenodd"
+          d="M269 14H295Q303 14 303 22V56C311 50 320 47 331 47C362 47 385 69 385 100C385 132 362 154 331 154C320 154 310 151 302 145V147Q302 154 295 154H269Q261 154 261 146V22Q261 14 269 14ZM303 100C303 112 311 120 323 120C335 120 343 112 343 100C343 88 335 80 323 80C311 80 303 88 303 100Z"
+        />
+        <rect x="388" y="50" width="45" height="104" rx="7" />
+        <path d="M455 20H484Q492 20 492 28V50H522Q530 50 530 58V75Q530 83 522 83H492V108Q492 121 505 121H522Q530 121 530 129V146Q530 154 522 154H491C463 154 447 139 447 111V28Q447 20 455 20Z" />
+      <circle cx="410.5" cy="22.5" r="22.5" fill="#183C32"/></g></g></svg>

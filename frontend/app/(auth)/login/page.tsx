@@ -57,7 +57,7 @@ export default function LoginPage() {
           Selamat datang kembali
         </h1>
         <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-          Masuk ke HABIT dan lanjutkan mengatur kehidupan keluargamu.
+          Masuk ke Habit dan lanjutkan mengatur kehidupan keluargamu.
         </p>
       </div>
 
@@ -137,7 +137,7 @@ export default function LoginPage() {
           loading={isSubmitting}
           className="w-full h-[50px] font-bold rounded-xl text-sm bg-primary-600 hover:bg-primary-700 shadow-sm border-0"
         >
-          Masuk ke HABIT →
+          Masuk ke Habit →
         </Button>
 
         {/* Divider */}

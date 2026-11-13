@@ -12,7 +12,22 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-13 (Pengiriman pembenahan menu Anak dan wordmark)
+> **Last updated:** 2026-11-13 (Penerapan logo Habit v3 di seluruh lini)
+
+### Penerapan logo Habit v3 di seluruh lini — 2026-11-13
+- Pengguna menyetujui Hadir Bersama, meminta penerapan seluruh lini termasuk PWA dan tulisan tab browser, lalu meminta langsung push origin setelah selesai. Menggunakan aset SVG pilihan utama dan proporsi ringkas yang sudah direview.
+- UI: HabitMark native vector 40 px dipakai Sidebar/auth desktop/mobile, wordmark 84×25 px dengan titik i satu warna agar fokus amber di simbol; emerald #007F5B / dark mint #93E2BF. Branding nama di login/register/install prompt/Apple/manifest menjadi Habit. Root title kini Habit — Keluarga lebih dekat, applicationName dan deskripsi selaras. Offline memakai lockup SVG terang/gelap dan judul Habit — Sedang offline.
+- Platform: generator brand-icons kini berbasis SVG v3, PNG 16/32/48/180/192/512, favicon ICO 16/32/48, maskable 192/512, SVG offline dan badge notifikasi putih transparan 96 px. Semua referensi aktif v2 di runtime diganti ke v3; aset lama dipertahankan sebagai arsip. Manifest versi 20261113-hadir3, id/start_url /dashboard tetap agar identitas instalasi tidak berganti. Sw-push/favicon juga revalidate; updateViaCache none tetap dipakai. Pembaruan launcher yang sudah terpasang mengikuti browser/OS.
+- Verifikasi: 22 tes frontend lulus; build produksi .next-qa/lint/typecheck 19 halaman lulus. PNG/ICO/badge dan maskable lulus (radius 74.98/199.51 px di dalam batas 76.8/204.8). Browser: 16 pemeriksaan lulus tanpa error runtime/overflow, mencakup brand/title login/register/onboarding 390/1440, tema gelap, metadata Apple/favicon, manifest/HTTP/cache, sidebar/banner install, push handler simulasi dan worker produksi/offline (HTTP 200 dari worker, logo selesai dimuat). Detail akhir pada docs/qa/brand-v3-results.json dan brand-v3-assets.json.
+- File utama: components/brand/HabitMark+HabitWordmark, Sidebar/auth/root metadata/login/register, globals, manifest/offline/sw-push, InstallPrompt/ServiceWorkerRegistration, next.config, ikon dan favicon; generator/QA baru serta alias logo-qa/pwa-qa, docs/logo/design-system dan paket desain docs/brand/habit-v3. Tidak ada perubahan backend/schema/dependency runtime. Generated sw/workbox tidak disertakan dalam pengiriman.
+- Pengiriman: commit dan push biasa origin/main sesuai permintaan pengguna. Next steps: pantau CI/CD dan review brand/launcher PWA di deployment.
+
+### Desain logo Habit Hadir Bersama — 2026-11-13
+- Pengguna secara eksplisit memakai skill SVG Logo Designer dan meminta pembuatan ulang logo berdasarkan nilai aplikasi serta nama Habit. Membaca skill, overview plan, dokumentasi logo/design system dan outline wordmark aktif. Kesimpulan brand: kebiasaan kecil yang membuat keluarga lebih terhubung dan keseharian lebih teratur.
+- Pilihan utama Hadir Bersama: H membulat dengan dua sisi yang saling merangkul dan satu titik amber sebagai pusat perhatian bersama; emerald aktif #007F5B, amber #F5B942, forest/cream. Lettering bulat-tebal dipertahankan untuk kontinuitas, lebih rendah dari simbol pada lockup; titik i mengikuti tinta pada kombinasi agar aksen terpusat di simbol. Alternatif Ritme Rumah dan Tumbuh Bersama disertakan sebagai pembanding.
+- File baru frontend/scripts/design-habit-logo-v3.cjs, folder docs/brand/habit-v3 (25 SVG produksi, dua board SVG/PNG, PNG utama/launcher/simbol, README/manifest/validation), ZIP docs/brand/habit-v3-logo-package.zip. Script memakai Sharp existing; tidak menambah dependency. Semua logo berupa geometri/outline mandiri, tanpa font eksternal atau raster di SVG.
+- Validasi: seluruh 27 SVG berhasil dirender, title/desc tersedia, tidak ada script/foreignObject/embedded bitmap; sumber PWA foreground berada di lingkar aman diameter 80%. Pratinjau terang/gelap, komposisi dan simbol 16/24/34/64 px diperiksa. Hasil docs/brand/habit-v3/validation.json.
+- Status: paket desain selesai, belum mengganti logo aktif/metadata/favicon/PWA, belum commit/push. Scope sesi ini pembuatan dan penyajian desain. Next steps: iterasi atau penerapan aset ketika diminta pengguna; active app tetap versi brand yang sudah terkirim sebelumnya.
 
 ### Pengiriman pembenahan menu Anak dan wordmark — 2026-11-13
 - Pengguna meminta push setelah semua perbaikan selesai. Cakupan backend/frontend kids, penyesuaian Habit, tes, data WHO/provenance, rencana, dokumentasi dan bukti QA. Branch main dan origin/main sinkron sebelum pengiriman; diff whitespace bersih.
@@ -239,6 +254,9 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Penerapan Habit Hadir Bersama v3 — 2026-11-13
+- Simbol/wordmark diselaraskan di UI, judul tab dan nama brand diperbarui, favicon/Apple/PWA/shortcut/offline/push/badge memakai v3. Build/lint/typecheck, 22 tes, validasi aset dan 16 pemeriksaan browser/PWA lulus. Detail file pada STATUS TERKINI dan docs/logo.md; commit/push sesuai permintaan pengguna.
 
 #### CRUD Anak dan proporsi/warna Habit — 2026-11-13
 - Melengkapi profil dan empat catatan, transaksi/validasi/family+child isolation, form/grafik/role UI dan tes/QA. Wordmark 84×25 emerald. Detail file/status/verifikasi pada STATUS TERKINI dan docs/kids-improvements.md; commit/push biasa sesuai permintaan pengguna.

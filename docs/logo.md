@@ -1,3 +1,17 @@
+# Logo aktif Habit — Hadir Bersama v3
+
+Penerapan 2026-11-13 atas persetujuan pengguna. Identitas aktif memakai H yang merangkul dan titik amber, emerald #007F5B serta mint #93E2BF pada tema gelap. Wordmark bulat-tebal tetap 84×25 px; simbol native SVG 40×40 px menjaga proporsi. Titik i mengikuti warna huruf pada lockup agar aksen amber hanya berada di simbol.
+
+Dipakai pada Sidebar/auth, halaman offline, banner pemasangan, metadata favicon/Apple/PWA, shortcut dan notifikasi. Judul tab: **Habit — Keluarga lebih dekat**. Nama instalasi dan Apple: **Habit**. Tagline: **Kebiasaan kecil. Keluarga lebih dekat.**
+
+Sumber desain dan panduan: [brand/habit-v3/README.md](brand/habit-v3/README.md). Komponen `HabitMark.tsx`/`HabitWordmark.tsx` menyajikan vektor pada UI. `node frontend/scripts/generate-brand-icons.cjs` mengekspor PNG/ICO dan lockup offline dari SVG yang disetujui. Ikon maskable menjaga foreground dalam lingkar aman diameter 80%; badge notifikasi memakai siluet putih transparan 96 px.
+
+URL `habit-v3-*` dan versi manifest `20261113-hadir3` memisahkan aset baru dari cache lama. Manifest id `/dashboard`, start_url dan scope dipertahankan. Manifest/sw/sw-push/favicon diminta revalidasi; registrasi service worker memakai updateViaCache none. Pembaruan ikon launcher yang sudah terpasang tetap mengikuti browser/OS.
+
+Verifikasi lulus: 22 tes frontend, build produksi/lint/typecheck 19 halaman, PNG/ICO/maskable/badge, serta 16 pemeriksaan browser/PWA tanpa error runtime/overflow. Offline fallback HTTP 200 dari worker dengan lockup baru selesai dimuat. Bukti `docs/qa/brand-v3-assets.json`, `brand-v3-results.json` serta screenshot `brand-v3-*`. Script browser: `node frontend/scripts/brand-v3-qa.cjs` (atau alias `logo-qa.cjs`). Bagian di bawah adalah arsip v2 dan proses eksplorasi.
+
+---
+
 # Logo HABIT v2 — 2026-11-13
 
 Pengguna meminta saran dan penggantian logo. Arah yang dipilih adalah monogram H yang menyatu dengan atap rumah: huruf awal HABIT, rumah sebagai ruang keluarga, bentuk sederhana agar terbaca pada ukuran kecil. Sage dan ivory mengikuti redesign aplikasi; wordmark HABIT tetap berupa teks HTML.
@@ -46,3 +60,8 @@ Tool built-in imagegen dipakai untuk pembuatan dan penyempurnaan; Sharp hanya me
 ## Pembaruan wordmark dan cache PWA — 2026-11-13
 
 Wordmark sidebar diperkuat menjadi 24 px, weight 800, tracking -0.9 px dan stroke 0.3 px; tagline tetap ringan. Ikon PWA tetap berasal dari logo v2 yang sama dengan sidebar, dengan URL berparameter `v=20261113-logo2` untuk memutus pemakaian URL cache lama. Manifest memiliki id `/dashboard` (identitas lama berdasarkan start_url), keluar dari precache, menggunakan NetworkOnly dan HTTP no-cache; worker diperbarui dengan updateViaCache none. Metadata Apple juga memakai URL ikon berversi. Ikon launcher aplikasi yang sudah terpasang mengikuti jadwal pembaruan browser/OS; instalasi ulang dapat diperlukan jika OS tetap menampilkan ikon lama setelah versi baru tersedia.
+
+
+## Konsep SVG v3 — Hadir Bersama (2026-11-13)
+
+Pengguna meminta eksplorasi ulang berdasarkan nilai aplikasi melalui skill SVG Logo Designer. Pilihan utama menggabungkan H, hubungan melengkung seperti rangkulan dan titik amber; emerald mengikuti UI aktif. Paket desain, alternatif, panduan serta pratinjau tersedia di [habit-v3/README.md](brand/habit-v3/README.md), dengan sumber generator `frontend/scripts/design-habit-logo-v3.cjs`. Seluruh SVG berupa vektor mandiri. Paket desain ini kemudian disetujui dan diterapkan sebagai identitas aktif v3 sebagaimana catatan di atas.

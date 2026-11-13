@@ -25,7 +25,7 @@ const origin = process.env.HABIT_QA_URL || "http://localhost:3100";
     result.manifestErrors = manifest.errors;
     result.manifest = JSON.parse(manifest.data);
     assert.equal(result.manifest.id, "/dashboard");
-    assert(result.manifest.icons.every((icon) => icon.src.includes("?v=20261113-logo2")));
+    assert(result.manifest.icons.every((icon) => icon.src.includes("?v=20261113-hadir3")));
     result.manifestCacheControl = await page.evaluate(async () => {
       const response = await fetch(document.querySelector('link[rel="manifest"]').href);
       return response.headers.get("cache-control");

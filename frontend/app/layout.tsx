@@ -18,27 +18,36 @@ const mono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "HABIT — Our Family, Organized",
+  title: "Habit — Keluarga lebih dekat",
+  applicationName: "Habit",
   description:
-    "Atur jadwal, tugas, kenangan, dan keuangan keluarga bersama dalam satu aplikasi.",
-  manifest: "/manifest.json?v=20261113-logo2",
+    "Kebiasaan kecil. Keluarga lebih dekat. Atur jadwal, tugas, keuangan, tumbuh kembang, dan kenangan keluarga bersama Habit.",
+  manifest: "/manifest.json?v=20261113-hadir3",
   other: { "mobile-web-app-capable": "yes" },
   // Apple PWA
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "HABIT",
-    startupImage: "/icons/habit-v2-180.png?v=20261113-logo2",
+    title: "Habit",
+    startupImage: "/icons/habit-v3-180.png?v=20261113-hadir3",
   },
   // Ikon untuk berbagai platform
   icons: {
     icon: [
-      { url: "/icons/habit-v2-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/icons/habit-v2-48.png", sizes: "48x48", type: "image/png" },
+      {
+        url: "/icons/habit-v3-32.png?v=20261113-hadir3",
+        sizes: "32x32",
+        type: "image/png",
+      },
+      {
+        url: "/icons/habit-v3-48.png?v=20261113-hadir3",
+        sizes: "48x48",
+        type: "image/png",
+      },
     ],
     apple: [
       {
-        url: "/icons/habit-v2-180.png?v=20261113-logo2",
+        url: "/icons/habit-v3-180.png?v=20261113-hadir3",
         sizes: "180x180",
         type: "image/png",
       },

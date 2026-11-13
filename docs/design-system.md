@@ -1,5 +1,7 @@
 # Family Hub — Design System
 
+> Brand aktif 2026-11-13: **Habit — Hadir Bersama**, simbol H/rangkulan dan titik amber, emerald #007F5B, mint #93E2BF pada dark. Wordmark 84×25 px, simbol 40×40 px. Tagline “Kebiasaan kecil. Keluarga lebih dekat.” Judul tab “Habit — Keluarga lebih dekat”. Favicon/Apple/PWA/shortcut/notifikasi memakai aset v3. Detail `logo.md` dan `brand/habit-v3/README.md`.
+
 > Revisi aktif v3 — 2026-11-13: Plus Jakarta Sans lokal, body 13 px/token sm dan base 13 px, caption 11 px, judul halaman 20 px, subjudul 15–17 px, tombol standar 36 px, padding kartu/gap 16 px, emerald #007F5B, latar cream tipis #FAF8F2, sidebar 208/80 px, kontrol/tombol lebih ringkas dan satu judul halaman. Detail serta screenshot: `dashboard-reference-refresh.md`. Bagian v2/v1 di bawah merekam desain sebelumnya.
 
 > Pembaruan arah redesign — 2026-11-12: acuan aktif adalah [`ui-art-direction.md`](ui-art-direction.md) dan [`ui-redesign-roadmap.md`](ui-redesign-roadmap.md), mengikuti preferensi pengguna untuk UI minimalis dengan ilustrasi pencil art / 2D dan palet awal sage. Spesifikasi versi 1.0 di bawah adalah catatan lama; token sage, label 14 px/caption 12 px, shell 240/80 px, fokus keyboard, dan navigasi konsisten sudah diterapkan pada batch pertama. Kontrak data dan susunan halaman aktif: [`ui-baseline.md`](ui-baseline.md). Komponen halaman akan dimigrasikan bertahap. Nama produk saat ini HABIT, dan font implementasi saat ini Inter. Klaim kontras pada dokumen lama perlu diuji ulang, bukan dianggap hasil verifikasi.

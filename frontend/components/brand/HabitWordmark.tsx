@@ -1,4 +1,4 @@
-/** Vector lettering based on the user's rounded Habit reference. */
+/** Habit lettering; monochrome dot keeps the amber accent on the combined brand symbol. */
 export function HabitWordmark({ className = "" }: { className?: string }) {
   return (
     <svg
@@ -22,7 +22,7 @@ export function HabitWordmark({ className = "" }: { className?: string }) {
         <rect x="388" y="50" width="45" height="104" rx="7" />
         <path d="M455 20H484Q492 20 492 28V50H522Q530 50 530 58V75Q530 83 522 83H492V108Q492 121 505 121H522Q530 121 530 129V146Q530 154 522 154H491C463 154 447 139 447 111V28Q447 20 455 20Z" />
       </g>
-      <circle cx="410.5" cy="22.5" r="22.5" fill="#FFC452" />
+      <circle cx="410.5" cy="22.5" r="22.5" fill="currentColor" />
     </svg>
   );
 }

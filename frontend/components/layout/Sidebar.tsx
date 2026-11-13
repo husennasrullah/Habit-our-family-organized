@@ -1,10 +1,10 @@
 "use client";
 
+import { HabitMark } from "@/components/brand/HabitMark";
 import { HabitWordmark } from "@/components/brand/HabitWordmark";
 
 import { useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   X,
@@ -100,23 +100,18 @@ export function Sidebar() {
         <div className="sidebar-brand">
           <Link
             href="/dashboard"
-            aria-label="HABIT — Beranda"
+            aria-label="Habit — Beranda"
             className="flex min-w-0 items-center gap-2.5"
           >
-            <Image
-              src="/icons/habit-mark-v2.png"
-              alt=""
-              width={34}
-              height={34}
-              className="shrink-0 rounded-[11px]"
-            />
+            <HabitMark />
             <span
               className={cn(
                 "sidebar-wordmark",
                 sidebarCollapsed && "lg:hidden",
               )}
             >
-              <HabitWordmark /><span>Ruang keluarga kita</span>
+              <HabitWordmark />
+              <span>Ruang keluarga kita</span>
             </span>
           </Link>
           <button
@@ -140,7 +135,11 @@ export function Sidebar() {
               </p>
               <ul>
                 {navigation
-                  .filter((item) => item.group === group && (item.href !== "/kids" || canManageKids(user?.role)))
+                  .filter(
+                    (item) =>
+                      item.group === group &&
+                      (item.href !== "/kids" || canManageKids(user?.role)),
+                  )
                   .map(({ href, label, icon: Icon }) => {
                     const active = isNavigationActive(pathname, href);
                     return (

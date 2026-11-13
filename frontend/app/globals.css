@@ -294,12 +294,14 @@
     justify-content: space-between;
     padding: 15px 20px;
   }
+  .habit-brand-mark { color: #007f5b; }
+  .dark .habit-brand-mark { color: #93e2bf; }
   .habit-wordmark {
     display: block;
     flex-shrink: 0;
     color: #007f5b;
   }
-  .dark .habit-wordmark { color: #8ce0bd; }
+  .dark .habit-wordmark { color: #93e2bf; }
   .sidebar-wordmark {
     color: #182030;
     font-size: 24px;

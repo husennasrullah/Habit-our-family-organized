@@ -62,12 +62,12 @@ export function InstallPrompt() {
       {/* App icon */}
       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary-500">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icons/habit-v2-192.png" alt="" className="h-8 w-8 rounded-lg" />
+        <img src="/icons/habit-v3-192.png" alt="" className="h-8 w-8 rounded-lg" />
       </div>
 
       {/* Text */}
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-foreground">Pasang HABIT</p>
+        <p className="text-sm font-semibold text-foreground">Pasang Habit</p>
         <p className="text-xs text-muted-foreground">
           Buka ruang keluarga dari layar utama.
         </p>

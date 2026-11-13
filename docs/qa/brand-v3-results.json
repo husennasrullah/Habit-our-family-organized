@@ -1,0 +1,223 @@
+{
+  "checks": [
+    "/login 390: approved symbol, lettering, title and no overflow",
+    "/login 1440: approved symbol, lettering, title and no overflow",
+    "/register 390: approved symbol, lettering, title and no overflow",
+    "/register 1440: approved symbol, lettering, title and no overflow",
+    "/onboarding 390: approved symbol, lettering, title and no overflow",
+    "/onboarding 1440: approved symbol, lettering, title and no overflow",
+    "dark brand uses approved mint",
+    "browser and Apple metadata match Habit v3",
+    "manifest keeps app identity and serves v3 any/maskable icons",
+    "all platform assets return 200; manifest is revalidated",
+    "production worker controls the page",
+    "dashboard sidebar retains compact balanced wordmark",
+    "mobile drawer brand",
+    "install banner uses Habit and new app icon",
+    "push notifications use v3 icon and monochrome badge",
+    "offline fallback includes new lockup and title"
+  ],
+  "screenshots": [
+    "brand-v3-login-390.png",
+    "brand-v3-login-1440.png",
+    "brand-v3-register-390.png",
+    "brand-v3-register-1440.png",
+    "brand-v3-onboarding-390.png",
+    "brand-v3-onboarding-1440.png",
+    "brand-v3-login-dark.png",
+    "brand-v3-dashboard.png",
+    "brand-v3-sidebar-mobile.png",
+    "brand-v3-offline.png"
+  ],
+  "runtimeErrors": [],
+  "manifest": {
+    "name": "Habit",
+    "short_name": "Habit",
+    "description": "Kebiasaan kecil. Keluarga lebih dekat.",
+    "start_url": "/dashboard",
+    "scope": "/",
+    "display": "standalone",
+    "display_override": [
+      "standalone",
+      "minimal-ui"
+    ],
+    "background_color": "#FAF8F2",
+    "theme_color": "#007F5B",
+    "orientation": "portrait-primary",
+    "lang": "id",
+    "categories": [
+      "lifestyle",
+      "productivity"
+    ],
+    "icons": [
+      {
+        "src": "/icons/habit-v3-192.png?v=20261113-hadir3",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "/icons/habit-v3-512.png?v=20261113-hadir3",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "/icons/habit-v3-maskable-192.png?v=20261113-hadir3",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "maskable"
+      },
+      {
+        "src": "/icons/habit-v3-maskable-512.png?v=20261113-hadir3",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "maskable"
+      }
+    ],
+    "shortcuts": [
+      {
+        "name": "Kalender",
+        "short_name": "Kalender",
+        "url": "/calendar",
+        "icons": [
+          {
+            "src": "/icons/habit-v3-192.png?v=20261113-hadir3",
+            "sizes": "192x192"
+          }
+        ]
+      },
+      {
+        "name": "Tugas",
+        "short_name": "Tugas",
+        "url": "/tasks",
+        "icons": [
+          {
+            "src": "/icons/habit-v3-192.png?v=20261113-hadir3",
+            "sizes": "192x192"
+          }
+        ]
+      },
+      {
+        "name": "Keuangan",
+        "short_name": "Keuangan",
+        "url": "/budget",
+        "icons": [
+          {
+            "src": "/icons/habit-v3-192.png?v=20261113-hadir3",
+            "sizes": "192x192"
+          }
+        ]
+      }
+    ],
+    "id": "/dashboard"
+  },
+  "metadata": {
+    "title": "Habit — Keluarga lebih dekat",
+    "application": "Habit",
+    "apple": "Habit",
+    "icons": [
+      "http://127.0.0.1:3100/favicon.ico",
+      "http://127.0.0.1:3100/icons/habit-v3-32.png?v=20261113-hadir3",
+      "http://127.0.0.1:3100/icons/habit-v3-48.png?v=20261113-hadir3",
+      "http://127.0.0.1:3100/icons/habit-v3-180.png?v=20261113-hadir3"
+    ]
+  },
+  "assets": [
+    {
+      "url": "/icons/habit-v3-192.png?v=20261113-hadir3",
+      "status": 200,
+      "type": "image/png",
+      "cache": "public, max-age=0",
+      "size": 3348
+    },
+    {
+      "url": "/icons/habit-v3-512.png?v=20261113-hadir3",
+      "status": 200,
+      "type": "image/png",
+      "cache": "public, max-age=0",
+      "size": 11855
+    },
+    {
+      "url": "/icons/habit-v3-maskable-192.png?v=20261113-hadir3",
+      "status": 200,
+      "type": "image/png",
+      "cache": "public, max-age=0",
+      "size": 3348
+    },
+    {
+      "url": "/icons/habit-v3-maskable-512.png?v=20261113-hadir3",
+      "status": 200,
+      "type": "image/png",
+      "cache": "public, max-age=0",
+      "size": 11855
+    },
+    {
+      "url": "/icons/habit-v3-32.png",
+      "status": 200,
+      "type": "image/png",
+      "cache": "public, max-age=0",
+      "size": 532
+    },
+    {
+      "url": "/icons/habit-v3-48.png",
+      "status": 200,
+      "type": "image/png",
+      "cache": "public, max-age=0",
+      "size": 775
+    },
+    {
+      "url": "/icons/habit-v3-180.png",
+      "status": 200,
+      "type": "image/png",
+      "cache": "public, max-age=0",
+      "size": 3111
+    },
+    {
+      "url": "/icons/habit-v3-badge-96.png",
+      "status": 200,
+      "type": "image/png",
+      "cache": "public, max-age=0",
+      "size": 903
+    },
+    {
+      "url": "/icons/habit-lockup-v3.svg",
+      "status": 200,
+      "type": "image/svg+xml",
+      "cache": "public, max-age=0",
+      "size": 1858
+    },
+    {
+      "url": "/icons/habit-lockup-v3-dark.svg",
+      "status": 200,
+      "type": "image/svg+xml",
+      "cache": "public, max-age=0",
+      "size": 1858
+    },
+    {
+      "url": "/favicon.ico",
+      "status": 200,
+      "type": "image/x-icon",
+      "cache": "no-cache, must-revalidate, public, max-age=0, must-revalidate",
+      "size": 1683
+    },
+    {
+      "url": "/sw-push.js",
+      "status": 200,
+      "type": "application/javascript; charset=UTF-8",
+      "cache": "no-cache, must-revalidate",
+      "size": 1163
+    },
+    {
+      "url": "/manifest.json?v=20261113-hadir3",
+      "status": 200,
+      "type": "application/json; charset=UTF-8",
+      "cache": "no-cache, must-revalidate",
+      "size": 1779
+    }
+  ],
+  "offlineResponse": {
+    "status": 200,
+    "fromServiceWorker": true
+  }
+}
