@@ -882,17 +882,17 @@ Membangun API untuk memantau tumbuh kembang anak secara komprehensif termasuk pe
 - Endpoint riwayat kesehatan berfungsi
 
 **Todo List:**
-- [ ] Buat model: `KidProfile`, `GrowthRecord`, `VaccineRecord`, `Milestone`, `HealthRecord`
-- [ ] Jalankan migrasi tabel
+- [x] Buat model: `KidProfile`, `GrowthRecord`, `VaccineRecord`, `Milestone`, `HealthRecord`
+- [x] Jalankan migrasi tabel
 - [ ] Seed data: jadwal vaksin IDAI standar
 - [ ] Seed data: checklist milestone per usia (WHO/IDAI)
-- [ ] Implementasi CRUD profil anak
-- [ ] Implementasi CRUD growth records
+- [x] Implementasi CRUD profil anak
+- [x] Implementasi CRUD growth records
 - [ ] Implementasi endpoint data referensi pertumbuhan WHO (by usia & jenis kelamin)
-- [ ] Implementasi CRUD vaccine records
+- [x] Implementasi CRUD vaccine records
 - [ ] Auto-generate jadwal vaksin saat profil anak dibuat
-- [ ] Implementasi CRUD milestones
-- [ ] Implementasi CRUD health records
+- [x] Implementasi CRUD milestones
+- [x] Implementasi CRUD health records
 
 ---
 
@@ -909,15 +909,23 @@ Membangun halaman pemantauan anak yang informatif dengan grafik pertumbuhan dan 
 - Riwayat kesehatan tampil dalam list kronologis
 
 **Todo List:**
-- [ ] Buat halaman kids dengan list profil setiap anak
-- [ ] Buat halaman detail anak dengan tab: Pertumbuhan, Vaksin, Milestone, Kesehatan
+- [x] Buat halaman kids dengan list profil setiap anak
+- [x] Buat halaman detail anak dengan tab: Pertumbuhan, Vaksin, Milestone, Kesehatan
 - [ ] Implementasi grafik pertumbuhan line chart (tinggi & berat) dengan referensi WHO (Recharts)
-- [ ] Buat form tambah data pertumbuhan
-- [ ] Buat tampilan jadwal vaksin dengan badge status (hijau/merah/kuning)
-- [ ] Buat form catat vaksin yang sudah diberikan
+- [x] Buat form tambah data pertumbuhan
+- [x] Buat tampilan jadwal vaksin dengan badge status (hijau/merah/kuning)
+- [x] Buat form catat vaksin yang sudah diberikan
 - [ ] Buat checklist milestone per kelompok usia
-- [ ] Buat form tambah catatan kesehatan
+- [x] Buat form tambah catatan kesehatan
 - [ ] Buat komponen screen time log harian (input manual)
+
+---
+
+### Catatan pembenahan menu Anak — 2026-11-13
+- CRUD profil dan keempat jenis catatan lengkap, validasi frontend/backend, transaksi row lock, family+child isolation, GET vaksin tanpa mutasi, desired-state milestone, field lingkar kepala/obat/catatan serta dialog ringkas tersedia.
+- Grafik memakai SVG responsif dengan satu ukuran/satuan per pilihan, sumbu tanggal sebenarnya, gap data kosong dan titik yang dapat dipilih. Referensi WHO −2 SD/median/+2 SD 0–60 bulan dari enam tabel resmi dipaketkan statis di frontend; tersedia untuk panjang/tinggi dan berat sesuai jenis kelamin. Bukan endpoint referensi backend atau Recharts seperti usulan awal. Detail/provenance: docs/kids-improvements.md dan docs/data/who-growth-sources.json.
+- Jadwal vaksin/milestone bisa ditambah manual dari UI; auto-generate jadwal IDAI dan seed milestone per usia belum diimplementasikan. Screen time/sekolah tidak termasuk pembenahan ini. Checkbox task besar tetap belum ditutup untuk membedakan cakupan tersebut.
+- Tes/vet backend, integrasi PostgreSQL terisolasi, 22 tes frontend dan build/lint/typecheck lulus. Bukti QA browser fixture: docs/qa/kids-modern-results.json.
 
 ---
 

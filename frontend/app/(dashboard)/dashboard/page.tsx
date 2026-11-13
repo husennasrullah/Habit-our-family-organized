@@ -30,6 +30,7 @@ import { useBudgets, useBudgetSummary } from "@/hooks/useBudget";
 import { useMealPlans } from "@/hooks/useMealPlans";
 import { cn } from "@/lib/utils";
 import { useMemories } from "@/hooks/useMemories";
+import { canManageKids } from "@/lib/kids";
 import { useKids, useVaccines } from "@/hooks/useKids";
 import { EmptyIllustration } from "@/components/shared/EmptyIllustration";
 import { ContentState } from "@/components/shared/ContentState";
@@ -631,42 +632,44 @@ export default function DashboardPage() {
       </Section>
 
       <div className="grid items-start gap-4 lg:grid-cols-2">
-        <Section
-          title="Pengingat anak"
-          href="/kids"
-          icon={
-            <Syringe
-              size={19}
-              className="text-primary-600 dark:text-primary-200"
-            />
-          }
-        >
-          {kids.isPending ? (
-            <LoadingBlock />
-          ) : kids.isError ? (
-            <ErrorBlock retry={() => void kids.refetch()} />
-          ) : !kids.data?.length ? (
-            <ContentState
-              title="Temani setiap tumbuh kembangnya"
-              description="Tambahkan profil anak untuk mencatat pertumbuhan dan jadwal vaksin."
-              action={
-                <Link href="/kids" className={`${actionClass} bg-muted`}>
-                  Kelola profil anak
-                </Link>
-              }
-            />
-          ) : (
-            <div className="space-y-5">
-              {kids.data.map((kid) => (
-                <KidReminders
-                  key={kid.id}
-                  kid={kid}
-                  today={localDateKey(now)}
-                />
-              ))}
-            </div>
-          )}
-        </Section>
+        {canManageKids(user?.role) && (
+          <Section
+            title="Pengingat anak"
+            href="/kids"
+            icon={
+              <Syringe
+                size={19}
+                className="text-primary-600 dark:text-primary-200"
+              />
+            }
+          >
+            {kids.isPending ? (
+              <LoadingBlock />
+            ) : kids.isError ? (
+              <ErrorBlock retry={() => void kids.refetch()} />
+            ) : !kids.data?.length ? (
+              <ContentState
+                title="Temani setiap tumbuh kembangnya"
+                description="Tambahkan profil anak untuk mencatat pertumbuhan dan jadwal vaksin."
+                action={
+                  <Link href="/kids" className={`${actionClass} bg-muted`}>
+                    Kelola profil anak
+                  </Link>
+                }
+              />
+            ) : (
+              <div className="space-y-5">
+                {kids.data.map((kid) => (
+                  <KidReminders
+                    key={kid.id}
+                    kid={kid}
+                    today={localDateKey(now)}
+                  />
+                ))}
+              </div>
+            )}
+          </Section>
+        )}
         <Section
           title="Cerita keluarga"
           href="/memories"

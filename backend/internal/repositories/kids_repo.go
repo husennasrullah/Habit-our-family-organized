@@ -5,116 +5,90 @@ import (
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type KidsRepository struct{ db *gorm.DB }
 
-func NewKidsRepository(db *gorm.DB) *KidsRepository {
-	return &KidsRepository{db: db}
+func NewKidsRepository(db *gorm.DB) *KidsRepository { return &KidsRepository{db: db} }
+
+// Every write locks the parent first, including deletion and birth-date corrections.
+// This keeps child records, ownership checks and concurrent edits in one transaction.
+func (r *KidsRepository) WithKid(id, familyID uuid.UUID, fn func(*KidsRepository, *models.KidProfile) error) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		var kid models.KidProfile
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("id = ? AND family_id = ?", id, familyID).First(&kid).Error; err != nil {
+			return err
+		}
+		return fn(&KidsRepository{db: tx}, &kid)
+	})
 }
-
-// ─── KidProfile ───────────────────────────────────────────────────────────────
-
-func (r *KidsRepository) CreateKid(k *models.KidProfile) error {
-	return r.db.Create(k).Error
-}
-
+func (r *KidsRepository) CreateKid(k *models.KidProfile) error { return r.db.Create(k).Error }
 func (r *KidsRepository) GetKidsByFamily(familyID uuid.UUID) ([]models.KidProfile, error) {
-	var list []models.KidProfile
-	err := r.db.Where("family_id = ?", familyID).Order("birth_date ASC").Find(&list).Error
+	list := make([]models.KidProfile, 0)
+	err := r.db.Where("family_id = ?", familyID).Order("birth_date ASC, id ASC").Find(&list).Error
 	return list, err
 }
-
 func (r *KidsRepository) GetKidByID(id, familyID uuid.UUID) (*models.KidProfile, error) {
 	var k models.KidProfile
-	err := r.db.First(&k, "id = ? AND family_id = ?", id, familyID).Error
+	err := r.db.Where("id = ? AND family_id = ?", id, familyID).First(&k).Error
 	return &k, err
 }
-
 func (r *KidsRepository) UpdateKid(k *models.KidProfile) error {
-	return r.db.Save(k).Error
+	result := r.db.Model(&models.KidProfile{}).Where("id = ? AND family_id = ?", k.ID, k.FamilyID).Select("name", "gender", "birth_date", "notes", "updated_at").Updates(k)
+	return affected(result)
 }
-
+func affected(result *gorm.DB) error {
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
+}
 func (r *KidsRepository) DeleteKid(id, familyID uuid.UUID) error {
-	return r.db.Where("id = ? AND family_id = ?", id, familyID).Delete(&models.KidProfile{}).Error
+	for _, record := range []interface{}{&models.GrowthRecord{}, &models.VaccineRecord{}, &models.Milestone{}, &models.HealthRecord{}} {
+		if err := r.db.Where("kid_id = ?", id).Delete(record).Error; err != nil {
+			return err
+		}
+	}
+	return affected(r.db.Where("id = ? AND family_id = ?", id, familyID).Delete(&models.KidProfile{}))
 }
 
-// ─── GrowthRecord ─────────────────────────────────────────────────────────────
-
-func (r *KidsRepository) AddGrowth(g *models.GrowthRecord) error {
-	return r.db.Create(g).Error
+// These record helpers are used only inside WithKid after the family and parent row were checked.
+func (r *KidsRepository) CreateRecord(record interface{}) error { return r.db.Create(record).Error }
+func (r *KidsRepository) GetRecord(id, kidID uuid.UUID, record interface{}) error {
+	return r.db.Where("id = ? AND kid_id = ?", id, kidID).First(record).Error
+}
+func (r *KidsRepository) UpdateRecord(id, kidID uuid.UUID, record interface{}) error {
+	return affected(r.db.Model(record).Where("id = ? AND kid_id = ?", id, kidID).Select("*").Omit("id", "kid_id", "created_at", "deleted_at").Updates(record))
+}
+func (r *KidsRepository) DeleteRecord(id, kidID uuid.UUID, record interface{}) error {
+	return affected(r.db.Where("id = ? AND kid_id = ?", id, kidID).Delete(record))
+}
+func (r *KidsRepository) ListRecords(kidID, familyID uuid.UUID, out interface{}, order string) error {
+	parent := r.db.Model(&models.KidProfile{}).Select("id").Where("id = ? AND family_id = ?", kidID, familyID)
+	return r.db.Where("kid_id IN (?)", parent).Order(order).Find(out).Error
 }
 
-func (r *KidsRepository) GetGrowthByKid(kidID uuid.UUID) ([]models.GrowthRecord, error) {
-	var list []models.GrowthRecord
-	err := r.db.Where("kid_id = ?", kidID).Order("date ASC").Find(&list).Error
-	return list, err
-}
-
-func (r *KidsRepository) DeleteGrowth(id, kidID uuid.UUID) error {
-	return r.db.Where("id = ? AND kid_id = ?", id, kidID).Delete(&models.GrowthRecord{}).Error
-}
-
-// ─── VaccineRecord ────────────────────────────────────────────────────────────
-
-func (r *KidsRepository) AddVaccine(v *models.VaccineRecord) error {
-	return r.db.Create(v).Error
-}
-
-func (r *KidsRepository) GetVaccinesByKid(kidID uuid.UUID) ([]models.VaccineRecord, error) {
-	var list []models.VaccineRecord
-	err := r.db.Where("kid_id = ?", kidID).Order("scheduled_date ASC").Find(&list).Error
-	return list, err
-}
-
-func (r *KidsRepository) GetVaccineByID(id uuid.UUID) (*models.VaccineRecord, error) {
-	var v models.VaccineRecord
-	err := r.db.First(&v, "id = ?", id).Error
-	return &v, err
-}
-
-func (r *KidsRepository) UpdateVaccine(v *models.VaccineRecord) error {
-	return r.db.Save(v).Error
-}
-
-// ─── Milestone ────────────────────────────────────────────────────────────────
-
-func (r *KidsRepository) AddMilestone(m *models.Milestone) error {
-	return r.db.Create(m).Error
-}
-
-func (r *KidsRepository) GetMilestonesByKid(kidID uuid.UUID) ([]models.Milestone, error) {
-	var list []models.Milestone
-	err := r.db.Where("kid_id = ?", kidID).Order("category ASC, created_at ASC").Find(&list).Error
-	return list, err
-}
-
-func (r *KidsRepository) GetMilestoneByID(id uuid.UUID) (*models.Milestone, error) {
-	var m models.Milestone
-	err := r.db.First(&m, "id = ?", id).Error
-	return &m, err
-}
-
-func (r *KidsRepository) UpdateMilestone(m *models.Milestone) error {
-	return r.db.Save(m).Error
-}
-
-func (r *KidsRepository) DeleteMilestone(id, kidID uuid.UUID) error {
-	return r.db.Where("id = ? AND kid_id = ?", id, kidID).Delete(&models.Milestone{}).Error
-}
-
-// ─── HealthRecord ─────────────────────────────────────────────────────────────
-
-func (r *KidsRepository) AddHealth(h *models.HealthRecord) error {
-	return r.db.Create(h).Error
-}
-
-func (r *KidsRepository) GetHealthByKid(kidID uuid.UUID) ([]models.HealthRecord, error) {
-	var list []models.HealthRecord
-	err := r.db.Where("kid_id = ?", kidID).Order("date DESC").Find(&list).Error
-	return list, err
-}
-
-func (r *KidsRepository) DeleteHealth(id, kidID uuid.UUID) error {
-	return r.db.Where("id = ? AND kid_id = ?", id, kidID).Delete(&models.HealthRecord{}).Error
+// Reject a birth-date correction that would put existing history before birth.
+func (r *KidsRepository) HasHistoryBefore(kidID uuid.UUID, birth string) (bool, error) {
+	for _, item := range []struct {
+		model  interface{}
+		column string
+	}{
+		{&models.GrowthRecord{}, "date"}, {&models.HealthRecord{}, "date"},
+		{&models.VaccineRecord{}, "scheduled_date"}, {&models.VaccineRecord{}, "given_date"},
+		{&models.Milestone{}, "achieved_at"},
+	} {
+		var count int64
+		if err := r.db.Model(item.model).Where("kid_id = ? AND "+item.column+" < ?", kidID, birth).Count(&count).Error; err != nil {
+			return false, err
+		}
+		if count > 0 {
+			return true, nil
+		}
+	}
+	return false, nil
 }

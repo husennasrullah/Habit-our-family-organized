@@ -297,9 +297,9 @@
   .habit-wordmark {
     display: block;
     flex-shrink: 0;
-    color: #103c32;
+    color: #007f5b;
   }
-  .dark .habit-wordmark { color: #e5f3e8; }
+  .dark .habit-wordmark { color: #8ce0bd; }
   .sidebar-wordmark {
     color: #182030;
     font-size: 24px;
@@ -311,8 +311,8 @@
   .sidebar-wordmark > span {
     -webkit-text-stroke: 0;
     display: block;
-    margin-top: 5px;
-    font-size: 10.5px;
+    margin-top: 3px;
+    font-size: 10px;
     font-weight: 400;
     letter-spacing: 0;
     color: #51596b;
@@ -1878,4 +1878,128 @@
     .meal-dialog input,
     .meal-dialog select { min-height: 44px; font-size: 16px; }
   }
+}
+
+/* Kids records share the compact scale and form behavior of the other family modules. */
+@layer components {
+ .kids-page { display:flex;flex-direction:column;gap:16px;min-width:0; }
+ .kids-button { display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:7px 11px;border:1px solid hsl(var(--border));border-radius:10px;background:hsl(var(--card));font-size:12px;font-weight:600;line-height:1.4; }
+ .kids-button:hover { background:hsl(var(--muted)); }
+ .kids-button.is-primary { background:#007f5b;border-color:#007f5b;color:#fff; }
+ .kids-button.is-primary:hover { background:#006f50; }
+ .kids-button:disabled,.kids-icon-button:disabled { opacity:.5;cursor:wait; }
+ .kids-workspace { display:grid;grid-template-columns:200px minmax(0,1fr);gap:16px;align-items:start; }
+ .kids-list { display:flex;flex-direction:column;gap:8px;min-width:0; }
+ .kids-list-label { padding:0 4px 3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:hsl(var(--muted-foreground)); }
+ .kids-profile-option { display:flex;align-items:center;gap:10px;min-width:0;padding:12px;border:1px solid hsl(var(--border));border-radius:14px;background:hsl(var(--card));text-align:left; }
+ .kids-profile-option.is-active { border-color:#65b799;background:hsl(var(--primary) / .08); }
+ .kids-profile-option>span:last-child { min-width:0; }
+ .kids-profile-option strong { display:block;overflow-wrap:anywhere;font-size:13px;font-weight:600; }
+ .kids-profile-option small { display:block;margin-top:3px;font-size:11px;color:hsl(var(--muted-foreground)); }
+ .kids-avatar { display:flex;align-items:center;justify-content:center;width:36px;height:36px;flex-shrink:0;border-radius:50%;background:#e0f2ee;color:#11664e;font-size:15px;font-weight:700; }
+ .kids-avatar.is-female { background:#fce8ee;color:#9a355e; }
+ .kids-add-profile { border-style:dashed; }
+ .kids-detail { min-width:0;display:flex;flex-direction:column;gap:12px; }
+ .kids-profile-header { display:flex;justify-content:space-between;align-items:start;gap:12px;padding:16px;border:1px solid hsl(var(--border));border-radius:16px;background:hsl(var(--card)); }
+ .kids-profile-header>div:first-child { min-width:0; }
+ .kids-profile-header h2 { font-size:17px;font-weight:700;overflow-wrap:anywhere; }
+ .kids-profile-header p { margin-top:5px;font-size:11px;color:hsl(var(--muted-foreground));line-height:1.7; }
+ .kids-profile-notes { white-space:pre-wrap;overflow-wrap:anywhere; }
+ .kids-row-actions { display:flex;align-items:center;gap:3px;flex-shrink:0; }
+ .kids-icon-button { display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;flex-shrink:0;border-radius:9px;color:hsl(var(--muted-foreground)); }
+ .kids-icon-button:hover { background:hsl(var(--muted));color:hsl(var(--foreground)); }
+ .kids-icon-button.is-danger { color:#b42332; }
+ .kids-tabs { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:5px;border:1px solid hsl(var(--border));border-radius:13px;background:hsl(var(--card)); }
+ .kids-tabs button { display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;min-height:36px;padding:7px 4px;border-radius:9px;font-size:12px;color:hsl(var(--muted-foreground)); }
+ .kids-tabs button.is-active { background:#007f5b;color:#fff; }
+ .kids-record-panel { min-width:0;border:1px solid hsl(var(--border));border-radius:16px;overflow:hidden;background:hsl(var(--card)); }
+ .kids-panel-header { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid hsl(var(--border)); }
+ .kids-panel-header h2 { font-size:13px;font-weight:600; }
+ .kids-panel-header .kids-button { flex-shrink:0; }
+ .kids-empty { padding:32px 20px;text-align:center;font-size:12px;color:hsl(var(--muted-foreground));line-height:1.7; }
+ .kids-empty-profiles { display:flex;flex-direction:column;align-items:center;gap:10px;border:1px dashed hsl(var(--border));border-radius:16px;background:hsl(var(--card)); }
+ .kids-empty-profiles h2 { font-size:15px;font-weight:600;color:hsl(var(--foreground)); }
+ .kids-section-help { padding:12px 16px;font-size:11px;color:hsl(var(--muted-foreground));line-height:1.7; }
+ .kids-record-row { display:flex;align-items:start;gap:10px;padding:14px 16px;border-bottom:1px solid hsl(var(--border)); }
+ .kids-record-row:last-child { border-bottom:0; }
+ .kids-record-main { flex:1;min-width:0;overflow-wrap:anywhere; }
+ .kids-record-main h3 { font-size:13px;font-weight:600;line-height:1.7;white-space:pre-wrap; }
+ .kids-record-main p { margin-top:4px;font-size:11px;color:hsl(var(--muted-foreground));line-height:1.7;white-space:pre-wrap; }
+ .kids-record-title { display:flex;align-items:start;flex-wrap:wrap;gap:7px; }
+ .kids-record-controls { display:flex;align-items:center;flex-wrap:wrap;justify-content:end;gap:6px; }
+ .kids-status { display:inline-block;flex-shrink:0;padding:3px 8px;border-radius:8px;background:hsl(var(--muted));font-size:10px;color:hsl(var(--muted-foreground)); }
+ .kids-status.is-given { background:#e0f2e7;color:#23633f; }
+ .kids-status.is-overdue { background:#fff0ed;color:#a23c29; }
+ .kids-status.is-scheduled { background:#e9f2ff;color:#2a5896; }
+ .kids-record-notes { padding:0 16px 12px;white-space:pre-wrap;font-size:11px;color:hsl(var(--muted-foreground));overflow-wrap:anywhere; }
+ .kids-record-main .kids-record-notes { padding:0; }
+ .kids-milestone-check { display:flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;height:36px; }
+ .kids-milestone-check>span { display:flex;align-items:center;justify-content:center;width:20px;height:20px;border:1.5px solid #899b94;border-radius:50%; }
+ .kids-milestone-check.is-achieved>span { background:#007f5b;border-color:#007f5b;color:white; }
+ .kids-growth-table { overflow-x:auto; }
+ .kids-growth-entry,.kids-growth-row { min-width:510px; }
+ .kids-growth-row { display:grid;grid-template-columns:minmax(100px,1.2fr) repeat(3,minmax(75px,1fr)) 72px;gap:8px;align-items:center;padding:10px 16px;font-size:12px;border-top:1px solid hsl(var(--border)); }
+ .kids-growth-row.is-header { font-size:10px;background:hsl(var(--muted));color:hsl(var(--muted-foreground)); }
+ .kids-chart { padding:16px; }
+ .kids-chart-header { display:flex;align-items:center;justify-content:space-between;gap:10px; }
+ .kids-chart-header h3 { font-size:12px;font-weight:600; }
+ .kids-chart-header select { max-width:65%;min-height:36px;padding:6px 8px;border:1px solid hsl(var(--border));border-radius:9px;background:hsl(var(--card));font-size:11px; }
+ .kids-chart-svg { width:100%;height:220px;display:block;margin-top:10px; }
+ .kids-chart-grid { stroke:hsl(var(--border));stroke-width:1; }
+ .kids-chart-label { fill:hsl(var(--muted-foreground));font-size:12px; }
+ .kids-who-line { stroke:#7c8795;stroke-width:1.5; }
+ .kids-who-line.is-median { stroke:#8b6a34; }
+ .kids-measured-line { stroke:#007f5b;stroke-width:2.5; }
+ .kids-measured-dot { fill:#007f5b;stroke:hsl(var(--card));stroke-width:1.5;cursor:pointer; }
+ .kids-chart-value { min-height:18px;text-align:center;font-size:11px;color:hsl(var(--muted-foreground)); }
+ .kids-chart-legend { display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:10px;color:hsl(var(--muted-foreground)); }
+ .kids-chart-legend span { display:flex;align-items:center;gap:5px; }
+ .kids-chart-legend i { width:15px;height:2px;background:#7c8795; }
+ .kids-chart-legend i.is-measured { background:#007f5b; }
+ .kids-chart-note { margin-top:10px;font-size:10px;line-height:1.7;color:hsl(var(--muted-foreground)); }
+ .kids-chart-note a { text-decoration:underline;text-underline-offset:2px; }
+ .kids-dialog-card { width:100%;max-width:360px;background:hsl(var(--card));border-radius:16px;box-shadow:0 12px 50px #0003; }
+ .kids-dialog-header { display:flex;align-items:start;justify-content:space-between;gap:12px;padding:16px;border-bottom:1px solid hsl(var(--border)); }
+ .kids-dialog-header h2 { font-size:15px;font-weight:600;overflow-wrap:anywhere; }
+ .kids-dialog-header p { margin-top:5px;font-size:11px;color:hsl(var(--muted-foreground)); }
+ .kids-dialog-header button { display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;color:hsl(var(--muted-foreground)); }
+ .kids-form,.kids-delete-body { padding:16px;display:flex;flex-direction:column;gap:12px; }
+ .kids-field { display:flex;flex-direction:column;gap:5px;min-width:0; }
+ .kids-field label { font-size:11px;font-weight:500; }
+ .kids-dialog .kids-field input,.kids-dialog .kids-field select,.kids-dialog .kids-field textarea { width:100%;min-width:0;min-height:36px;border:1px solid hsl(var(--border));border-radius:9px;background:hsl(var(--card));padding:7px 10px;font-size:13px;line-height:1.5; }
+ .kids-dialog .kids-field textarea { resize:vertical; }
+ .kids-dialog-actions { display:flex;justify-content:end;gap:8px;margin-top:3px; }
+ .kids-help,.kids-delete-body>p { font-size:11px;line-height:1.7;color:hsl(var(--muted-foreground)); }
+ .kids-form-error { font-size:12px;color:#b42332;line-height:1.6; }
+ .kids-button.is-danger-solid { color:white;background:#b42332;border-color:#b42332; }
+ .dark .kids-status.is-given { background:#163b2d;color:#a8e5c3; }
+ .dark .kids-status.is-overdue { background:#48271f;color:#ffb69e; }
+ .dark .kids-status.is-scheduled { background:#20364e;color:#accff9; }
+ .dark .kids-icon-button.is-danger,.dark .kids-form-error { color:#ffadb7; }
+ .dark .kids-measured-dot { fill:#72d7ad; }
+ .dark .kids-measured-line { stroke:#72d7ad; }
+ .dark .kids-who-line { stroke:#99a6b4; }
+ .dark .kids-who-line.is-median { stroke:#d9b67e; }
+ @media (max-width:1023px) {
+  .kids-workspace { grid-template-columns:1fr; }
+  .kids-list { flex-direction:row;flex-wrap:wrap; }
+  .kids-list-label { width:100%; }
+  .kids-list .kids-profile-option { flex:1 1 145px;min-width:145px; }
+  .kids-list .kids-add-profile { flex-shrink:0;flex-basis:100%; }
+ }
+ @media (max-width:599px) {
+  .kids-tabs button { flex-direction:column;gap:4px;font-size:10px; }
+  .kids-profile-header { flex-direction:column; }
+  .kids-profile-header>.kids-row-actions { align-self:flex-end; }
+  .kids-record-row { flex-wrap:wrap; }
+  .kids-record-controls { width:100%;justify-content:space-between; }
+  .kids-panel-header { padding:12px;gap:8px; }
+  .kids-panel-header h2 { font-size:12px; }
+  .kids-panel-header .kids-button { font-size:11px;padding:7px 8px; }
+ }
+ @media (pointer:coarse) {
+  .kids-button,.kids-icon-button,.kids-milestone-check { min-height:44px; }
+  .kids-icon-button,.kids-milestone-check { min-width:44px; }
+  .kids-dialog .kids-field input,.kids-dialog .kids-field select,.kids-dialog .kids-field textarea { font-size:16px;min-height:44px; }
+ }
 }

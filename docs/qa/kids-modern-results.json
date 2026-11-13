@@ -1,0 +1,273 @@
+{
+  "checks": [
+    "incomplete height row preserves other measurement points",
+    "chronological growth coordinates and units",
+    "create growth with decimal weight, head circumference and notes",
+    "new forms reset on save, cancel and child change",
+    "Ani draft is never stored for Budi",
+    "growth edit clears optional values",
+    "delete growth",
+    "vaccine date normalized",
+    "vaccine actual date and metadata preserved",
+    "vaccine can be corrected to not yet given",
+    "manual vaccine schedule creation",
+    "delete vaccine",
+    "milestone achievement records chosen date",
+    "milestone reopen sends explicit state",
+    "create milestone",
+    "delete milestone",
+    "health shows medication and notes",
+    "health fields can be cleared",
+    "create health record",
+    "delete health record",
+    "profile edit uses fresh query state",
+    "create profile selects it",
+    "profile deletion selects surviving profile",
+    "failed save preserves draft and server error",
+    "empty growth rejected before API",
+    "no page overflow 375",
+    "no page overflow 390",
+    "no page overflow 1024",
+    "no page overflow 1440",
+    "Habit wordmark has compact dimensions and theme color",
+    "empty profile state",
+    "profile error state",
+    "child cannot manage kids",
+    "view_only cannot manage kids"
+  ],
+  "errors": [],
+  "audits": [
+    {
+      "name": "growth-form-light",
+      "violations": []
+    },
+    {
+      "name": "vaccine-form-light",
+      "violations": []
+    },
+    {
+      "name": "milestone-form-light",
+      "violations": []
+    },
+    {
+      "name": "health-form-light",
+      "violations": []
+    },
+    {
+      "name": "profile-form-light",
+      "violations": []
+    },
+    {
+      "name": "growth-light-375",
+      "violations": []
+    },
+    {
+      "name": "growth-light-390",
+      "violations": []
+    },
+    {
+      "name": "growth-light-1024",
+      "violations": []
+    },
+    {
+      "name": "growth-light-1440",
+      "violations": []
+    },
+    {
+      "name": "growth-dark",
+      "violations": []
+    },
+    {
+      "name": "Vaksin-dark",
+      "violations": []
+    },
+    {
+      "name": "Vaksin-form-dark",
+      "violations": []
+    },
+    {
+      "name": "Milestone-dark",
+      "violations": []
+    },
+    {
+      "name": "Milestone-form-dark",
+      "violations": []
+    },
+    {
+      "name": "Kesehatan-dark",
+      "violations": []
+    },
+    {
+      "name": "Kesehatan-form-dark",
+      "violations": []
+    },
+    {
+      "name": "growth-form-dark",
+      "violations": []
+    }
+  ],
+  "mutations": [
+    {
+      "route": "/kids/kid-a/growth",
+      "method": "POST",
+      "payload": {
+        "date": "2026-11-13",
+        "height_cm": null,
+        "weight_kg": 13.25,
+        "head_circumference_cm": 48.75,
+        "notes": "Draft Ani"
+      }
+    },
+    {
+      "route": "/kids/kid-a/growth/g1",
+      "method": "PUT",
+      "payload": {
+        "date": "2026-01-01",
+        "height_cm": null,
+        "weight_kg": null,
+        "head_circumference_cm": 48,
+        "notes": ""
+      }
+    },
+    {
+      "route": "/kids/kid-a/growth/g2",
+      "method": "DELETE",
+      "payload": {}
+    },
+    {
+      "route": "/kids/kid-a/vaccines/v1",
+      "method": "PUT",
+      "payload": {
+        "vaccine_name": "Vaksin uji",
+        "scheduled_date": "2026-01-01",
+        "given_date": "2026-01-03",
+        "given_by": "Klinik",
+        "notes": "Jangan hilang"
+      }
+    },
+    {
+      "route": "/kids/kid-a/vaccines/v1",
+      "method": "PUT",
+      "payload": {
+        "vaccine_name": "Vaksin uji",
+        "scheduled_date": "2026-01-01",
+        "given_date": null,
+        "given_by": "",
+        "notes": "Jangan hilang"
+      }
+    },
+    {
+      "route": "/kids/kid-a/vaccines",
+      "method": "POST",
+      "payload": {
+        "vaccine_name": "Vaksin baru",
+        "scheduled_date": "2026-12-01",
+        "given_date": null,
+        "given_by": "",
+        "notes": ""
+      }
+    },
+    {
+      "route": "/kids/kid-a/vaccines/record-1794586078908",
+      "method": "DELETE",
+      "payload": {}
+    },
+    {
+      "route": "/kids/kid-a/milestones/m1",
+      "method": "PUT",
+      "payload": {
+        "title": "Bersepeda",
+        "category": "motorik",
+        "achieved_at": "2026-02-01",
+        "notes": "Catatan milestone"
+      }
+    },
+    {
+      "route": "/kids/kid-a/milestones/m1/achievement",
+      "method": "PATCH",
+      "payload": {
+        "achieved": false
+      }
+    },
+    {
+      "route": "/kids/kid-a/milestones",
+      "method": "POST",
+      "payload": {
+        "title": "Menyanyi",
+        "category": "bahasa",
+        "achieved_at": null,
+        "notes": ""
+      }
+    },
+    {
+      "route": "/kids/kid-a/milestones/record-1794586080533",
+      "method": "DELETE",
+      "payload": {}
+    },
+    {
+      "route": "/kids/kid-a/health/h1",
+      "method": "PUT",
+      "payload": {
+        "type": "checkup",
+        "description": "Kontrol tahunan",
+        "date": "2026-01-01",
+        "doctor": "",
+        "medication": "",
+        "notes": ""
+      }
+    },
+    {
+      "route": "/kids/kid-a/health",
+      "method": "POST",
+      "payload": {
+        "type": "illness",
+        "description": "Kontrol baru",
+        "date": "2026-11-13",
+        "doctor": "",
+        "medication": "Obat uji",
+        "notes": ""
+      }
+    },
+    {
+      "route": "/kids/kid-a/health/record-1794586081990",
+      "method": "DELETE",
+      "payload": {}
+    },
+    {
+      "route": "/kids/kid-a",
+      "method": "PUT",
+      "payload": {
+        "name": "Ani Putri",
+        "gender": "female",
+        "birth_date": "2023-01-01",
+        "notes": ""
+      }
+    },
+    {
+      "route": "/kids",
+      "method": "POST",
+      "payload": {
+        "name": "Citra",
+        "gender": "female",
+        "birth_date": "2024-01-01",
+        "notes": ""
+      }
+    },
+    {
+      "route": "/kids/kid-new",
+      "method": "DELETE",
+      "payload": {}
+    },
+    {
+      "route": "/kids/kid-a/growth",
+      "method": "POST",
+      "payload": {
+        "date": "2026-11-13",
+        "height_cm": null,
+        "weight_kg": 15,
+        "head_circumference_cm": null,
+        "notes": ""
+      }
+    }
+  ]
+}

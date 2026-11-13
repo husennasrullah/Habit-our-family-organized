@@ -14,6 +14,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { canManageKids } from "@/lib/kids";
 import { navigation, isNavigationActive } from "@/lib/navigation";
 import { useUIStore } from "@/stores/uiStore";
 import { useAuthStore } from "@/stores/authStore";
@@ -139,7 +140,7 @@ export function Sidebar() {
               </p>
               <ul>
                 {navigation
-                  .filter((item) => item.group === group)
+                  .filter((item) => item.group === group && (item.href !== "/kids" || canManageKids(user?.role)))
                   .map(({ href, label, icon: Icon }) => {
                     const active = isNavigationActive(pathname, href);
                     return (

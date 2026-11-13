@@ -18,6 +18,7 @@ import (
 
 	fiberws "github.com/gofiber/websocket/v2"
 	"github.com/gofiber/fiber/v2"
+ "github.com/google/uuid"
 )
 
 func main() {
@@ -187,25 +188,40 @@ func main() {
 	memories.Get("/:id/photos/:photo_id/serve", memoryHandler.ServePhoto)
 
 	// Kids Tracker routes
-	kids := api.Group("/kids", authMw)
-	kids.Get("",    kidsHandler.GetKids)
-	kids.Post("",   kidsHandler.CreateKid)
-	kids.Put("/:id",    kidsHandler.UpdateKid)
+	kids := api.Group("/kids", authMw, middleware.RequireRole("admin", "member"), func(c *fiber.Ctx) error {
+		if c.Locals("family_id") == uuid.Nil {
+			return c.Status(400).JSON(fiber.Map{"message": "belum bergabung ke keluarga"})
+		}
+		return c.Next()
+	})
+	kids.Get("", kidsHandler.GetKids)
+	kids.Post("", kidsHandler.CreateKid)
+	kids.Put("/:id", kidsHandler.UpdateKid)
 	kids.Delete("/:id", kidsHandler.DeleteKid)
 
-	kids.Get("/:id/growth",  kidsHandler.GetGrowth)
+	kids.Get("/:id/growth", kidsHandler.GetGrowth)
 	kids.Post("/:id/growth", kidsHandler.AddGrowth)
 
-	kids.Get("/:id/vaccines",                       kidsHandler.GetVaccines)
-	kids.Post("/:id/vaccines",                      kidsHandler.AddVaccine)
-	kids.Patch("/:id/vaccines/:vaccine_id/given",   kidsHandler.MarkVaccineGiven)
+	kids.Get("/:id/vaccines", kidsHandler.GetVaccines)
+	kids.Post("/:id/vaccines", kidsHandler.AddVaccine)
+	kids.Patch("/:id/vaccines/:vaccine_id/given", kidsHandler.MarkVaccineGiven)
 
-	kids.Get("/:id/milestones",                          kidsHandler.GetMilestones)
-	kids.Post("/:id/milestones",                         kidsHandler.AddMilestone)
-	kids.Patch("/:id/milestones/:milestone_id/toggle",   kidsHandler.ToggleMilestone)
+	kids.Get("/:id/milestones", kidsHandler.GetMilestones)
+	kids.Post("/:id/milestones", kidsHandler.AddMilestone)
+	kids.Patch("/:id/milestones/:milestone_id/toggle", kidsHandler.ToggleMilestone)
 
-	kids.Get("/:id/health",  kidsHandler.GetHealth)
+	kids.Get("/:id/health", kidsHandler.GetHealth)
 	kids.Post("/:id/health", kidsHandler.AddHealth)
+
+	kids.Put("/:id/growth/:record_id", kidsHandler.UpdateGrowth)
+	kids.Delete("/:id/growth/:record_id", kidsHandler.DeleteGrowth)
+	kids.Put("/:id/vaccines/:record_id", kidsHandler.UpdateVaccine)
+	kids.Delete("/:id/vaccines/:record_id", kidsHandler.DeleteVaccine)
+	kids.Put("/:id/milestones/:record_id", kidsHandler.UpdateMilestone)
+	kids.Delete("/:id/milestones/:record_id", kidsHandler.DeleteMilestone)
+	kids.Put("/:id/health/:record_id", kidsHandler.UpdateHealth)
+	kids.Delete("/:id/health/:record_id", kidsHandler.DeleteHealth)
+	kids.Patch("/:id/milestones/:milestone_id/achievement", kidsHandler.SetMilestoneAchievement)
 
 	// Documents routes
 	docs := api.Group("/documents", authMw)

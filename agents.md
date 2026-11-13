@@ -12,7 +12,31 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-13 (Pengiriman Jadwal Makan dan wordmark Habit)
+> **Last updated:** 2026-11-13 (Pengiriman pembenahan menu Anak dan wordmark)
+
+### Pengiriman pembenahan menu Anak dan wordmark — 2026-11-13
+- Pengguna meminta push setelah semua perbaikan selesai. Cakupan backend/frontend kids, penyesuaian Habit, tes, data WHO/provenance, rencana, dokumentasi dan bukti QA. Branch main dan origin/main sinkron sebelum pengiriman; diff whitespace bersih.
+- Verifikasi final: go test/vet, integrasi PostgreSQL schema temporer, 22 tes frontend, build produksi/lint/typecheck 19 halaman, 34 pemeriksaan browser dan 17 audit axe lulus. Tidak menyertakan environment, cache/build atau generated sw/workbox.
+- Commit dan push biasa ke origin/main tanpa force. Next steps: pantau CI/CD dan review di deployment. Tidak menambahkan auto-jadwal vaksin/seed medis, screen time/sekolah atau migrasi schema pada scope ini.
+
+### Pembenahan menu Anak dan proporsi wordmark — 2026-11-13
+- Pengguna meminta semua temuan diperbaiki sekaligus, lalu meminta wordmark Habit diperkecil/diselaraskan warna dan commit/push ke origin setelah selesai. Implementasi backend/frontend dan verifikasi final selesai; pengguna telah meminta commit/push ke origin.
+- Backend: CRUD profil/growth/vaccine/milestone/health, validasi trim/panjang/enum/tanggal/numerik, tanggal aktual tidak mendahului lahir/di masa depan; jadwal boleh di masa depan. Seluruh write mengunci profil dalam transaksi; nested record harus cocok dengan path anak dan keluarga JWT. GET vaksin tidak menulis DB; mark given mempertahankan metadata omitted; milestone memiliki endpoint desired-state idempoten. Soft-delete profil+rincian atomik, tidak ada Save yang menghidupkan record terhapus, koreksi lahir melewati riwayat ditolak. Role API dibatasi admin/member, UI/sidebar/pengingat dashboard selaras.
+- Frontend: form modal 360 px untuk tambah/edit semua entitas, konfirmasi hapus, tanggal vaksin aktual/pemberi/catatan, lingkar kepala, obat/catatan kesehatan. Target form dan mutation mengikat kidId, form reset saat ditutup dan selectedId berasal dari query terbaru. Semua tab punya tambah/error/loading/empty; pending mencegah aksi ganda. Tanggal default WIB, label Indonesia, tombol bernama spesifik. Jadwal vaksin/milestone diisi manual; tidak menambahkan auto-jadwal klinis atau seed medis/screen time/sekolah.
+- Grafik: pilihan panjang/tinggi/berat/lingkar kepala, sumbu nilai dan tanggal aktual, gap sparse tidak menghilangkan seri. Referensi WHO statis 0–60 bulan untuk tinggi/panjang dan berat laki-laki/perempuan, enam XLSX resmi dengan provenance SHA-256 di docs/data/who-growth-sources.json; panjang/tinggi dipisah pada 24 bulan, tidak ada extrapolation/diagnosis. Detail docs/kids-improvements.md; plan Task 7.1–7.2 diselaraskan tanpa menandai fitur di luar scope selesai.
+- Wordmark bersama 84×25 px menggantikan 106×31; tagline lebih rapat, huruf emerald #007f5b / dark #8ce0bd, titik kuning tetap. Ikon rumah/PWA tidak diganti. File frontend brand/globals/Sidebar/auth melalui komponen bersama.
+- Verifikasi: go test ./... dan go vet lulus; PostgreSQL schema temporer lulus untuk CRUD/clear/isolation, GET tanpa write, 20 GET+20 given serentak, 10 achievement idempoten dan delete+insert bersamaan, tanpa mutasi data asli. 22 tes frontend dan build produksi 19 halaman/lint/typecheck lulus. QA browser fixture final: 34 pemeriksaan dan 17 audit axe terarah lulus tanpa error runtime/overflow/pelanggaran, pada 375/390/1024/1440 px serta tema terang/gelap dan lima form. Temuan nested-interactive SVG diperbaiki dengan role group; label grafik memakai lebar aktual agar tidak membesar/terpotong dan kartu anak mobile diberi lebar minimum. Bukti docs/qa/kids-modern-results.json.
+- File utama services/repositories/handlers kids, routes main, tests, halaman kids/dashboard, hooks/useKids, components/kids, lib/kids dan data WHO, brand/globals/Sidebar, script QA/import, dokumentasi/plan. Tidak mengubah schema/dependency runtime. Next steps: pantau CI/CD dan verifikasi alur di deployment setelah commit/push biasa origin/main sesuai permintaan.
+
+### Review menu Anak — 2026-11-13
+- Pengguna meminta pemeriksaan menu Anak. Membaca halaman kids, hooks/types, service/repository/model/handler/routes, migrasi 006, seed, pengingat dashboard dan Task 7.1–7.2. Review source, tanpa browser/API/mutasi data atau tes runtime baru; belum mengubah fitur.
+- Tersedia tambah profil, daftar anak, empat tab pertumbuhan/vaksin/milestone/kesehatan, catatan tinggi/berat dan grafik enam titik terakhir, tandai vaksin dan toggle milestone. API punya edit/hapus profil tetapi UI belum ada. CRUD rincian belum lengkap; UI tidak memiliki tambah vaksin/milestone, backend tidak membuat jadwal/checklist saat profil baru dibuat (seed hanya contoh vaksin anak demo).
+- Prioritas ketepatan: GetVaccines melakukan Save seluruh record ketika GET mengubah status terlambat, mengabaikan error dan tanpa lock/conditional update; snapshot lama dapat menimpa status/tanggal vaksin given yang disimpan bersamaan. MarkVaccineGiven juga menimpa given_by/notes dengan string kosong dari request UI. Toggle milestone read-modify-save tanpa lock dan UI tidak menonaktifkan saat pending/menampilkan error mutation.
+- Form pertumbuhan/kesehatan tidak reset setelah simpan/batal atau ganti anak; state dan visibilitas dibagi lintas anak, sementara mutation memakai kidId aktif. Draft anak A bisa tersimpan ke anak B. Form tambah anak juga tidak reset saat batal; selectedKid menyimpan object snapshot.
+- Validasi: create profil hanya cek kosong, update tanpa cek nama/tanggal/gender, growth dapat kosong semua/negatif/nol; vaksin/milestone/health belum memvalidasi field wajib/enum/tanggal di service meski DTO bertag validate (handler hanya BodyParser). Tanggal default frontend memakai UTC toISOString; penandaan vaksin langsung memakai tanggal hari ini tanpa form tanggal aktual/pemberi/catatan. Tanggal vaksin/milestone dirender mentah dan bisa berupa timestamp.
+- Grafik: jika satu catatan tidak punya tinggi atau berat, seluruh seri terkait tidak digambar; masing-masing seri memakai skala min/max sendiri tanpa sumbu nilai, jarak tanggal dibuat rata. Ini grafik catatan pribadi, belum referensi WHO yang disebut plan. Lingkar kepala/obat/catatan ada di API/model tetapi belum terlayani lengkap di UI.
+- Isolasi keluarga diperiksa lewat profil induk sebelum mengakses rincian; tidak menyimpulkan kebocoran lintas keluarga. Namun handler given/toggle mengabaikan kid_id path dan memeriksa keluarga record saja, sehingga record anak lain dalam keluarga yang sama bisa berubah melalui path anak yang tidak cocok. Hak akses route hanya auth; perlu menyelaraskan kebijakan role bila akun child seharusnya dibatasi.
+- Tidak menemukan tes khusus kids pada tes backend/frontend yang diperiksa; QA bersama memuat halaman dengan fixture, bukan bukti alur mutasi menu Anak. Nama akses pilihan anak generik Berikutnya. File diubah hanya agents.md. Next steps: benahi ketepatan simpan/konkurensi dan validasi dahulu, lalu lengkapi CRUD/form vaksin-milestone, grafik dan UX sesuai scope berikutnya; belum commit/push review ini.
 
 ### Pengiriman Jadwal Makan dan wordmark Habit — 2026-11-13
 - Pengguna meminta push ke origin setelah perbaikan dan QA dinyatakan lulus. Branch main dan origin/main sinkron sebelum pengiriman; diff whitespace bersih.
@@ -215,6 +239,9 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### CRUD Anak dan proporsi/warna Habit — 2026-11-13
+- Melengkapi profil dan empat catatan, transaksi/validasi/family+child isolation, form/grafik/role UI dan tes/QA. Wordmark 84×25 emerald. Detail file/status/verifikasi pada STATUS TERKINI dan docs/kids-improvements.md; commit/push biasa sesuai permintaan pengguna.
 
 #### Jadwal Makan dan wordmark referensi — 2026-11-13
 - Memperbaiki meal/push backend, halaman/form/helper frontend dan tes/QA; wordmark vektor dipakai sidebar/auth. Detail file, keputusan, verifikasi dan batas pengujian tercatat pada STATUS TERKINI serta docs/meal-plan-improvements.md. Belum commit/push.

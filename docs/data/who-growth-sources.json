@@ -1,0 +1,123 @@
+{
+  "retrieved": "2026-11-13",
+  "columns": [
+    "month",
+    "minus2sd",
+    "median",
+    "plus2sd"
+  ],
+  "sources": [
+    {
+      "key": "boys_wfa_0-to-5-years",
+      "url": "https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/weight-for-age/wfa_boys_0-to-5-years_zscores.xlsx?sfvrsn=97a05331_9",
+      "sha256": "f8f5a77b944ff7a8c1524e76f9d33f8a93cc423d23c2e7f2b10ba6b96a428e69",
+      "header": [
+        "Month",
+        "L",
+        "M",
+        "S",
+        "SD3neg",
+        "SD2neg",
+        "SD1neg",
+        "SD0",
+        "SD1",
+        "SD2",
+        "SD3"
+      ]
+    },
+    {
+      "key": "boys_lhfa_0-to-2-years",
+      "url": "https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/lhfa_boys_0-to-2-years_zscores.xlsx?sfvrsn=30e044c_9",
+      "sha256": "ccfd8e455141c9a39dd728d99b7d7e080a925b06ea4a4d7592229665713dba54",
+      "header": [
+        "Month",
+        "L",
+        "M",
+        "S",
+        "SD",
+        "SD3neg",
+        "SD2neg",
+        "SD1neg",
+        "SD0",
+        "SD1",
+        "SD2",
+        "SD3"
+      ]
+    },
+    {
+      "key": "boys_lhfa_2-to-5-years",
+      "url": "https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/lhfa_boys_2-to-5-years_zscores.xlsx?sfvrsn=17e5ad91_9",
+      "sha256": "a44ed06039e0a9dd6920e4a4d928395c541c9732662e49eacd489d2194ccc80d",
+      "header": [
+        "Month",
+        "L",
+        "M       ",
+        "S",
+        "SD",
+        "SD3neg",
+        "SD2neg",
+        "SD1neg",
+        "SD0",
+        "SD1",
+        "SD2",
+        "SD3"
+      ]
+    },
+    {
+      "key": "girls_wfa_0-to-5-years",
+      "url": "https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/weight-for-age/wfa_girls_0-to-5-years_zscores.xlsx?sfvrsn=4c03b8db_7",
+      "sha256": "01e9a6fda2f3723dbc74d3c86bfbfcb9f6d474367d1d7b4a804501a2debd2ef1",
+      "header": [
+        "Month",
+        "L",
+        "M",
+        "S",
+        "SD3neg",
+        "SD2neg",
+        "SD1neg",
+        "SD0",
+        "SD1",
+        "SD2",
+        "SD3"
+      ]
+    },
+    {
+      "key": "girls_lhfa_0-to-2-years",
+      "url": "https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/lhfa_girls_0-to-2-years_zscores.xlsx?sfvrsn=e9e66a95_11",
+      "sha256": "6757f5eb96b51ab5cdb4828105929c78b1fb3d73b0fd8fa65682ad9f60f8c083",
+      "header": [
+        "Month",
+        "L",
+        "M",
+        "S",
+        "SD",
+        "SD3neg",
+        "SD2neg",
+        "SD1neg",
+        "SD0",
+        "SD1",
+        "SD2",
+        "SD3"
+      ]
+    },
+    {
+      "key": "girls_lhfa_2-to-5-years",
+      "url": "https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/lhfa_girls_2-to-5-years_zscores.xlsx?sfvrsn=2ec187b9_11",
+      "sha256": "a976c56a6d36885cc32bf77c5539ca066e396ef2adad06011cd71d9eb0f0eb5c",
+      "header": [
+        "Month",
+        "L",
+        "M       ",
+        "S",
+        "SD",
+        "SD3neg",
+        "SD2neg",
+        "SD1neg",
+        "SD0",
+        "SD1",
+        "SD2",
+        "SD3"
+      ]
+    }
+  ]
+}
