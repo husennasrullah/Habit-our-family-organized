@@ -1,0 +1,111 @@
+{
+  "checks": [
+    "multiple meals per slot, desktop and mobile render paths",
+    "notification activation waits for server persistence",
+    "notification status restored after reload",
+    "unsubscribe",
+    "missing VAPID config produces error",
+    "server push registration failure produces error",
+    "detail dialog accessible name",
+    "timestamp date normalized for edit",
+    "compact modal width",
+    "edit moves date and slot and clears optional fields",
+    "add form resets on reopen",
+    "unsafe recipe scheme blocked before API",
+    "failed save retains form",
+    "create menu",
+    "delete menu with confirmation",
+    "today resets selected day",
+    "layout without overflow 375",
+    "layout without overflow 390",
+    "layout without overflow 1024",
+    "layout without overflow 1440",
+    "empty state",
+    "error state with retry",
+    "reference wordmark on login"
+  ],
+  "errors": [],
+  "audits": [
+    {
+      "dialog": "detail-light",
+      "violations": []
+    },
+    {
+      "dialog": "form-light",
+      "violations": []
+    },
+    {
+      "width": 375,
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "dialog": "detail-dark",
+      "violations": []
+    },
+    {
+      "dialog": "form-dark",
+      "violations": []
+    }
+  ],
+  "mutations": [
+    {
+      "route": "/meal-plans/meal-1",
+      "method": "PUT",
+      "data": {
+        "name": "Nasi goreng",
+        "notes": "",
+        "recipe_url": "",
+        "date": "2026-11-14",
+        "meal_type": "dinner"
+      }
+    },
+    {
+      "route": "/meal-plans",
+      "method": "POST",
+      "data": {
+        "name": "Test menu",
+        "notes": "",
+        "recipe_url": "",
+        "date": "2026-11-13",
+        "meal_type": "breakfast"
+      }
+    },
+    {
+      "route": "/meal-plans",
+      "method": "POST",
+      "data": {
+        "name": "Test menu",
+        "notes": "",
+        "recipe_url": "",
+        "date": "2026-11-13",
+        "meal_type": "breakfast"
+      }
+    },
+    {
+      "route": "/meal-plans/new-1794583931311",
+      "method": "DELETE",
+      "data": {}
+    }
+  ]
+}

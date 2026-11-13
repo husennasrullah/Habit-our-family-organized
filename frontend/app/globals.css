@@ -294,6 +294,12 @@
     justify-content: space-between;
     padding: 15px 20px;
   }
+  .habit-wordmark {
+    display: block;
+    flex-shrink: 0;
+    color: #103c32;
+  }
+  .dark .habit-wordmark { color: #e5f3e8; }
   .sidebar-wordmark {
     color: #182030;
     font-size: 24px;
@@ -1856,4 +1862,20 @@
   .task-dialog input,.task-dialog select,.task-dialog textarea,.task-search input { font-size:16px; }
   .task-dialog input,.task-dialog select { min-height:44px; }
  }
+}
+
+
+/* Match the compact task/finance form scale while keeping touch inputs zoom-safe. */
+@layer components {
+  .meal-dialog input,
+  .meal-dialog select {
+    min-width: 0;
+    min-height: 36px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  @media (pointer: coarse) {
+    .meal-dialog input,
+    .meal-dialog select { min-height: 44px; font-size: 16px; }
+  }
 }

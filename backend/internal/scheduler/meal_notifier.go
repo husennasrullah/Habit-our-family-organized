@@ -1,8 +1,12 @@
 package scheduler
 
 import (
+	"encoding/json"
 	"fmt"
+	"keluarga-app/backend/internal/pushvalidation"
 	"log"
+	"net/http"
+	"strings"
 	"time"
 
 	"keluarga-app/backend/internal/config"
@@ -16,9 +20,9 @@ import (
 
 // MealNotifier mengirim push notification berisi menu hari ini ke semua keluarga
 type MealNotifier struct {
-	mealSvc  *services.MealPlanService
-	subRepo  *repositories.PushSubscriptionRepository
-	pushCfg  *config.PushConfig
+	mealSvc *services.MealPlanService
+	subRepo *repositories.PushSubscriptionRepository
+	pushCfg *config.PushConfig
 }
 
 func NewMealNotifier(
@@ -36,7 +40,7 @@ func (n *MealNotifier) StartScheduler() {
 		return
 	}
 
-	c := cron.New()
+	c := cron.New(cron.WithLocation(time.FixedZone("WIB", 7*60*60)))
 	schedule := n.pushCfg.NotificationTime
 	if schedule == "" {
 		schedule = "0 4 * * *" // default jam 04:00 setiap hari
@@ -85,31 +89,39 @@ func (n *MealNotifier) sendDailyNotifications() {
 
 // buildNotificationPayload membuat JSON payload push notification
 func buildNotificationPayload(meals []models.MealPlan) string {
-	mealMap := map[models.MealType]string{}
+	mealMap := map[models.MealType][]string{}
 	for _, m := range meals {
-		mealMap[m.MealType] = m.Name
+		mealMap[m.MealType] = append(mealMap[m.MealType], m.Name)
 	}
 
-	sarapan := mealMap[models.MealTypeBreakfast]
-	if sarapan == "" { sarapan = "Belum direncanakan" }
-	siang := mealMap[models.MealTypeLunch]
-	if siang == "" { siang = "Belum direncanakan" }
-	malam := mealMap[models.MealTypeDinner]
-	if malam == "" { malam = "Belum direncanakan" }
+	sarapan := strings.Join(mealMap[models.MealTypeBreakfast], ", ")
+	if sarapan == "" {
+		sarapan = "Belum direncanakan"
+	}
+	siang := strings.Join(mealMap[models.MealTypeLunch], ", ")
+	if siang == "" {
+		siang = "Belum direncanakan"
+	}
+	malam := strings.Join(mealMap[models.MealTypeDinner], ", ")
+	if malam == "" {
+		malam = "Belum direncanakan"
+	}
 
-	today := time.Now().Format("02 January 2006")
-	body  := fmt.Sprintf("🌅 Sarapan: %s\n☀️ Siang: %s\n🌙 Malam: %s", sarapan, siang, malam)
+	today := time.Now().In(time.FixedZone("WIB", 7*60*60)).Format("02 January 2006")
+	body := fmt.Sprintf("🌅 Sarapan: %s\n☀️ Siang: %s\n🌙 Malam: %s", sarapan, siang, malam)
 	title := fmt.Sprintf("Menu Hari Ini 🍽️ — %s", today)
 
 	// JSON format yang diparse oleh service worker
-	return fmt.Sprintf(
-		`{"title":%q,"body":%q,"url":"/meals"}`,
-		title, body,
-	)
+	payload, _ := json.Marshal(map[string]string{"title": title, "body": body, "url": "/meals"})
+	return string(payload)
 }
 
 // sendToSubscription mengirim push notification ke satu subscription
 func (n *MealNotifier) sendToSubscription(sub models.PushSubscription, payload string) {
+	if err := pushvalidation.Validate(sub.Endpoint, sub.P256DH, sub.Auth); err != nil {
+		log.Printf("[Scheduler] Subscription invalid untuk member %s: %v", sub.MemberID, err)
+		return
+	}
 	resp, err := webpush.SendNotification([]byte(payload), &webpush.Subscription{
 		Endpoint: sub.Endpoint,
 		Keys: webpush.Keys{
@@ -121,11 +133,22 @@ func (n *MealNotifier) sendToSubscription(sub models.PushSubscription, payload s
 		VAPIDPrivateKey: n.pushCfg.VAPIDPrivateKey,
 		Subscriber:      n.pushCfg.VAPIDSubject,
 		TTL:             3600,
+		HTTPClient:      &http.Client{Timeout: 15 * time.Second, CheckRedirect: func(req *http.Request, via []*http.Request) error { return http.ErrUseLastResponse }},
 	})
 	if err != nil {
-		log.Printf("[Scheduler] Gagal kirim notif ke %s: %v", sub.Endpoint[:30], err)
+		log.Printf("[Scheduler] Gagal kirim notif ke member %s: %v", sub.MemberID, err)
 		return
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusGone || resp.StatusCode == http.StatusNotFound {
+		if err := n.subRepo.DeleteByEndpoint(sub.Endpoint, sub.FamilyID, sub.MemberID); err != nil {
+			log.Printf("[Scheduler] Gagal membersihkan subscription: %v", err)
+		}
+		return
+	}
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		log.Printf("[Scheduler] Push ditolak untuk member %s (status: %d)", sub.MemberID, resp.StatusCode)
+		return
+	}
 	log.Printf("[Scheduler] Notif terkirim ke member %s (status: %d)", sub.MemberID, resp.StatusCode)
 }

@@ -1,3 +1,4 @@
+import { HabitWordmark } from "@/components/brand/HabitWordmark";
 import { Providers } from "@/app/providers";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,7 +21,7 @@ export default function AuthLayout({
               height={40}
             />
             <span className="text-xl font-semibold tracking-tight">
-              HABIT
+              <HabitWordmark />
               <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
                 Ruang keluarga kita
               </span>
@@ -63,7 +64,7 @@ export default function AuthLayout({
               width={36}
               height={36}
             />
-            <span className="text-xl font-semibold tracking-tight">HABIT</span>
+            <HabitWordmark />
           </Link>
           <div className="w-full max-w-md rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-9">
             {children}

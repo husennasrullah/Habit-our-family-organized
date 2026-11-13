@@ -511,6 +511,8 @@ export interface CreateMealPlanPayload {
 }
 
 export interface UpdateMealPlanPayload {
+  date?: string;
+  meal_type?: MealType;
   name: string;
   notes?: string;
   recipe_url?: string;

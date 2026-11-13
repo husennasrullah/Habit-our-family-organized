@@ -31,8 +31,8 @@ Mendefinisikan struktur data untuk meal plan di database. Satu `MealPlan` merepr
 - Build backend tetap berhasil (`go build ./...`)
 
 **Todo List:**
-- [ ] Buat file `backend/internal/models/meal_plan.go`
-- [ ] Definisikan struct `MealPlan` dengan field:
+- [x] Buat file `backend/internal/models/meal_plan.go`
+- [x] Definisikan struct `MealPlan` dengan field:
   - `BaseModel` (embed — ID UUID, CreatedAt, UpdatedAt, DeletedAt)
   - `FamilyID uuid.UUID` (wajib, indexed)
   - `CreatedBy uuid.UUID` (user yang menambahkan)
@@ -41,15 +41,15 @@ Mendefinisikan struktur data untuk meal plan di database. Satu `MealPlan` merepr
   - `Name string` (nama masakan, wajib)
   - `Notes string` (catatan singkat, opsional)
   - `RecipeURL string` (link resep, opsional)
-- [ ] Tambahkan `&models.MealPlan{}` ke daftar AutoMigrate di `backend/internal/database/migrate.go`
-- [ ] Jalankan `go build ./...` untuk validasi
+- [x] Tambahkan `&models.MealPlan{}` ke daftar AutoMigrate di `backend/internal/database/migrate.go`
+- [x] Jalankan `go build ./...` untuk validasi
 
 **Relevant Context:**
 - Pola model: `backend/internal/models/task.go`
 - BaseModel: `backend/internal/models/base.go`
 - Migrasi: `backend/internal/database/migrate.go`
 
-**Status:** `[ ] pending`
+**Status:** `[x] implemented`
 
 ---
 
@@ -64,32 +64,32 @@ Membuat lapisan data access dan business logic untuk meal plan. Mendukung query 
 - Build backend tetap berhasil
 
 **Todo List:**
-- [ ] Buat file `backend/internal/repositories/meal_plan_repo.go`
-- [ ] Implementasi method repository:
+- [x] Buat file `backend/internal/repositories/meal_plan_repo.go`
+- [x] Implementasi method repository:
   - `Create(m *models.MealPlan) error`
   - `GetByID(id, familyID uuid.UUID) (*models.MealPlan, error)`
   - `GetByDateRange(familyID uuid.UUID, from, to string) ([]models.MealPlan, error)` — untuk query mingguan/bulanan
   - `GetByDate(familyID uuid.UUID, date string) ([]models.MealPlan, error)` — untuk notifikasi harian
   - `Update(m *models.MealPlan) error`
   - `Delete(id, familyID uuid.UUID) error`
-- [ ] Buat file `backend/internal/services/meal_plan_service.go`
-- [ ] Definisikan DTOs di service:
+- [x] Buat file `backend/internal/services/meal_plan_service.go`
+- [x] Definisikan DTOs di service:
   - `CreateMealPlanRequest` (date, meal_type, name, notes, recipe_url)
   - `UpdateMealPlanRequest` (name, notes, recipe_url)
   - `GetMealPlansRequest` (from, to — tanggal range)
-- [ ] Implementasi method service:
+- [x] Implementasi method service:
   - `Create(req, familyID, createdBy)` — validasi meal_type harus salah satu dari 3 pilihan
   - `GetByDateRange(req, familyID)`
   - `GetTodayMeals(familyID)` — dipakai scheduler notifikasi
   - `Update(id, req, familyID)`
   - `Delete(id, familyID)`
-- [ ] Jalankan `go build ./...` untuk validasi
+- [x] Jalankan `go build ./...` untuk validasi
 
 **Relevant Context:**
 - Pola repository: `backend/internal/repositories/task_repo.go`
 - Pola service: `backend/internal/services/task_service.go`
 
-**Status:** `[ ] pending`
+**Status:** `[x] implemented`
 
 ---
 
@@ -104,23 +104,23 @@ Membuat HTTP endpoints untuk meal plan dan mendaftarkan ke router Fiber. Semua e
 - Response format konsisten `{data, message}`
 
 **Todo List:**
-- [ ] Buat file `backend/internal/handlers/meal_plan_handler.go`
-- [ ] Implementasi handler methods:
+- [x] Buat file `backend/internal/handlers/meal_plan_handler.go`
+- [x] Implementasi handler methods:
   - `GetMealPlans` — `GET /meal-plans?from=YYYY-MM-DD&to=YYYY-MM-DD`
   - `CreateMealPlan` — `POST /meal-plans`
   - `UpdateMealPlan` — `PUT /meal-plans/:id`
   - `DeleteMealPlan` — `DELETE /meal-plans/:id`
-- [ ] Tambahkan ke `backend/cmd/main.go`:
+- [x] Tambahkan ke `backend/cmd/main.go`:
   - Inisialisasi `mealPlanRepo`, `mealPlanService`, `mealPlanHandler`
   - Daftarkan route group `/meal-plans` dengan `authMw`
-- [ ] Jalankan `go build ./...` untuk validasi
+- [x] Jalankan `go build ./...` untuk validasi
 
 **Relevant Context:**
 - Pola handler: `backend/internal/handlers/task_handler.go`
 - Registrasi route & DI: `backend/cmd/main.go` lines 50–83 dan 132–138
 - Helper `getUserID` dan `getFamilyID`: `backend/internal/handlers/family_handler.go`
 
-**Status:** `[ ] pending`
+**Status:** `[x] implemented`
 
 ---
 
@@ -131,34 +131,34 @@ Menambahkan infrastruktur push notification berbasis Web Push (VAPID) dan schedu
 
 **Expected Outcomes:**
 - Backend bisa menerima dan menyimpan push subscription dari browser
-- Scheduler berjalan setiap hari pagi (default jam 06:00) dan mengirim notifikasi ke semua subscriber aktif
+- Scheduler berjalan setiap hari pagi (default jam 04:00 WIB) dan mengirim notifikasi ke semua subscriber aktif
 - VAPID key dikonfigurasi via `.env`
 
 **Todo List:**
-- [ ] Tambahkan library `github.com/SherClockHolmes/webpush-go` ke `go.mod`
-- [ ] Tambahkan library `github.com/robfig/cron/v3` ke `go.mod` untuk scheduler
-- [ ] Tambahkan `PushConfig` ke `backend/internal/config/config.go`:
+- [x] Tambahkan library `github.com/SherClockHolmes/webpush-go` ke `go.mod`
+- [x] Tambahkan library `github.com/robfig/cron/v3` ke `go.mod` untuk scheduler
+- [x] Tambahkan `PushConfig` ke `backend/internal/config/config.go`:
   - `VAPID_PUBLIC_KEY`
   - `VAPID_PRIVATE_KEY`
   - `VAPID_SUBJECT` (contoh: `mailto:admin@keluarga.dev`)
   - `NOTIFICATION_TIME` (format cron, default: `0 4 * * *` = jam 04:00 setiap hari)
-- [ ] Tambahkan ke `.env.example`
-- [ ] Buat model `PushSubscription` (`backend/internal/models/push_subscription.go`):
+- [x] Tambahkan ke `.env.example`
+- [x] Buat model `PushSubscription` (`backend/internal/models/push_subscription.go`):
   - `FamilyID`, `MemberID`, `Endpoint`, `P256DH`, `Auth`
-- [ ] Buat handler `POST /push/subscribe` — simpan subscription dari browser
-- [ ] Buat handler `DELETE /push/subscribe` — hapus subscription (unsubscribe)
-- [ ] Buat file `backend/internal/scheduler/meal_notifier.go`:
+- [x] Buat handler `POST /push/subscribe` — simpan subscription dari browser
+- [x] Buat handler `DELETE /push/subscribe` — hapus subscription (unsubscribe)
+- [x] Buat file `backend/internal/scheduler/meal_notifier.go`:
   - Fungsi `SendDailyMealNotification(familyID)` — ambil menu hari ini, format pesan, kirim ke semua subscriber keluarga
   - Fungsi `StartScheduler(cfg, db)` — jalankan cron job
-- [ ] Panggil `scheduler.StartScheduler()` di `backend/cmd/main.go` setelah AutoMigrate
-- [ ] Jalankan `go build ./...` untuk validasi
+- [x] Panggil `scheduler.StartScheduler()` di `backend/cmd/main.go` setelah AutoMigrate
+- [x] Jalankan `go build ./...` untuk validasi
 
 **Relevant Context:**
 - Config pattern: `backend/internal/config/config.go`
 - Main entry point: `backend/cmd/main.go`
 - MealPlanService.GetTodayMeals() dari Task MP-2
 
-**Status:** `[ ] pending`
+**Status:** `[x] implemented`
 
 ---
 
@@ -173,7 +173,7 @@ Mendefinisikan TypeScript types untuk meal plan dan membuat React Query hooks ya
 - TypeScript tidak ada error (`npx tsc --noEmit`)
 
 **Todo List:**
-- [ ] Tambahkan types ke `frontend/types/index.ts`:
+- [x] Tambahkan types ke `frontend/types/index.ts`:
   ```ts
   export type MealType = "breakfast" | "lunch" | "dinner";
   export interface MealPlan {
@@ -189,20 +189,20 @@ Mendefinisikan TypeScript types untuk meal plan dan membuat React Query hooks ya
     updated_at: string;
   }
   ```
-- [ ] Buat file `frontend/hooks/useMealPlans.ts` dengan hooks:
+- [x] Buat file `frontend/hooks/useMealPlans.ts` dengan hooks:
   - `useMealPlans(from: string, to: string)` — query GET `/meal-plans?from=&to=`
   - `useCreateMealPlan()` — mutation POST
   - `useUpdateMealPlan()` — mutation PUT
   - `useDeleteMealPlan()` — mutation DELETE
   - Semua mutation invalidate query key `["meal-plans"]` on success
-- [ ] Jalankan `npx tsc --noEmit` untuk validasi
+- [x] Jalankan `npx tsc --noEmit` untuk validasi
 
 **Relevant Context:**
 - Pola hook: `frontend/hooks/useTasks.ts`
 - Type pattern: `frontend/types/index.ts` lines 170–188
 - API client: `frontend/lib/api.ts`
 
-**Status:** `[ ] pending`
+**Status:** `[x] implemented`
 
 ---
 
@@ -220,29 +220,29 @@ Membangun halaman `/meals` dengan tampilan grid mingguan (7 kolom hari × 3 bari
 - TypeScript tidak ada error
 
 **Todo List:**
-- [ ] Buat file `frontend/app/(dashboard)/meals/page.tsx`
-- [ ] State yang dikelola: `currentWeekStart` (Date), `modalOpen`, `selectedSlot` (date + meal_type), `selectedMealPlan`
-- [ ] Logika helper:
+- [x] Buat file `frontend/app/(dashboard)/meals/page.tsx`
+- [x] State yang dikelola: `currentWeekStart` (Date), `modalOpen`, `selectedSlot` (date + meal_type), `selectedMealPlan`
+- [x] Logika helper:
   - `getWeekDays(startDate)` — return array 7 Date dari Senin s/d Minggu
   - `getMealForSlot(meals, date, mealType)` — cari meal plan dari array berdasarkan date+type
-- [ ] Layout grid:
+- [x] Layout grid:
   - Header baris: kolom hari (Sen, Sel, Rab, ..., Min) + tanggal
   - Baris 1: Sarapan (06:00–09:00)
   - Baris 2: Makan Siang (11:00–13:00)
   - Baris 3: Makan Malam (18:00–20:00)
   - Tiap sel: tampilkan `MealSlotCard` (jika ada) atau `EmptySlot` (tombol +)
-- [ ] Buat komponen `MealSlotCard` — tampilkan nama, notes singkat, ikon link resep, tombol edit/hapus
-- [ ] Buat komponen `MealFormModal` — form tambah/edit (name, notes, recipe_url), validasi name wajib diisi
-- [ ] Navigasi minggu: tombol `< Prev` | label "Minggu ini" | tombol `Next >`, plus tombol "Hari Ini" reset ke minggu berjalan
-- [ ] Highlight kolom hari ini dengan warna teal ringan
-- [ ] Jalankan `npx tsc --noEmit` untuk validasi
+- [x] Buat komponen `MealSlotCard` — tampilkan nama, notes singkat, ikon link resep, tombol edit/hapus
+- [x] Buat komponen `MealFormModal` — form tambah/edit (name, notes, recipe_url), validasi name wajib diisi
+- [x] Navigasi minggu: tombol `< Prev` | label "Minggu ini" | tombol `Next >`, plus tombol "Hari Ini" reset ke minggu berjalan
+- [x] Highlight kolom hari ini dengan warna teal ringan
+- [x] Jalankan `npx tsc --noEmit` untuk validasi
 
 **Relevant Context:**
 - Pola halaman: `frontend/app/(dashboard)/tasks/page.tsx`
 - Pola modal: `frontend/components/tasks/TaskModal.tsx`
 - Design system: warna teal `primary-600`, background `#F4F6F8`, card `bg-white rounded-xl border border-neutral-100`
 
-**Status:** `[ ] pending`
+**Status:** `[x] implemented`
 
 ---
 
@@ -257,18 +257,18 @@ Menambahkan menu "Jadwal Makanan" ke sidebar dan bottom nav, sesuai urutan yang 
 - Active state berfungsi saat berada di `/meals`
 
 **Todo List:**
-- [ ] Edit `frontend/components/layout/Sidebar.tsx`:
+- [x] Edit `frontend/components/layout/Sidebar.tsx`:
   - Tambahkan import icon `UtensilsCrossed` dari lucide-react
   - Tambahkan entry di `NAV_ITEMS` setelah `/budget`: `{ href: "/meals", label: "Jadwal Makan", icon: UtensilsCrossed }`
-- [ ] Edit `frontend/components/layout/BottomNav.tsx`:
+- [x] Edit `frontend/components/layout/BottomNav.tsx`:
   - Tambahkan `/meals` di posisi yang sesuai (gantikan `/memories` atau tambah)
-- [ ] Jalankan `npx tsc --noEmit` untuk validasi
+- [x] Jalankan `npx tsc --noEmit` untuk validasi
 
 **Relevant Context:**
 - Sidebar: `frontend/components/layout/Sidebar.tsx` lines 23–32
 - Bottom nav: `frontend/components/layout/BottomNav.tsx`
 
-**Status:** `[ ] pending`
+**Status:** `[x] implemented`
 
 ---
 
@@ -280,31 +280,31 @@ Mengaktifkan push notification PWA di frontend. Browser akan meminta izin, menyi
 **Expected Outcomes:**
 - Browser meminta izin notifikasi saat user pertama kali buka `/meals`
 - Subscription berhasil tersimpan ke backend
-- Notifikasi muncul di HP/browser saat scheduler backend mengirim (jam 06:00)
+- Notifikasi muncul di HP/browser saat scheduler backend mengirim (jam 04:00 WIB)
 - Bekerja di Chrome Android dan Safari iOS (dengan keterbatasan iOS < 16.4)
 
 **Todo List:**
-- [ ] Tambahkan `NEXT_PUBLIC_VAPID_PUBLIC_KEY` ke `frontend/.env.local` (dan `.env.example`)
-- [ ] Buat file `frontend/lib/pushNotification.ts`:
+- [x] Tambahkan `NEXT_PUBLIC_VAPID_PUBLIC_KEY` ke `frontend/.env.local` (dan `.env.example`)
+- [x] Buat file `frontend/lib/pushNotification.ts`:
   - `requestPermission()` — minta izin browser
   - `subscribeToPush()` — daftarkan subscription ke browser + kirim ke backend `POST /push/subscribe`
   - `unsubscribeFromPush()` — hapus subscription dari browser + backend
-- [ ] Buat file `frontend/public/sw-push.js` (custom service worker handler):
+- [x] Buat file `frontend/public/sw-push.js` (custom service worker handler):
   - Event listener `push` — parse payload JSON, tampilkan `self.registration.showNotification()`
   - Notifikasi: title "Menu Hari Ini 🍽️", body berisi daftar 3 menu, icon PWA
   - Event listener `notificationclick` — buka `/meals` saat notif diklik
-- [ ] Update `frontend/next.config.mjs` untuk include custom service worker
-- [ ] Tambahkan hook `usePushNotification()` di halaman `/meals`:
+- [x] Update `frontend/next.config.mjs` untuk include custom service worker
+- [x] Tambahkan hook `usePushNotification()` di halaman `/meals`:
   - Saat halaman dimount, cek apakah sudah subscribe
   - Jika belum, tampilkan banner "Aktifkan notifikasi menu harian?"
-- [ ] Jalankan `npx tsc --noEmit` untuk validasi
+- [x] Jalankan `npx tsc --noEmit` untuk validasi
 
 **Relevant Context:**
 - PWA config: `frontend/next.config.mjs`
 - Service worker: `frontend/public/sw.js` (existing, generated by next-pwa)
 - Manifest: `frontend/public/manifest.json`
 
-**Status:** `[ ] pending`
+**Status:** `[x] implemented`
 
 ---
 
@@ -355,3 +355,12 @@ Body:  "🌅 Sarapan: Nasi Goreng\n☀️ Siang: Soto Ayam\n🌙 Malam: Belum di
 - iOS Safari mendukung Web Push hanya mulai iOS 16.4+
 - Harus diinstall sebagai PWA dulu (Add to Home Screen)
 - Notifikasi tidak muncul saat app tidak di-install sebagai PWA
+
+
+## Pembenahan hasil review — 2026-11-13
+- CRUD meal memiliki validasi nama trim/panjang, tanggal dan rentang tanggal, waktu makan, catatan, dan URL resep HTTP(S). Edit dapat memindahkan tanggal/waktu makan serta mengosongkan catatan/resep. Update database tetap membatasi keluarga dan tidak membuat ulang record yang telah dihapus.
+- Frontend memakai Zod dan form native, modal maksimal 360 px, nama akses kartu/dialog spesifik, tombol Hari Ini mereset hari mobile, tautan lama yang tidak aman tidak dirender sebagai link.
+- Notifikasi memakai client API bersama dengan refresh token, memeriksa kegagalan server/config, memulihkan status tersimpan milik anggota saat mount, dan menyediakan nonaktifkan. Subscription baru yang gagal disimpan dibatalkan di browser.
+- API status subscription baru; unsubscribe/upsert dibatasi family/member JWT. Upsert atomik menolak mengambil alih endpoint akun lain. Validasi endpoint hanya mengizinkan provider browser Google/Mozilla/Apple/Windows melalui HTTPS, memeriksa kunci P-256/auth, dan diulang sebelum pengiriman. Redirect pengiriman dinonaktifkan, timeout 15 detik; endpoint/token tidak dicatat di log.
+- Scheduler dan tanggal memakai WIB eksplisit. Semua masakan per slot digabung dalam payload JSON; 404/410 membersihkan subscription. Error tidak lagi memotong string endpoint secara tidak aman.
+- Verifikasi dan bukti rinci: docs/meal-plan-improvements.md. Pengiriman push ke perangkat nyata belum diuji; checklist implemented menyatakan implementasi tersedia, bukan klaim verifikasi perangkat.

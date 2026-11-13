@@ -256,7 +256,8 @@ func main() {
 
 	// Push Notification routes
 	push := api.Group("/push")
-	push.Get("/vapid-key", handlers.GetVAPIDPublicKey(cfg.Push.VAPIDPublicKey))
+	push.Get("/subscription", authMw, pushHandler.Status)
+	push.Get("/vapid-key", handlers.GetVAPIDPublicKey(cfg.Push.VAPIDPublicKey, cfg.Push.VAPIDPrivateKey))
 	push.Post("/subscribe",   authMw, pushHandler.Subscribe)
 	push.Delete("/subscribe", authMw, pushHandler.Unsubscribe)
 

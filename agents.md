@@ -12,7 +12,31 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-13 (Pembenahan menu Tugas dan pengiriman)
+> **Last updated:** 2026-11-13 (Pengiriman Jadwal Makan dan wordmark Habit)
+
+### Pengiriman Jadwal Makan dan wordmark Habit — 2026-11-13
+- Pengguna meminta push ke origin setelah perbaikan dan QA dinyatakan lulus. Branch main dan origin/main sinkron sebelum pengiriman; diff whitespace bersih.
+- Cakupan: perbaikan meal/push backend, frontend dan wordmark referensi, tes, rencana, dokumentasi serta bukti QA. Tidak menyertakan environment, cache/build atau generated sw/workbox.
+- Verifikasi sebelumnya: tes/vet backend, integrasi PostgreSQL schema temporer, enam file tes frontend, build/lint/typecheck, 23 pemeriksaan browser dan sembilan audit axe lulus. Tidak menjalankan ulang pengujian karena perubahan berikutnya hanya dokumentasi pengiriman.
+- Pengiriman dengan commit dan push biasa ke origin/main tanpa force. Next steps: pantau CI/CD dan verifikasi di deployment, termasuk push pada perangkat nyata yang belum diuji lokal.
+
+### Pembenahan Jadwal Makan dan wordmark Habit — 2026-11-13
+- Pengguna menyetujui semua temuan review untuk diperbaiki sekaligus, kemudian meminta tulisan Habit mengikuti gambar referensi. Akses penuh ditegaskan untuk menyelesaikan pekerjaan proyek ini; belum ada permintaan commit/push pada batch ini.
+- Backend meal: validasi nama trim/panjang, tanggal/rentang/waktu makan/catatan/URL HTTP(S), edit tanggal dan waktu makan, normalisasi DATE PostgreSQL lama, UPDATE terfilter keluarga yang tidak menghidupkan record terhapus. Frontend memakai form native+Zod, clear catatan/resep, blok tautan legacy tidak aman, modal 360 px, input ringkas/touch-safe, nama akses kartu/dialog, Hari Ini mereset hari mobile, dan pesan gagal simpan server.
+- Push: client API bersama/refresh token, rollback subscription baru saat POST gagal, kedua kunci VAPID wajib tersedia, status tersimpan dipulihkan via endpoint status milik anggota JWT, kontrol nonaktifkan dan panduan izin. Upsert atomik membatasi keluarga/anggota dan menolak transfer pemilik, unsubscribe terfilter; validasi provider HTTPS Google/Mozilla/Apple/Windows dan kunci P-256/auth. Scheduler memvalidasi ulang data legacy, tanpa redirect, timeout 15 detik, tanpa log endpoint/token, membersihkan 404/410. WIB eksplisit dan payload JSON menggabungkan semua masakan per slot.
+- Wordmark: komponen vektor HabitWordmark mengikuti bentuk huruf membulat tebal, hijau gelap dan titik kuning pada referensi pengguna; diterapkan di sidebar dan auth desktop/mobile, huruf terang untuk tema gelap. Tidak mengubah ikon rumah/PWA atau menambah font/dependency.
+- Verifikasi: go test ./... dan go vet ./... lulus; integrasi PostgreSQL schema temporer lulus untuk CRUD/clear/pindah slot/family isolation/stale update, 10 upsert serentak, kepemilikan anggota, unsubscribe/resubscribe. Enam file tes frontend dan build produksi 19 halaman berikut lint/typecheck lulus. Browser fixture: 23 pemeriksaan dan sembilan audit axe terarah lulus tanpa error runtime/overflow/pelanggaran; mencakup CRUD/error/empty, validasi, alur push simulasi, layar 375/390/1024/1440 serta halaman/dialog terang/gelap. Hasil final pada docs/qa/meals-modern-results.json.
+- File utama: services/repositories/handlers/model terkait meal/push, scheduler, route status baru, halaman meals, lib/mealPlans dan pushNotification, komponen brand, Sidebar/auth/globals/types, tes dan script QA. Dokumentasi docs/meal-plan-improvements.md dan meal-plan-feature.md diselaraskan. Tidak mengubah schema atau data keluarga asli; schema QA dibersihkan otomatis, generated sw/workbox tidak disertakan.
+- Next steps: review hasil pengguna; pengiriman push ke perangkat nyata belum diuji. Belum commit/push/deploy.
+
+### Review menu Jadwal Makan — 2026-11-13
+- Pengguna meminta pemeriksaan dan laporan. Membaca halaman meals, hooks/API/types terkait, service/repository/model/handler/routes meal dan push, scheduler, service worker, serta meal-plan-feature.md. Review berdasarkan source; tidak menjalankan browser/API atau mengirim push baru.
+- Tersedia grid mingguan desktop, pilihan hari mobile, tiga waktu makan, beberapa masakan per slot, CRUD/catatan/link resep dan tombol aktivasi notifikasi. CRUD meal mengambil keluarga dari JWT; query baca/hapus terfilter keluarga, update membaca record terfilter sebelum Save.
+- Prioritas: subscribeToPush tidak memeriksa HTTP status dan mengembalikan sukses saat VAPID kosong; fetch melewati refresh token API bersama. Status subscription tidak dipulihkan saat mount dan belum ada kontrol nonaktifkan. Payload scheduler menimpa masakan pada slot sama sehingga hanya satu tampil.
+- Push unsubscribe menghapus berdasarkan endpoint saja tanpa family/member JWT. Subscribe hanya memvalidasi endpoint tidak kosong; endpoint/key perlu validasi, terutama karena scheduler melakukan request keluar. Error kirim memakai sub.Endpoint[:30] yang dapat panic untuk endpoint pendek; subscription 404/410 tidak dibersihkan.
+- Validasi meal belum trim nama, parse tanggal/rentang atau batasi skema URL resep; input type=url bukan bagian form sehingga tombol simpan tidak memicu validasi native. Edit belum bisa memindah tanggal/waktu makan. Tombol Minggu Ini pada mobile tidak mereset hari terpilih ke hari ini; nama akses kartu hanya Buka. Modal masih max-w-md (448 px), berbeda dari modal ringkas modul terbaru.
+- Tidak menemukan tes khusus meal/push pada direktori tes yang diperiksa; QA bersama memuat halaman dan memeriksa dialog, bukan bukti pengiriman notifikasi nyata. Docker sudah menetapkan TZ=Asia/Jakarta; scheduler di luar Docker mengikuti zona host. Plan meal lama masih pending meski implementasi tersedia.
+- File yang diubah sesi review hanya agents.md. Next steps: benahi isolasi/validasi push dan ketepatan status notifikasi, agregasi masakan, validasi meal, lalu UX jadwal/modal; implementasi menunggu arahan pengguna.
 
 ### Pembenahan menu Tugas dan pengiriman — 2026-11-13
 - Pengguna menyetujui seluruh perbaikan hasil review, lalu meminta push ke origin setelah selesai. Backend: TaskField membedakan omitted/null untuk anggota dan tenggat, validasi judul trim/status/poin integer 0–1000/tanggal/anggota keluarga, serta row lock yang menyatukan update/complete/delete. Complete bersifat idempoten.
@@ -191,6 +215,9 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Jadwal Makan dan wordmark referensi — 2026-11-13
+- Memperbaiki meal/push backend, halaman/form/helper frontend dan tes/QA; wordmark vektor dipakai sidebar/auth. Detail file, keputusan, verifikasi dan batas pengujian tercatat pada STATUS TERKINI serta docs/meal-plan-improvements.md. Belum commit/push.
 
 #### Fix Google OAuth Missing Refresh Token — 2026-09-02
 - **Root Cause:** Pada endpoint `/auth/google/callback` di backend, `GoogleCallback` handler hanya menyertakan `token` (access token) di redirect URL dan tidak memasang cookie `refresh_token` maupun mengirimnya ke URL. Akibatnya saat frontend redirect/reload atau mount `AuthSync`/interceptor 401, refresh token tidak ditemukan di `localStorage` maupun cookie.

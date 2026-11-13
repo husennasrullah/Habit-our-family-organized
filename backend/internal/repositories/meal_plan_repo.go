@@ -53,7 +53,14 @@ func (r *MealPlanRepository) GetByDate(familyID uuid.UUID, date string) ([]model
 }
 
 func (r *MealPlanRepository) Update(m *models.MealPlan) error {
-	return r.db.Save(m).Error
+	result := r.db.Model(&models.MealPlan{}).Where("id = ? AND family_id = ?", m.ID, m.FamilyID).Select("name", "notes", "recipe_url", "date", "meal_type", "updated_at").Updates(m)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
 func (r *MealPlanRepository) Delete(id, familyID uuid.UUID) error {

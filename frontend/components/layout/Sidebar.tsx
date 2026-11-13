@@ -1,5 +1,7 @@
 "use client";
 
+import { HabitWordmark } from "@/components/brand/HabitWordmark";
+
 import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -113,7 +115,7 @@ export function Sidebar() {
                 sidebarCollapsed && "lg:hidden",
               )}
             >
-              Habit<span>Ruang keluarga kita</span>
+              <HabitWordmark /><span>Ruang keluarga kita</span>
             </span>
           </Link>
           <button

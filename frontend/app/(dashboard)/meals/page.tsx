@@ -1,5 +1,8 @@
 "use client";
 
+import { isRecipeURL, mealFormSchema, type MealFormValues } from "@/lib/mealPlans";
+import { supportsPush, currentPushSubscription, subscribeToPush, unsubscribeFromPush } from "@/lib/pushNotification";
+import { AxiosError } from "axios";
 import { QueryError } from "@/components/shared/QueryError";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { ModalFrame } from "@/components/shared/ModalFrame";
@@ -84,7 +87,7 @@ function MealSlotCard({
     <button
       onClick={() => onDetail(meal)}
       className="group w-full text-left rounded-lg border border-border dark:border-primary-900 bg-primary-50 dark:bg-primary-950 p-2.5 hover:bg-primary-100 dark:hover:bg-primary-900 hover:border-primary-200 transition-colors"
-      aria-label="Buka"
+      aria-label={`Buka menu ${meal.name}`}
     >
       <p className="text-xs font-semibold text-foreground dark:text-foreground leading-snug line-clamp-2">
         {meal.name}
@@ -129,10 +132,11 @@ function MealDetailModal({
 
   return (
     <ModalFrame
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40"
+      className="meal-dialog fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40"
       onClose={onClose}
+      aria-label={meal.name}
     >
-      <div className="bg-card dark:bg-card w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl">
+      <div className="bg-card dark:bg-card w-full sm:max-w-[360px] rounded-t-2xl sm:rounded-2xl shadow-xl">
         {/* Header */}
         <div className="flex items-start justify-between px-4 pt-5 pb-4 border-b border-border dark:border-border">
           <div className="flex items-center gap-2.5">
@@ -180,7 +184,7 @@ function MealDetailModal({
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                 Link Resep
               </p>
-              <a
+              {isRecipeURL(meal.recipe_url) ? <a
                 href={meal.recipe_url}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -188,12 +192,12 @@ function MealDetailModal({
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 {meal.recipe_url}
-              </a>
+              </a> : <p className="text-xs text-muted-foreground">Tautan resep tidak valid. Edit menu untuk memperbaruinya.</p>}
             </div>
           )}
 
           {!meal.notes && !meal.recipe_url && (
-            <div className="flex flex-col items-center justify-center py-4 text-neutral-300">
+            <div className="flex flex-col items-center justify-center py-4 text-muted-foreground">
               <UtensilsCrossed className="h-8 w-8 mb-2" />
               <p className="text-xs">Tidak ada catatan tambahan</p>
             </div>
@@ -205,7 +209,7 @@ function MealDetailModal({
           <button
             onClick={() => onDelete(meal.id)}
             disabled={isDeleting}
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-red-200 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 disabled:opacity-50 transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-red-200 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 disabled:opacity-50 transition-colors"
           >
             <Trash2 className="h-4 w-4" />
             Hapus
@@ -223,12 +227,12 @@ function MealDetailModal({
   );
 }
 
-function AddSlotButton({ onClick }: { onClick: () => void }) {
+function AddSlotButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
     <button
       onClick={onClick}
-      aria-label="Tambah menu"
-      className="w-full rounded-lg border border-dashed border-border py-1.5 flex items-center justify-center text-neutral-300 hover:border-primary-300 hover:text-primary-400 transition-colors"
+      aria-label={label}
+      className="w-full rounded-lg border border-dashed border-border py-1.5 flex items-center justify-center text-muted-foreground hover:border-primary-300 hover:text-primary-600 transition-colors"
     >
       <Plus className="h-3.5 w-3.5" />
     </button>
@@ -248,7 +252,7 @@ function MealFormModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (values: { name: string; notes: string; recipe_url: string }) => void;
+  onSave: (values: MealFormValues) => void;
   mealType: MealType;
   date: Date;
   editingMeal?: MealPlan;
@@ -257,34 +261,55 @@ function MealFormModal({
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
   const [recipeURL, setRecipeURL] = useState("");
+  const [formDate, setFormDate] = useState(toDateStr(date));
+  const [formType, setFormType] = useState<MealType>(mealType);
+  const [formError, setFormError] = useState("");
 
   // Sync state setiap kali modal dibuka atau editingMeal berganti
   useEffect(() => {
     if (isOpen) {
+      setFormDate(toDateStr(date));
+      setFormType(mealType);
+      setFormError("");
       setName(editingMeal?.name ?? "");
       setNotes(editingMeal?.notes ?? "");
       setRecipeURL(editingMeal?.recipe_url ?? "");
     }
-  }, [isOpen, editingMeal]);
+  }, [isOpen, editingMeal, date, mealType]);
 
   if (!isOpen) return null;
 
-  const mealLabel = MEAL_TYPES.find((m) => m.value === mealType)?.label ?? "";
-  const dateLabel = format(date, "EEEE, d MMMM yyyy", { locale: dateLocale });
+  const mealLabel = MEAL_TYPES.find((m) => m.value === formType)?.label ?? "";
+  const formDay = new Date(formDate + "T00:00:00");
+  const dateLabel = Number.isNaN(formDay.getTime()) ? "Pilih tanggal" : format(formDay, "EEEE, d MMMM yyyy", { locale: dateLocale });
 
   return (
     <ModalFrame
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40"
-      onClose={onClose}
+      className="meal-dialog fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40"
+      onClose={() => { if (!isSaving) onClose(); }}
     >
-      <div className="bg-card dark:bg-card rounded-2xl shadow-xl w-full max-w-md">
+      <div className="bg-card dark:bg-card rounded-2xl shadow-xl w-full max-w-[360px]">
         <div className="px-4 py-4 border-b border-border dark:border-border">
           <h2 className="text-base font-semibold text-foreground dark:text-neutral-50">
             {editingMeal ? "Edit" : "Tambah"} {mealLabel}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">{dateLabel}</p>
         </div>
-        <div className="p-4 space-y-4">
+        <form id="meal-form" onSubmit={(event) => {
+          event.preventDefault();
+          if (isSaving) return;
+          const parsed = mealFormSchema.safeParse({ name, notes, recipe_url: recipeURL, date: formDate, meal_type: formType });
+          if (!parsed.success) { setFormError(parsed.error.issues[0].message); return; }
+          setFormError(""); onSave(parsed.data);
+        }} className="p-4 space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div><label htmlFor="meal-date" className="text-xs font-medium">Tanggal</label>
+            <input id="meal-date" type="date" required value={formDate} onChange={(e) => setFormDate(e.target.value)} className="mt-1 w-full min-w-0 rounded-lg border border-border bg-card px-2 py-2 text-sm" /></div>
+            <div><label htmlFor="meal-type" className="text-xs font-medium">Waktu makan</label>
+            <select id="meal-type" value={formType} onChange={(e) => setFormType(e.target.value as MealType)} className="mt-1 w-full rounded-lg border border-border bg-card px-2 py-2 text-sm">
+              {MEAL_TYPES.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}
+            </select></div>
+          </div>
           <div>
             <label
               className="text-xs font-medium text-foreground dark:text-muted-foreground"
@@ -293,6 +318,8 @@ function MealFormModal({
               Nama Masakan *
             </label>
             <input
+              required
+              maxLength={150}
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="mt-1 w-full rounded-lg border border-border dark:border-border bg-card dark:bg-muted text-foreground dark:text-foreground px-3 py-2 text-sm focus:border-primary-400 focus:outline-none"
@@ -309,6 +336,7 @@ function MealFormModal({
               Catatan Singkat
             </label>
             <input
+              maxLength={2000}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="mt-1 w-full rounded-lg border border-border dark:border-border bg-card dark:bg-muted text-foreground dark:text-foreground px-3 py-2 text-sm focus:border-primary-400 focus:outline-none"
@@ -324,6 +352,7 @@ function MealFormModal({
               Link Resep (opsional)
             </label>
             <input
+              maxLength={2048}
               value={recipeURL}
               onChange={(e) => setRecipeURL(e.target.value)}
               className="mt-1 w-full rounded-lg border border-border dark:border-border bg-card dark:bg-muted text-foreground dark:text-foreground px-3 py-2 text-sm focus:border-primary-400 focus:outline-none"
@@ -332,16 +361,19 @@ function MealFormModal({
               id="field-page-dashboardmeals-2"
             />
           </div>
-        </div>
+          {formError && <p role="alert" className="text-xs text-red-600">{formError}</p>}
+        </form>
         <div className="px-4 pb-5 flex gap-2 justify-end">
           <button
             onClick={onClose}
+            disabled={isSaving}
             className="px-4 py-2 rounded-lg text-sm font-medium text-foreground dark:text-foreground border border-border dark:border-border hover:bg-muted dark:hover:bg-neutral-800"
           >
             Batal
           </button>
           <button
-            onClick={() => onSave({ name, notes, recipe_url: recipeURL })}
+            type="submit"
+            form="meal-form"
             disabled={!name.trim() || isSaving}
             className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 transition-colors"
           >
@@ -402,26 +434,20 @@ export default function MealsPage() {
     setModalOpen(true);
   }, []);
 
-  const handleSave = async (values: {
-    name: string;
-    notes: string;
-    recipe_url: string;
-  }) => {
+  const handleSave = async (values: MealFormValues) => {
     try {
       if (editingMeal) {
         await updateMeal.mutateAsync({ id: editingMeal.id, ...values });
         toast.success("Menu diperbarui");
       } else {
         await createMeal.mutateAsync({
-          date: toDateStr(selectedDate),
-          meal_type: selectedMealType,
           ...values,
         });
         toast.success("Menu ditambahkan");
       }
       setModalOpen(false);
-    } catch {
-      toast.error("Gagal menyimpan menu");
+    } catch (error) {
+      toast.error(error instanceof AxiosError ? error.response?.data?.message ?? "Gagal menyimpan menu" : "Gagal menyimpan menu");
     }
   };
 
@@ -464,12 +490,12 @@ export default function MealsPage() {
           </button>
           <button
             onClick={() =>
-              setWeekStart(startOfWeek(today, { weekStartsOn: 1 }))
+              { setWeekStart(startOfWeek(today, { weekStartsOn: 1 })); setActiveDay((today.getDay() + 6) % 7); }
             }
             className="px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
           >
             {isThisWeek
-              ? "Minggu Ini"
+              ? "Hari Ini"
               : format(weekStart, "d MMM", { locale: dateLocale })}
           </button>
           <button
@@ -646,6 +672,7 @@ export default function MealsPage() {
                                 />
                               ))}
                               <AddSlotButton
+                                label={`Tambah ${mt.label}, ${format(day, "EEEE, d MMMM", { locale: dateLocale })}`}
                                 onClick={() => openAdd(day, mt.value)}
                               />
                             </>
@@ -673,7 +700,7 @@ export default function MealsPage() {
       {/* ── Form Modal ────────────────────────────────────────── */}
       <MealFormModal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={() => { if (!createMeal.isPending && !updateMeal.isPending) setModalOpen(false); }}
         onSave={handleSave}
         mealType={selectedMealType}
         date={selectedDate}
@@ -684,94 +711,43 @@ export default function MealsPage() {
   );
 }
 
-// ─── Banner notifikasi ────────────────────────────────────────────────────────
+// ─── Notifikasi ──────────────────────────────────────────────────────────────
 function NotificationBanner() {
-  const [status, setStatus] = useState<
-    "idle" | "granted" | "denied" | "loading"
-  >("idle");
-
-  const requestNotification = async () => {
-    if (!("Notification" in window) || !("serviceWorker" in navigator)) {
-      toast.error("Browser tidak mendukung push notification");
-      return;
-    }
-    setStatus("loading");
+  const [status, setStatus] = useState<"checking" | "idle" | "granted" | "denied" | "loading" | "unsupported">("checking");
+  const [error, setError] = useState("");
+  const check = useCallback(async () => {
+    if (!supportsPush()) { setStatus("unsupported"); return; }
+    if (Notification.permission === "denied") { setStatus("denied"); return; }
+    try { setStatus(await currentPushSubscription() ? "granted" : "idle"); setError(""); }
+    catch { setStatus("idle"); setError("Status notifikasi belum dapat diperiksa."); }
+  }, []);
+  useEffect(() => { void check(); }, [check]);
+  const toggle = async () => {
+    const previous = status;
+    setStatus("loading"); setError("");
     try {
-      const perm = await Notification.requestPermission();
-      if (perm === "granted") {
-        await subscribeToPush();
-        setStatus("granted");
-        toast.success("Notifikasi menu harian aktif! 🔔");
+      if (previous === "granted") {
+        await unsubscribeFromPush(); setStatus("idle"); toast.success("Notifikasi dinonaktifkan");
       } else {
-        setStatus("denied");
+        const perm = await Notification.requestPermission();
+        if (perm !== "granted") { setStatus(perm === "denied" ? "denied" : "idle"); return; }
+        await subscribeToPush(); setStatus("granted"); toast.success("Notifikasi menu harian aktif");
       }
-    } catch {
-      setStatus("idle");
-      toast.error("Gagal mengaktifkan notifikasi");
+    } catch (err) {
+      const active = await currentPushSubscription().catch(() => previous === "granted");
+      setStatus(active ? "granted" : "idle");
+      const message = err instanceof AxiosError ? err.response?.data?.message ?? "Gagal memperbarui notifikasi. Coba lagi." : err instanceof Error ? err.message : "Gagal memperbarui notifikasi";
+      setError(message); toast.error(message);
     }
   };
-
-  if (status === "granted") return null;
-
-  return (
-    <button
-      onClick={requestNotification}
-      disabled={status === "loading" || status === "denied"}
-      className={cn(
-        "flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors shadow-sm",
-        status === "denied"
-          ? "bg-muted text-muted-foreground cursor-not-allowed"
-          : "bg-primary-600 text-white hover:bg-primary-700",
-      )}
-    >
+  if (status === "unsupported") return <p className="text-xs text-muted-foreground">Notifikasi tidak tersedia di browser ini.</p>;
+  return <div className="max-w-sm space-y-1">
+    <button onClick={status === "denied" ? () => void check() : () => void toggle()} disabled={status === "loading" || status === "checking"}
+      className="flex min-h-9 items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold disabled:opacity-50">
       <Bell className="h-4 w-4" />
-      {status === "loading"
-        ? "Mengaktifkan..."
-        : status === "denied"
-          ? "Notifikasi ditolak"
-          : "Aktifkan Notifikasi"}
+      {status === "checking" ? "Memeriksa notifikasi..." : status === "loading" ? "Memproses..." : status === "granted" ? "Nonaktifkan Notifikasi" : status === "denied" ? "Periksa Ulang Izin" : "Aktifkan Notifikasi"}
     </button>
-  );
-}
-
-// ─── Push subscription helper ─────────────────────────────────────────────────
-async function subscribeToPush() {
-  const reg = await navigator.serviceWorker.ready;
-
-  // Ambil VAPID public key dari backend
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/push/vapid-key`);
-  const { public_key } = await res.json();
-  if (!public_key) return;
-
-  const sub = await reg.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(
-      public_key,
-    ) as unknown as BufferSource,
-  });
-
-  const json = sub.toJSON();
-  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/push/subscribe`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-    },
-    body: JSON.stringify({
-      endpoint: json.endpoint,
-      p256dh: (json.keys as Record<string, string>)?.p256dh,
-      auth: (json.keys as Record<string, string>)?.auth,
-    }),
-  });
-}
-
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = window.atob(base64);
-  const output = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; i++) {
-    output[i] = rawData.charCodeAt(i);
-  }
-  return output;
+    {status === "denied" && <p className="text-xs text-muted-foreground">Izinkan notifikasi melalui pengaturan browser, lalu periksa ulang.</p>}
+    {error && <p role="alert" className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+  </div>;
 }
