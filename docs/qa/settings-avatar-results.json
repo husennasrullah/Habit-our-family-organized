@@ -1,0 +1,73 @@
+{
+  "results": [
+    {
+      "scenario": "empty",
+      "images": [
+        {
+          "src": "http://127.0.0.1:3000/icons/assets-habit/logo-user-ayah.png",
+          "width": 100
+        },
+        {
+          "src": "http://127.0.0.1:3000/icons/assets-habit/logo-user-ayah.png",
+          "width": 100
+        },
+        {
+          "src": "http://127.0.0.1:3000/icons/assets-habit/logo-user-anak.png",
+          "width": 512
+        }
+      ]
+    },
+    {
+      "scenario": "broken",
+      "images": [
+        {
+          "src": "http://127.0.0.1:3000/icons/assets-habit/logo-user-ayah.png",
+          "width": 100
+        },
+        {
+          "src": "http://127.0.0.1:3000/icons/assets-habit/logo-user-ayah.png",
+          "width": 100
+        },
+        {
+          "src": "http://127.0.0.1:3000/icons/assets-habit/logo-user-anak.png",
+          "width": 512
+        }
+      ]
+    },
+    {
+      "scenario": "whitespace",
+      "images": [
+        {
+          "src": "http://127.0.0.1:3000/icons/assets-habit/logo-user-ayah.png",
+          "width": 100
+        },
+        {
+          "src": "http://127.0.0.1:3000/icons/assets-habit/logo-user-ayah.png",
+          "width": 100
+        },
+        {
+          "src": "http://127.0.0.1:3000/icons/assets-habit/logo-user-anak.png",
+          "width": 512
+        }
+      ]
+    },
+    {
+      "scenario": "valid",
+      "images": [
+        {
+          "src": "https://avatar.example.test/valid.png",
+          "width": 100
+        },
+        {
+          "src": "https://avatar.example.test/valid.png",
+          "width": 100
+        },
+        {
+          "src": "https://avatar.example.test/valid.png",
+          "width": 100
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

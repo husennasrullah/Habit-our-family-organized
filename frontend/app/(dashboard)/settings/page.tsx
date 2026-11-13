@@ -84,22 +84,31 @@ function InviteCodeBox({ code }: { code: string }) {
   );
 }
 
+function ProfileAvatar({ user, size }: { user: AuthUser; size: number }) {
+  const [failedSource, setFailedSource] = useState<string | null>(null);
+  const source = user.avatar_url?.trim() || "";
+  const fallback =
+    user.role === "child"
+      ? "/icons/assets-habit/logo-user-anak.png"
+      : "/icons/assets-habit/logo-user-ayah.png";
+  return (
+    <Image
+      src={source && source !== failedSource ? source : fallback}
+      alt={user.name}
+      width={size}
+      height={size}
+      unoptimized
+      onError={() => setFailedSource(source)}
+      className="h-full w-full object-cover"
+    />
+  );
+}
+
 function MemberRow({ member, isMe }: { member: AuthUser; isMe: boolean }) {
   return (
     <div className="flex items-center gap-3 py-2.5 border-b border-neutral-50 dark:border-border last:border-0">
       <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-neutral-100 dark:ring-neutral-700">
-        <Image
-          src={
-            member.avatar_url ||
-            (member.role === "child"
-              ? "/icons/assets-habit/logo-user-anak.png"
-              : "/icons/assets-habit/logo-user-ayah.png")
-          }
-          alt={member.name}
-          width={36}
-          height={36}
-          className="h-9 w-9 object-cover"
-        />
+        <ProfileAvatar user={member} size={36} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-foreground dark:text-foreground truncate">
@@ -178,18 +187,7 @@ export default function SettingsPage() {
         {user ? (
           <div className="flex items-center gap-4">
             <div className="h-16 w-16 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-primary-200">
-              <Image
-                src={
-                  user.avatar_url ||
-                  (user.role === "child"
-                    ? "/icons/assets-habit/logo-user-anak.png"
-                    : "/icons/assets-habit/logo-user-ayah.png")
-                }
-                alt={user.name}
-                width={64}
-                height={64}
-                className="h-16 w-16 object-cover"
-              />
+              <ProfileAvatar user={user} size={64} />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-base font-bold text-foreground dark:text-foreground">

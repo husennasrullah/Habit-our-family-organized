@@ -12,7 +12,13 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-13 (Modernisasi kalender dan pengiriman ke origin)
+> **Last updated:** 2026-11-13 (Fallback foto profil Pengaturan)
+
+### Fallback foto profil Pengaturan — 2026-11-13
+- Pengguna melaporkan foto profil tidak muncul, meminta gambar default bila belum diatur, dan meminta push setelah selesai. Modernisasi kalender sebelumnya sudah terkirim ke origin/main pada be752e7.
+- File frontend/app/(dashboard)/settings/page.tsx: komponen ProfileAvatar dipakai bersama pada Profil Saya dan daftar anggota. URL kosong/spasi atau gagal dimuat memakai aset lokal default sesuai peran anak/dewasa. Foto valid tetap dipakai. Image memakai unoptimized agar foto eksternal seperti Google dan aset default dilayani langsung tanpa ketergantungan konfigurasi host/optimizer.
+- Verifikasi: lint dan TypeScript lulus; QA browser dengan API fixture memeriksa empat skenario (kosong, rusak, spasi, valid) pada profil dan anggota dewasa/anak, semua gambar selesai dimuat tanpa error runtime. Script frontend/scripts/settings-avatar-qa.cjs; bukti docs/qa/settings-avatar-{results.json,fallback.png}. Tidak mengubah data/backend/dependency.
+- Pengiriman: commit dan push biasa ke origin/main sesuai permintaan pengguna. Next steps: pantau CI/CD dan review Pengaturan di deployment.
 
 ### Modernisasi kalender dan pengiriman — 2026-11-13
 - Pengguna meminta tampilan kalender lebih modern, kemudian menyetujui penyimpanan dan push ke origin/main.
