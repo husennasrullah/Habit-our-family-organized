@@ -4,24 +4,24 @@ import { format, parseISO } from "date-fns";
 import { id as dateLocale } from "date-fns/locale";
 import { CheckCircle2, Pencil, Trash2, PlusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { rupiah as formatRp } from "@/lib/finance";
 import type { FinancialGoal } from "@/types";
 
 interface GoalCardProps {
   goal: FinancialGoal;
   onEdit: (g: FinancialGoal) => void;
   onDelete: (g: FinancialGoal) => void;
+  onHistory: (goal: FinancialGoal) => void;
   onAddFund: (g: FinancialGoal) => void;
 }
 
-function formatRp(n: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
-export function GoalCard({ goal, onEdit, onDelete, onAddFund }: GoalCardProps) {
+export function GoalCard({
+  goal,
+  onEdit,
+  onDelete,
+  onAddFund,
+  onHistory,
+}: GoalCardProps) {
   const pct =
     goal.target_amount > 0
       ? Math.min((goal.current_amount / goal.target_amount) * 100, 100)
@@ -113,6 +113,12 @@ export function GoalCard({ goal, onEdit, onDelete, onAddFund }: GoalCardProps) {
         </p>
       )}
 
+      <button
+        onClick={() => onHistory(goal)}
+        className="w-full rounded-xl border border-border px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted"
+      >
+        Riwayat setoran
+      </button>
       {/* Tambah Dana button */}
       {!goal.is_achieved && (
         <button

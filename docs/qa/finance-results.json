@@ -1,0 +1,171 @@
+{
+  "checks": [
+    "four flat finance tabs",
+    "create first budget before any expense",
+    "expense defaults to local date",
+    "record expense",
+    "checkout creates one expense and leaves shopping list",
+    "create savings goal with opening balance",
+    "add deposit with note",
+    "deposit history shows member date amount and note",
+    "metadata edit does not overwrite savings balance",
+    "Pengeluaran fits 375",
+    "Anggaran fits 375",
+    "Tabungan fits 375",
+    "Belanja fits 375",
+    "Pengeluaran fits 390",
+    "Anggaran fits 390",
+    "Tabungan fits 390",
+    "Belanja fits 390",
+    "Pengeluaran fits 768",
+    "Anggaran fits 768",
+    "Tabungan fits 768",
+    "Belanja fits 768",
+    "Pengeluaran fits 1366",
+    "Anggaran fits 1366",
+    "Tabungan fits 1366",
+    "Belanja fits 1366",
+    "compact dialog fits mobile",
+    "dark theme budget",
+    "failed budget request is not shown as zero"
+  ],
+  "errors": [],
+  "mutations": [
+    {
+      "method": "POST",
+      "path": "/budgets",
+      "body": {
+        "category": "Belanja Rumah",
+        "amount": 100000,
+        "month": 11,
+        "year": 2026
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/expenses",
+      "body": {
+        "amount": 25000,
+        "category": "Belanja Rumah",
+        "description": "Kebutuhan rumah",
+        "date": "2026-11-13"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/shopping-items",
+      "body": {
+        "name": "Beras"
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/shopping-items/33333333-3333-4333-8333-000000000003/check",
+      "body": {}
+    },
+    {
+      "method": "POST",
+      "path": "/shopping-items/checkout",
+      "body": {
+        "amount": 50000,
+        "category": "Belanja Rumah",
+        "description": "",
+        "date": "2026-11-13",
+        "item_ids": [
+          "33333333-3333-4333-8333-000000000003"
+        ]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/financial-goals",
+      "body": {
+        "title": "Dana darurat",
+        "target_amount": 100000,
+        "deadline": "",
+        "notes": "",
+        "current_amount": 10000
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/financial-goals/33333333-3333-4333-8333-000000000005/progress",
+      "body": {
+        "amount": 15000,
+        "note": "Setoran Ayah"
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/financial-goals/33333333-3333-4333-8333-000000000005",
+      "body": {
+        "title": "Dana darurat",
+        "target_amount": 200000,
+        "deadline": "",
+        "notes": ""
+      }
+    }
+  ],
+  "audits": [
+    {
+      "name": "budget-dialog",
+      "violations": []
+    },
+    {
+      "name": "expense-dialog",
+      "violations": []
+    },
+    {
+      "name": "checkout-dialog",
+      "violations": []
+    },
+    {
+      "name": "goal-dialog",
+      "violations": []
+    },
+    {
+      "name": "deposit-dialog",
+      "violations": []
+    },
+    {
+      "name": "history-dialog",
+      "violations": []
+    },
+    {
+      "name": "Pengeluaran-390",
+      "violations": []
+    },
+    {
+      "name": "Anggaran-390",
+      "violations": []
+    },
+    {
+      "name": "Tabungan-390",
+      "violations": []
+    },
+    {
+      "name": "Belanja-390",
+      "violations": []
+    },
+    {
+      "name": "Pengeluaran-1366",
+      "violations": []
+    },
+    {
+      "name": "Anggaran-1366",
+      "violations": []
+    },
+    {
+      "name": "Tabungan-1366",
+      "violations": []
+    },
+    {
+      "name": "Belanja-1366",
+      "violations": []
+    },
+    {
+      "name": "budget-dark",
+      "violations": []
+    }
+  ]
+}

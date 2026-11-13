@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"strings"
 
 	"keluarga-app/backend/internal/models"
 	"keluarga-app/backend/internal/repositories"
@@ -29,6 +30,7 @@ type UpdateGoalRequest struct {
 }
 
 type AddFundRequest struct {
+	Note   string  `json:"note"`
 	Amount float64 `json:"amount" validate:"required"`
 }
 
@@ -43,13 +45,23 @@ func NewFinancialGoalService(repo *repositories.FinancialGoalRepository) *Financ
 }
 
 func (s *FinancialGoalService) Create(req CreateGoalRequest, familyID, userID uuid.UUID) (*models.FinancialGoal, error) {
+	req.Title = strings.TrimSpace(req.Title)
 	if req.Title == "" {
 		return nil, errors.New("judul target wajib diisi")
 	}
-	if req.TargetAmount <= 0 {
+	if !validMoney(req.TargetAmount, false) {
 		return nil, errors.New("nominal target harus lebih dari 0")
 	}
 
+	if !validMoney(req.CurrentAmount, true) {
+		return nil, errors.New("saldo awal tidak valid")
+	}
+	if req.Deadline != nil && *req.Deadline != "" && !validDate(*req.Deadline) {
+		return nil, errors.New("tanggal tidak valid")
+	}
+	if req.Deadline != nil && *req.Deadline == "" {
+		req.Deadline = nil
+	}
 	g := &models.FinancialGoal{
 		FamilyID:      familyID,
 		CreatedBy:     userID,
@@ -74,69 +86,56 @@ func (s *FinancialGoalService) GetList(familyID uuid.UUID) ([]models.FinancialGo
 	return s.repo.GetByFamily(familyID)
 }
 
-func (s *FinancialGoalService) Update(id uuid.UUID, req UpdateGoalRequest, familyID uuid.UUID) (*models.FinancialGoal, error) {
-	g, err := s.repo.GetByID(id, familyID)
-	if err != nil {
-		return nil, errors.New("target tidak ditemukan")
-	}
-
-	if req.Title != nil {
-		g.Title = *req.Title
-	}
-	if req.TargetAmount != nil {
-		if *req.TargetAmount <= 0 {
-			return nil, errors.New("nominal target harus lebih dari 0")
+func (s *FinancialGoalService) Update(id uuid.UUID, req UpdateGoalRequest, familyID, userID uuid.UUID) (*models.FinancialGoal, error) {
+	return s.repo.Mutate(id, familyID, userID, "adjustment", "Koreksi saldo", func(g *models.FinancialGoal) error {
+		if req.Title != nil {
+			g.Title = strings.TrimSpace(*req.Title)
+			if g.Title == "" {
+				return errors.New("judul target wajib diisi")
+			}
 		}
-		g.TargetAmount = *req.TargetAmount
-	}
-	if req.CurrentAmount != nil {
-		g.CurrentAmount = *req.CurrentAmount
-	}
-	if req.Deadline != nil {
-		if *req.Deadline == "" {
-			g.Deadline = nil
-		} else {
-			g.Deadline = req.Deadline
+		if req.TargetAmount != nil {
+			if !validMoney(*req.TargetAmount, false) {
+				return errors.New("nominal target tidak valid")
+			}
+			g.TargetAmount = *req.TargetAmount
 		}
-	}
-	if req.Notes != nil {
-		g.Notes = *req.Notes
-	}
-	if req.IsAchieved != nil {
-		g.IsAchieved = *req.IsAchieved
-	}
-
-	// Auto achieve check
-	if g.CurrentAmount >= g.TargetAmount {
-		g.IsAchieved = true
-	}
-
-	if err := s.repo.Update(g); err != nil {
-		return nil, err
-	}
-	return g, nil
+		if req.CurrentAmount != nil {
+			if !validMoney(*req.CurrentAmount, true) {
+				return errors.New("saldo tidak valid")
+			}
+			g.CurrentAmount = *req.CurrentAmount
+		}
+		if req.Deadline != nil {
+			if *req.Deadline == "" {
+				g.Deadline = nil
+			} else {
+				if !validDate(*req.Deadline) {
+					return errors.New("tanggal tidak valid")
+				}
+				g.Deadline = req.Deadline
+			}
+		}
+		if req.Notes != nil {
+			g.Notes = *req.Notes
+		}
+		return nil
+	})
 }
-
-// AddFund menambahkan dana ke current_amount dan auto-set is_achieved jika sudah tercapai
-func (s *FinancialGoalService) AddFund(id uuid.UUID, req AddFundRequest, familyID uuid.UUID) (*models.FinancialGoal, error) {
-	if req.Amount <= 0 {
-		return nil, errors.New("nominal tambah dana harus lebih dari 0")
+func (s *FinancialGoalService) AddFund(id uuid.UUID, req AddFundRequest, familyID, userID uuid.UUID) (*models.FinancialGoal, error) {
+	if !validMoney(req.Amount, false) {
+		return nil, errors.New("nominal tambah dana tidak valid")
 	}
-
-	g, err := s.repo.GetByID(id, familyID)
-	if err != nil {
-		return nil, errors.New("target tidak ditemukan")
-	}
-
-	g.CurrentAmount += req.Amount
-	if g.CurrentAmount >= g.TargetAmount {
-		g.IsAchieved = true
-	}
-
-	if err := s.repo.Update(g); err != nil {
-		return nil, err
-	}
-	return g, nil
+	return s.repo.Mutate(id, familyID, userID, "deposit", strings.TrimSpace(req.Note), func(g *models.FinancialGoal) error {
+		if !validMoney(g.CurrentAmount+req.Amount, true) {
+			return errors.New("saldo melebihi batas nominal")
+		}
+		g.CurrentAmount = roundMoney(g.CurrentAmount + req.Amount)
+		return nil
+	})
+}
+func (s *FinancialGoalService) Entries(id, familyID uuid.UUID) ([]models.FinancialGoalEntry, error) {
+	return s.repo.Entries(id, familyID)
 }
 
 func (s *FinancialGoalService) Delete(id, familyID uuid.UUID) error {

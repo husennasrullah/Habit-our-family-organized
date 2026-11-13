@@ -28,6 +28,7 @@ type Budget struct {
 
 // ShoppingItem — item dalam daftar belanja keluarga
 type ShoppingItem struct {
+	ExpenseID *uuid.UUID `gorm:"type:uuid;index" json:"expense_id"`
 	BaseModel
 	FamilyID  uuid.UUID  `gorm:"type:uuid;not null;index" json:"family_id"`
 	AddedBy   uuid.UUID  `gorm:"type:uuid;not null"       json:"added_by"`

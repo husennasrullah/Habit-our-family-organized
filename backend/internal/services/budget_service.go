@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"keluarga-app/backend/internal/models"
@@ -62,9 +63,10 @@ func NewBudgetService(
 // ─── Expenses ─────────────────────────────────────────────────────────────────
 
 func (s *BudgetService) CreateExpense(req CreateExpenseRequest, familyID, userID uuid.UUID) (*models.Expense, error) {
-	if req.Amount <= 0 {
+	if !validMoney(req.Amount, false) {
 		return nil, errors.New("nominal harus lebih dari 0")
 	}
+	req.Category = strings.TrimSpace(req.Category)
 	if req.Category == "" {
 		return nil, errors.New("kategori wajib diisi")
 	}
@@ -72,11 +74,17 @@ func (s *BudgetService) CreateExpense(req CreateExpenseRequest, familyID, userID
 		req.Date = time.Now().Format("2006-01-02")
 	}
 
+	if !validDate(req.Date) {
+		return nil, errors.New("tanggal tidak valid")
+	}
 	currency := req.Currency
 	if currency == "" {
 		currency = "IDR"
 	}
 
+	if currency != "IDR" {
+		return nil, errors.New("mata uang harus IDR")
+	}
 	e := &models.Expense{
 		FamilyID:    familyID,
 		CreatedBy:   userID,
@@ -99,6 +107,18 @@ func (s *BudgetService) GetExpenses(familyID uuid.UUID, month, year int, categor
 }
 
 func (s *BudgetService) UpdateExpense(id uuid.UUID, req UpdateExpenseRequest, familyID uuid.UUID) (*models.Expense, error) {
+	if req.Amount != nil && !validMoney(*req.Amount, false) {
+		return nil, errors.New("nominal harus positif dengan maksimal dua desimal")
+	}
+	if req.Date != nil && !validDate(*req.Date) {
+		return nil, errors.New("tanggal tidak valid")
+	}
+	if req.Category != nil && strings.TrimSpace(*req.Category) == "" {
+		return nil, errors.New("kategori wajib diisi")
+	}
+	if req.Currency != nil && *req.Currency != "IDR" {
+		return nil, errors.New("mata uang harus IDR")
+	}
 	e, err := s.expenseRepo.GetByID(id, familyID)
 	if err != nil {
 		return nil, errors.New("pengeluaran tidak ditemukan")
@@ -157,6 +177,16 @@ func (s *BudgetService) GetSummary(familyID uuid.UUID, month, year int) (map[str
 // ─── Budgets ─────────────────────────────────────────────────────────────────
 
 func (s *BudgetService) UpsertBudget(req UpsertBudgetRequest, familyID uuid.UUID) (*models.Budget, error) {
+	req.Category = strings.TrimSpace(req.Category)
+	if !validMoney(req.Amount, false) {
+		return nil, errors.New("anggaran harus lebih dari nol")
+	}
+	if req.Month < 1 || req.Month > 12 || req.Year < 2000 || req.Year > 9999 {
+		return nil, errors.New("periode tidak valid")
+	}
+	if req.Period != "" && req.Period != "monthly" {
+		return nil, errors.New("periode harus bulanan")
+	}
 	if req.Category == "" {
 		return nil, errors.New("kategori wajib diisi")
 	}
@@ -217,20 +247,7 @@ func (s *BudgetService) GetShoppingItems(familyID uuid.UUID) ([]models.ShoppingI
 }
 
 func (s *BudgetService) ToggleShoppingItem(id, familyID, userID uuid.UUID) (*models.ShoppingItem, error) {
-	item, err := s.shoppingRepo.GetByID(id, familyID)
-	if err != nil {
-		return nil, errors.New("item tidak ditemukan")
-	}
-	item.IsChecked = !item.IsChecked
-	if item.IsChecked {
-		item.CheckedBy = &userID
-	} else {
-		item.CheckedBy = nil
-	}
-	if err := s.shoppingRepo.Update(item); err != nil {
-		return nil, err
-	}
-	return item, nil
+	return s.shoppingRepo.Toggle(id, familyID, userID)
 }
 
 func (s *BudgetService) DeleteShoppingItem(id, familyID uuid.UUID) error {
@@ -243,4 +260,36 @@ func (s *BudgetService) DeleteShoppingItem(id, familyID uuid.UUID) error {
 
 func (s *BudgetService) ClearCheckedItems(familyID uuid.UUID) error {
 	return s.shoppingRepo.DeleteChecked(familyID)
+}
+
+type CheckoutShoppingRequest struct {
+	ItemIDs     []uuid.UUID `json:"item_ids"`
+	Amount      float64     `json:"amount"`
+	Category    string      `json:"category"`
+	Date        string      `json:"date"`
+	Description string      `json:"description"`
+}
+
+func (s *BudgetService) CheckoutShopping(req CheckoutShoppingRequest, familyID, userID uuid.UUID) (*models.Expense, error) {
+	if len(req.ItemIDs) == 0 || len(req.ItemIDs) > 200 {
+		return nil, errors.New("pilih 1 sampai 200 item belanja")
+	}
+	seen := map[uuid.UUID]bool{}
+	for _, id := range req.ItemIDs {
+		if id == uuid.Nil || seen[id] {
+			return nil, errors.New("item belanja tidak valid")
+		}
+		seen[id] = true
+	}
+	if !validMoney(req.Amount, false) {
+		return nil, errors.New("nominal belanja tidak valid")
+	}
+	if !validDate(req.Date) {
+		return nil, errors.New("tanggal tidak valid")
+	}
+	req.Category = strings.TrimSpace(req.Category)
+	if req.Category == "" {
+		return nil, errors.New("kategori wajib diisi")
+	}
+	return s.shoppingRepo.Checkout(req.ItemIDs, &models.Expense{FamilyID: familyID, CreatedBy: userID, Amount: req.Amount, Category: req.Category, Date: req.Date, Description: strings.TrimSpace(req.Description), Currency: "IDR"})
 }

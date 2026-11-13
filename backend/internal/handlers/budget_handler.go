@@ -316,3 +316,24 @@ func (h *BudgetHandler) ClearCheckedItems(c *fiber.Ctx) error {
 	}
 	return c.JSON(fiber.Map{"message": "item tercentang dihapus"})
 }
+
+// CheckoutShopping godoc
+// @Summary Catat item belanja tercentang sebagai satu pengeluaran
+// @Tags budget
+// @Security BearerAuth
+// @Router /shopping-items/checkout [post]
+func (h *BudgetHandler) CheckoutShopping(c *fiber.Ctx) error {
+	familyID := getFamilyID(c)
+	if familyID == uuid.Nil {
+		return c.Status(400).JSON(fiber.Map{"message": "belum bergabung ke keluarga"})
+	}
+	var req services.CheckoutShoppingRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"message": "request tidak valid"})
+	}
+	expense, err := h.budgetService.CheckoutShopping(req, familyID, getUserID(c))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"message": err.Error()})
+	}
+	return c.Status(201).JSON(fiber.Map{"data": expense, "message": "belanja dicatat sebagai pengeluaran"})
+}

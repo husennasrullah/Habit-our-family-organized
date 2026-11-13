@@ -1,5 +1,6 @@
 "use client";
 
+import type { ShoppingItem } from "@/types";
 import { QueryError } from "@/components/shared/QueryError";
 import { useState, useRef } from "react";
 import { Plus, Check, Trash2, ShoppingCart, Loader2 } from "lucide-react";
@@ -13,7 +14,11 @@ import {
 } from "@/hooks/useBudget";
 import { toast } from "sonner";
 
-export function ShoppingList() {
+export function ShoppingList({
+  onCheckout,
+}: {
+  onCheckout: (items: ShoppingItem[]) => void;
+}) {
   const [newItem, setNewItem] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -80,6 +85,19 @@ export function ShoppingList() {
         )}
       </div>
 
+      {checked.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-primary-50 px-4 py-3 dark:bg-primary-950">
+          <p className="text-sm">
+            {checked.length} item siap dicatat. Isi total sesuai struk.
+          </p>
+          <button
+            onClick={() => onCheckout(checked)}
+            className="rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white"
+          >
+            Selesaikan belanja
+          </button>
+        </div>
+      )}
       {/* Add item */}
       <div className="flex items-center gap-2 border-b border-border px-3 py-2">
         <input
@@ -124,8 +142,17 @@ export function ShoppingList() {
               >
                 <button
                   onClick={() => toggleItem.mutate(item.id)}
-                  className="flex-shrink-0 h-5 w-5 rounded-full border-2 border-neutral-300 hover:border-primary-400 transition-colors"
-                />
+                  role="checkbox"
+                  aria-checked={false}
+                  aria-label={`Tandai ${item.name} sudah dibeli`}
+                  disabled={toggleItem.isPending}
+                  className="shopping-check flex shrink-0 items-center justify-center rounded-lg p-0 hover:bg-muted disabled:opacity-50"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="shopping-check-mark rounded-full border-2 border-neutral-300"
+                  />
+                </button>
                 <span className="flex-1 text-sm text-foreground">
                   {item.name}
                   {item.quantity !== "1" && (
@@ -156,10 +183,18 @@ export function ShoppingList() {
               >
                 <button
                   onClick={() => toggleItem.mutate(item.id)}
-                  className="flex-shrink-0 flex h-5 w-5 items-center justify-center rounded-full bg-success-500"
-                  aria-label="Tandai selesai"
+                  role="checkbox"
+                  aria-checked={true}
+                  disabled={toggleItem.isPending}
+                  className="shopping-check flex shrink-0 items-center justify-center rounded-lg p-0 hover:bg-muted disabled:opacity-50"
+                  aria-label={`Tandai ${item.name} belum dibeli`}
                 >
-                  <Check className="h-3 w-3 text-white" />
+                  <span
+                    aria-hidden="true"
+                    className="shopping-check-mark flex items-center justify-center rounded-full bg-primary-600"
+                  >
+                    <Check className="h-3 w-3 text-white" />
+                  </span>
                 </button>
                 <span className="flex-1 text-sm text-muted-foreground line-through">
                   {item.name}

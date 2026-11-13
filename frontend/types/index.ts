@@ -147,7 +147,8 @@ export interface AuthUser extends FamilyMember {
 
 // ─── Events ──────────────────────────────────────────────────────────────────
 
-export type EventType = "general" | "school" | "medical" | "birthday" | "vacation";
+export type EventType =
+  "general" | "school" | "medical" | "birthday" | "vacation";
 
 export interface CalendarEvent {
   id: string;
@@ -201,6 +202,18 @@ export interface FinancialGoal {
   is_achieved: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface FinancialGoalEntry {
+  id: string;
+  goal_id: string;
+  actor_id: string | null;
+  actor_name: string;
+  amount: number;
+  balance_after: number;
+  kind: "opening" | "deposit" | "adjustment";
+  note: string;
+  created_at: string;
 }
 
 // ─── Memories ────────────────────────────────────────────────────────────────
@@ -258,6 +271,7 @@ export interface Budget {
 }
 
 export interface ShoppingItem {
+  expense_id?: string | null;
   id: string;
   family_id: string;
   added_by: string;
@@ -304,7 +318,7 @@ export interface MealPlan {
   id: string;
   family_id: string;
   created_by: string;
-  date: string;        // YYYY-MM-DD
+  date: string; // YYYY-MM-DD
   meal_type: MealType;
   name: string;
   notes: string;

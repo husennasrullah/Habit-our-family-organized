@@ -1237,3 +1237,14 @@ Sudah punya keluarga?
 - Simpan semua credentials dan environment variables di tempat yang aman
 - Lakukan backup database secara rutin sejak awal production
 - **Jangan pernah** mengambil `family_id` dari input user — selalu dari JWT context
+
+
+## Pembenahan Keuangan — 2026-11-13
+
+- [x] Navigasi empat tab, anggaran dari kosong, ringkasan anggaran/pengeluaran/sisa.
+- [x] Checkout belanja menjadi pengeluaran dalam satu transaksi database.
+- [x] Riwayat setoran/koreksi, row lock saldo, validasi nominal dan tanggal lokal.
+- [x] Modal Keuangan ringkas dan lingkaran ceklis 20 px.
+- [x] Migrasi tambahan 011, tes konkurensi PostgreSQL, browser/responsif/aksesibilitas dan curl API lokal.
+
+Detail implementasi dan bukti: [finance-improvements.md](docs/finance-improvements.md).

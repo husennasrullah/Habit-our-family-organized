@@ -1578,3 +1578,62 @@
     }
   }
 }
+
+/* Finance dialogs share a compact scale; the visible check remains smaller than its hit area. */
+@layer components {
+  .finance-dialog {
+    padding: 16px;
+    align-items: center;
+  }
+  .finance-dialog .finance-dialog-card {
+    width: 100%;
+    max-width: 360px;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    border-radius: 16px;
+  }
+  .finance-dialog .finance-dialog-history {
+    max-width: 440px;
+  }
+  .finance-dialog input,
+  .finance-dialog select,
+  .finance-dialog textarea {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .finance-dialog input:not([type="checkbox"]),
+  .finance-dialog select {
+    height: 36px;
+    min-height: 36px;
+    padding: 6px 10px;
+  }
+  .shopping-check {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+  .shopping-check-mark {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  @media (pointer: coarse) {
+    .finance-dialog input,
+    .finance-dialog select,
+    .finance-dialog textarea {
+      font-size: 16px;
+    }
+    .finance-dialog input:not([type="checkbox"]),
+    .finance-dialog select {
+      height: 44px;
+      min-height: 44px;
+    }
+    .shopping-check {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+}

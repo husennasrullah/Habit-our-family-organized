@@ -170,6 +170,7 @@ func main() {
 	shopping := api.Group("/shopping-items", authMw)
 	shopping.Get("", budgetHandler.GetShoppingItems)
 	shopping.Post("", budgetHandler.CreateShoppingItem)
+	shopping.Post("/checkout", budgetHandler.CheckoutShopping)
 	shopping.Patch("/:id/check", budgetHandler.ToggleShoppingItem)
 	shopping.Delete("/clear-checked", budgetHandler.ClearCheckedItems)
 	shopping.Delete("/:id", budgetHandler.DeleteShoppingItem)
@@ -215,6 +216,7 @@ func main() {
 	// Financial Goals routes
 	goals := api.Group("/financial-goals", authMw)
 	goals.Get("",            goalHandler.GetGoals)
+	goals.Get("/:id/entries", goalHandler.GetEntries)
 	goals.Post("",           goalHandler.CreateGoal)
 	goals.Put("/:id",        goalHandler.UpdateGoal)
 	goals.Patch("/:id/progress", goalHandler.AddFund)

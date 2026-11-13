@@ -14,6 +14,25 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 > Selalu update section ini setiap akhir sesi kerja.
 > **Last updated:** 2026-11-13 (Revisi dashboard sesuai referensi, font dan header)
 
+### Pengiriman pembenahan Keuangan — 2026-11-13
+- Pengguna meminta commit dan push pembenahan Keuangan ke origin/main, termasuk migrasi tambahan 011, API/ledger/checkout, tampilan/modal ringkas, tes, dokumentasi dan bukti QA.
+- Branch lokal dan origin/main sinkron sebelum commit. Verifikasi sebelumnya tercatat di bawah; diff whitespace lulus. Menggunakan push biasa tanpa force. Next step: pantau CI/CD dan review fitur di deployment setelah pembaruan tersedia.
+
+### Implementasi pembenahan Keuangan — 2026-11-13
+- Pengguna menyetujui seluruh perbaikan hasil review; kemudian meminta modal dan ceklis diperkecil. Implementasi mencakup empat tab sejajar, anggaran dari kosong, summary anggaran/pengeluaran/sisa, checkout belanja atomik, riwayat setoran/koreksi, tanggal lokal, validasi nominal dan konkurensi saldo.
+- Backend: migrasi tambahan 011 (`financial_goal_entries`, `shopping_items.expense_id`), model/AutoMigrate, services/repos/handlers/routes. Row lock untuk goal dan item belanja; anggaran memakai advisory lock per keluarga/kategori/periode. Semua ID keluarga/anggota berasal dari JWT. CI mengaktifkan PostgreSQL integration tests via HABIT_TEST_DATABASE_URL.
+- Frontend: halaman budget, BudgetModal/GoalHistoryModal baru, modal/list/goal card dan hooks/type bersama, helper/tes finance. Dialog maksimum 360 px, input desktop 13 px/36 px; lingkaran ceklis 20 px dengan hit area terpisah 36/44 px. Bukti/pembatasan rinci: `docs/finance-improvements.md`.
+- Migrasi SQL 011 diterapkan ke database pengembangan lokal; backend lama diganti build baru `/tmp/habit-finance-api`, log `/tmp/habit-finance-api.log`, health localhost:8080 lulus. Data QA memakai keluarga/schema temporer dan telah dibersihkan; tidak mengubah transaksi keluarga asli.
+- Verifikasi: build produksi frontend 19 halaman/lint/typecheck; sembilan tes frontend; backend build/vet/go test; tes integrasi PostgreSQL (20 setoran bersamaan, checkout bersamaan, ledger, family isolation) lulus. Browser 28 pemeriksaan dan 15 audit axe terpilih bersih. Curl API nyata 16 pemeriksaan lulus. Belum commit/push; perubahan `agents.md` dari review sebelumnya dipertahankan.
+- Implementasi, review bukti, dan dokumentasi selesai. Next step: review pengguna pada localhost:3000/budget; belum commit/push. Pemasukan/rekening/ekspor/transaksi rutin tidak ditambahkan pada scope pembenahan ini.
+
+### Review fitur Keuangan — 2026-11-13
+- Pengguna meminta penilaian fitur, bukan implementasi. Membaca halaman budget, ExpenseModal/BudgetProgress/ShoppingList/GoalCard, hooks budget/goals dan backend service/repository/model terkait. Tidak mengubah kode fitur atau data; tidak menjalankan pengujian runtime baru.
+- Fitur aktif: CRUD pengeluaran, filter kategori/bulan, summary, budget kategori dan indikator kelebihan, checklist belanja, target tabungan/tambah dana.
+- Temuan: budget baru hanya dapat dibuat pada kategori yang sudah muncul di budgets/actuals; keadaan awal kosong tidak punya tombol membuat anggaran. Navigasi dua tingkat dan label Target Budget/Target Keluarga berpotensi membingungkan. Belanja belum terhubung ke pencatatan nominal transaksi; belum ada pemasukan/saldo dan riwayat setoran target pada alur yang ditinjau.
+- Temuan kode: default tanggal pengeluaran memakai UTC toISOString (bisa berbeda tanggal lokal); AddFund memakai read-modify-save tanpa operasi atomik (risiko lost update setoran bersamaan); status target tercapai tidak otomatis kembali false ketika target dinaikkan; update nominal pengeluaran belum memeriksa positif di service.
+- Rekomendasi urutan: benahi alur anggaran kosong dan ketepatan data dahulu, lalu ringkasan pengeluaran/anggaran/sisa, navigasi Pengeluaran/Anggaran/Tabungan/Belanja, dan integrasi belanja ke pengeluaran. Fitur pemasukan, transaksi rutin, laporan/ekspor sebagai pengembangan berikutnya. Next step menunggu arahan implementasi pengguna.
+
 ### Pengiriman pembaruan tampilan dan PWA — 2026-11-13
 - Pengguna meminta batch lanjutan dikirim ke origin/main: lebar Liburan/Pengaturan, skala seragam semua menu, wordmark lebih tebal, cache ikon PWA, dan latar cream.
 - Verifikasi tercatat pada bagian di bawah: build/lint/typecheck, pemeriksaan browser dan PWA lulus. Commit dan push biasa ke origin/main, tanpa force push; bukti QA/dokumentasi disertakan. Next step: pantau CI/CD dan review instalasi PWA setelah versi baru tersedia.

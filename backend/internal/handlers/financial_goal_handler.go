@@ -74,7 +74,7 @@ func (h *FinancialGoalHandler) UpdateGoal(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "request tidak valid"})
 	}
 
-	goal, err := h.svc.Update(id, req, getFamilyID(c))
+	goal, err := h.svc.Update(id, req, getFamilyID(c), getUserID(c))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -98,7 +98,7 @@ func (h *FinancialGoalHandler) AddFund(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "request tidak valid"})
 	}
 
-	goal, err := h.svc.AddFund(id, req, getFamilyID(c))
+	goal, err := h.svc.AddFund(id, req, getFamilyID(c), getUserID(c))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -120,4 +120,21 @@ func (h *FinancialGoalHandler) DeleteGoal(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
 	return c.JSON(fiber.Map{"message": "target dihapus"})
+}
+
+// GetEntries godoc
+// @Summary Riwayat saldo dan setoran tabungan keluarga
+// @Tags financial-goals
+// @Security BearerAuth
+// @Router /financial-goals/{id}/entries [get]
+func (h *FinancialGoalHandler) GetEntries(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"message": "ID tidak valid"})
+	}
+	rows, err := h.svc.Entries(id, getFamilyID(c))
+	if err != nil {
+		return c.Status(404).JSON(fiber.Map{"message": "riwayat tidak ditemukan"})
+	}
+	return c.JSON(fiber.Map{"data": rows})
 }

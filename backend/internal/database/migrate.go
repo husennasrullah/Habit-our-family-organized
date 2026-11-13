@@ -26,6 +26,7 @@ func AutoMigrate() {
 		&models.MealPlan{},
 		&models.PushSubscription{},
 		&models.FinancialGoal{},
+		&models.FinancialGoalEntry{},
 		&models.Trip{},
 		&models.TripMember{},
 		&models.TripItinerary{},

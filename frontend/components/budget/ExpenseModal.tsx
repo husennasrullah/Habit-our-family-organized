@@ -1,5 +1,6 @@
 "use client";
 
+import { localDateKey } from "@/lib/dashboard";
 import { ModalFrame } from "@/components/shared/ModalFrame";
 
 import { useEffect } from "react";
@@ -27,7 +28,15 @@ export const EXPENSE_CATEGORIES = [
 ];
 
 const expenseSchema = z.object({
-  amount: z.coerce.number().min(1, "Nominal harus lebih dari 0"),
+  amount: z.coerce
+    .number()
+    .finite()
+    .positive("Nominal harus lebih dari 0")
+    .max(9999999999999.99)
+    .refine(
+      (n) => Math.abs(n * 100 - Math.round(n * 100)) < 0.001,
+      "Maksimal dua angka desimal",
+    ),
   category: z.string().min(1, "Kategori wajib dipilih"),
   description: z.string().optional(),
   date: z.string().min(1, "Tanggal wajib diisi"),
@@ -43,6 +52,8 @@ interface ExpenseModalProps {
   expense?: Expense | null;
   isSaving?: boolean;
   isDeleting?: boolean;
+  title?: string;
+  submitLabel?: string;
 }
 
 export function ExpenseModal({
@@ -53,6 +64,8 @@ export function ExpenseModal({
   expense,
   isSaving,
   isDeleting,
+  title,
+  submitLabel,
 }: ExpenseModalProps) {
   const isEditing = !!expense;
 
@@ -67,7 +80,7 @@ export function ExpenseModal({
       amount: 0,
       category: "",
       description: "",
-      date: new Date().toISOString().slice(0, 10),
+      date: localDateKey(new Date()),
     },
   });
 
@@ -84,7 +97,7 @@ export function ExpenseModal({
         amount: 0,
         category: "",
         description: "",
-        date: new Date().toISOString().slice(0, 10),
+        date: localDateKey(new Date()),
       });
     }
   }, [expense, reset]);
@@ -93,16 +106,16 @@ export function ExpenseModal({
 
   return (
     <ModalFrame
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+      className="finance-dialog fixed inset-0 z-50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       onClose={onClose}
     >
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative z-10 w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl shadow-xl">
-        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+      <div className="finance-dialog-card relative z-10 max-h-[90dvh] overflow-y-auto w-full max-w-sm bg-card rounded-2xl shadow-xl">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">
-            {isEditing ? "Edit Pengeluaran" : "Tambah Pengeluaran"}
+            {title ?? (isEditing ? "Edit Pengeluaran" : "Tambah Pengeluaran")}
           </h2>
           <button
             onClick={onClose}
@@ -116,7 +129,7 @@ export function ExpenseModal({
         <form
           id="expense-form"
           onSubmit={handleSubmit(onSave)}
-          className="px-4 py-4 space-y-4"
+          className="px-4 py-3 space-y-3"
         >
           {/* Amount */}
           <div className="space-y-1">
@@ -124,10 +137,11 @@ export function ExpenseModal({
             <Input
               id="exp-amount"
               type="number"
+              step="0.01"
               min={0}
               placeholder="0"
               {...register("amount")}
-              className={cn(errors.amount && "border-error-500")}
+              className={cn("h-9", errors.amount && "border-error-500")}
             />
             {errors.amount && (
               <p className="text-xs text-error-500">{errors.amount.message}</p>
@@ -164,6 +178,7 @@ export function ExpenseModal({
             <div className="space-y-1">
               <Label htmlFor="exp-desc">Keterangan</Label>
               <Input
+                className="h-9"
                 id="exp-desc"
                 placeholder="Opsional"
                 {...register("description")}
@@ -175,18 +190,18 @@ export function ExpenseModal({
                 id="exp-date"
                 type="date"
                 {...register("date")}
-                className={cn(errors.date && "border-error-500")}
+                className={cn("h-9", errors.date && "border-error-500")}
               />
             </div>
           </div>
         </form>
 
-        <div className="flex items-center justify-between border-t border-border px-4 py-4">
+        <div className="flex items-center justify-between border-t border-border px-4 py-3">
           {isEditing && onDelete ? (
             <button
               type="button"
               onClick={onDelete}
-              disabled={isDeleting}
+              disabled={isDeleting || isSaving}
               className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-error-600 hover:bg-error-50 transition-colors disabled:opacity-50"
             >
               {isDeleting ? (
@@ -206,11 +221,11 @@ export function ExpenseModal({
             <Button
               type="submit"
               form="expense-form"
-              disabled={isSaving}
+              disabled={isSaving || isDeleting}
               className="bg-primary-500 hover:bg-primary-600"
             >
               {isSaving && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
-              {isEditing ? "Simpan" : "Tambah"}
+              {submitLabel ?? (isEditing ? "Simpan" : "Tambah")}
             </Button>
           </div>
         </div>

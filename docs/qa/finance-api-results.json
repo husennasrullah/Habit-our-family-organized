@@ -1,0 +1,85 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "/budgets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/budgets",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/expenses",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "path": "/expenses/d5260eb8-c347-4e33-be12-d849e935b3bc",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/shopping-items",
+      "status": 201
+    },
+    {
+      "method": "PATCH",
+      "path": "/shopping-items/7d9c997b-3c3f-4c91-85d2-af27297985f7/check",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/shopping-items/checkout",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/shopping-items/checkout",
+      "status": 400
+    },
+    {
+      "method": "GET",
+      "path": "/shopping-items",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/expenses/summary",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/financial-goals",
+      "status": 201
+    },
+    {
+      "method": "PATCH",
+      "path": "/financial-goals/0b0a2fad-6625-4442-ae90-a18012a23e26/progress",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/financial-goals/0b0a2fad-6625-4442-ae90-a18012a23e26",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/financial-goals/0b0a2fad-6625-4442-ae90-a18012a23e26/entries",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/financial-goals/0b0a2fad-6625-4442-ae90-a18012a23e26/entries",
+      "status": 404
+    },
+    {
+      "method": "PATCH",
+      "path": "/financial-goals/0b0a2fad-6625-4442-ae90-a18012a23e26/progress",
+      "status": 400
+    }
+  ],
+  "temporary_family_cleaned": true
+}

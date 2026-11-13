@@ -3,8 +3,12 @@ package repositories
 import (
 	"keluarga-app/backend/internal/models"
 
+	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"strings"
 )
 
 // ─── Expense Repository ───────────────────────────────────────────────────────
@@ -26,14 +30,14 @@ func (r *ExpenseRepository) GetByID(id, familyID uuid.UUID) (*models.Expense, er
 }
 
 type ExpenseQueryOpts struct {
-	Month    int    // 0 = ignore
-	Year     int    // 0 = ignore
+	Month    int // 0 = ignore
+	Year     int // 0 = ignore
 	Category string
 }
 
 func (r *ExpenseRepository) GetByFamily(familyID uuid.UUID, opts ExpenseQueryOpts) ([]models.Expense, error) {
 	var list []models.Expense
-	q := r.db.Where("family_id = ?", familyID)
+	q := r.db.Where("family_id = ? AND currency = ?", familyID, "IDR")
 	if opts.Month > 0 && opts.Year > 0 {
 		q = q.Where("EXTRACT(MONTH FROM date) = ? AND EXTRACT(YEAR FROM date) = ?", opts.Month, opts.Year)
 	} else if opts.Year > 0 {
@@ -70,6 +74,7 @@ func (r *ExpenseRepository) SummaryByCategory(familyID uuid.UUID, month, year in
 		  AND EXTRACT(MONTH FROM date) = ?
 		  AND EXTRACT(YEAR FROM date) = ?
 		  AND deleted_at IS NULL
+ AND currency = 'IDR'
 		GROUP BY category
 		ORDER BY total DESC
 	`, familyID, month, year).Scan(&rows)
@@ -90,6 +95,7 @@ func (r *ExpenseRepository) SummaryByMonth(familyID uuid.UUID, year int) ([]Mont
 		WHERE family_id = ?
 		  AND EXTRACT(YEAR FROM date) = ?
 		  AND deleted_at IS NULL
+ AND currency = 'IDR'
 		GROUP BY 1
 		ORDER BY 1
 	`, familyID, year).Scan(&rows)
@@ -105,20 +111,28 @@ func NewBudgetRepository(db *gorm.DB) *BudgetRepository {
 }
 
 func (r *BudgetRepository) Upsert(b *models.Budget) error {
-	// cari existing berdasarkan family+category+month+year
-	var existing models.Budget
-	err := r.db.Where(
-		"family_id = ? AND category = ? AND month = ? AND year = ? AND deleted_at IS NULL",
-		b.FamilyID, b.Category, b.Month, b.Year,
-	).First(&existing).Error
-
-	if err == nil {
-		// update
-		existing.Amount = b.Amount
-		existing.Period = b.Period
-		return r.db.Save(&existing).Error
-	}
-	return r.db.Create(b).Error
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		// Serialize the same family/category/month without requiring destructive deduplication of old rows.
+		key := b.FamilyID.String() + ":" + b.Category + ":" + fmt.Sprint(b.Month) + ":" + fmt.Sprint(b.Year)
+		if err := tx.Exec("SELECT pg_advisory_xact_lock(hashtextextended(?, 0))", key).Error; err != nil {
+			return err
+		}
+		var existing models.Budget
+		err := tx.Where("family_id = ? AND category = ? AND month = ? AND year = ?", b.FamilyID, b.Category, b.Month, b.Year).First(&existing).Error
+		if err == nil {
+			existing.Amount = b.Amount
+			existing.Period = b.Period
+			if err := tx.Save(&existing).Error; err != nil {
+				return err
+			}
+			*b = existing
+			return nil
+		}
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return err
+		}
+		return tx.Create(b).Error
+	})
 }
 
 func (r *BudgetRepository) GetByFamily(familyID uuid.UUID, month, year int) ([]models.Budget, error) {
@@ -146,7 +160,7 @@ func (r *ShoppingRepository) Create(s *models.ShoppingItem) error {
 
 func (r *ShoppingRepository) GetByFamily(familyID uuid.UUID) ([]models.ShoppingItem, error) {
 	var list []models.ShoppingItem
-	err := r.db.Where("family_id = ?", familyID).
+	err := r.db.Where("family_id = ? AND expense_id IS NULL", familyID).
 		Order("is_checked ASC, created_at DESC").
 		Find(&list).Error
 	return list, err
@@ -167,5 +181,55 @@ func (r *ShoppingRepository) Delete(id, familyID uuid.UUID) error {
 }
 
 func (r *ShoppingRepository) DeleteChecked(familyID uuid.UUID) error {
-	return r.db.Where("family_id = ? AND is_checked = true", familyID).Delete(&models.ShoppingItem{}).Error
+	return r.db.Where("family_id = ? AND is_checked = true AND expense_id IS NULL", familyID).Delete(&models.ShoppingItem{}).Error
+}
+
+// Checkout locks selected items in a stable order, so concurrent submissions cannot double-charge.
+func (r *ShoppingRepository) Checkout(ids []uuid.UUID, e *models.Expense) (*models.Expense, error) {
+	err := r.db.Transaction(func(tx *gorm.DB) error {
+		var items []models.ShoppingItem
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("family_id = ? AND id IN ?", e.FamilyID, ids).Order("id").Find(&items).Error; err != nil {
+			return err
+		}
+		if len(items) != len(ids) {
+			return errors.New("item tidak ditemukan")
+		}
+		names := make([]string, 0, len(items))
+		for _, item := range items {
+			if !item.IsChecked || item.ExpenseID != nil {
+				return errors.New("item belum dicentang atau sudah dicatat; muat ulang daftar belanja")
+			}
+			names = append(names, item.Name)
+		}
+		if e.Description == "" {
+			e.Description = "Belanja: " + strings.Join(names, ", ")
+		} else {
+			e.Description += " — " + strings.Join(names, ", ")
+		}
+		if err := tx.Create(e).Error; err != nil {
+			return err
+		}
+		return tx.Model(&models.ShoppingItem{}).Where("family_id = ? AND id IN ?", e.FamilyID, ids).Update("expense_id", e.ID).Error
+	})
+	return e, err
+}
+
+func (r *ShoppingRepository) Toggle(id, familyID, userID uuid.UUID) (*models.ShoppingItem, error) {
+	var item models.ShoppingItem
+	err := r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&item, "id = ? AND family_id = ?", id, familyID).Error; err != nil {
+			return err
+		}
+		if item.ExpenseID != nil {
+			return errors.New("belanja sudah dicatat sebagai pengeluaran")
+		}
+		item.IsChecked = !item.IsChecked
+		if item.IsChecked {
+			item.CheckedBy = &userID
+		} else {
+			item.CheckedBy = nil
+		}
+		return tx.Save(&item).Error
+	})
+	return &item, err
 }

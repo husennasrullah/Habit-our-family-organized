@@ -3,11 +3,13 @@
 import { ModalFrame } from "@/components/shared/ModalFrame";
 
 import { useState, useEffect } from "react";
+import { z } from "zod";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { FinancialGoal } from "@/types";
 
 export interface GoalFormValues {
+  adjust_balance?: boolean;
   title: string;
   target_amount: number;
   current_amount: number;
@@ -24,6 +26,23 @@ interface GoalModalProps {
   isSaving?: boolean;
   isDeleting?: boolean;
 }
+
+const money = z
+  .number()
+  .finite()
+  .max(9999999999999.99)
+  .refine(
+    (n) => Math.abs(n * 100 - Math.round(n * 100)) < 0.001,
+    "Maksimal dua angka desimal",
+  );
+const goalSchema = z.object({
+  title: z.string().trim().min(1, "Nama tabungan wajib diisi"),
+  target_amount: money.refine((n) => n > 0, "Target harus lebih dari nol"),
+  current_amount: money.refine((n) => n >= 0, "Saldo tidak boleh negatif"),
+  deadline: z.string(),
+  notes: z.string(),
+  adjust_balance: z.boolean().optional(),
+});
 
 const DEFAULT: GoalFormValues = {
   title: "",
@@ -42,9 +61,13 @@ export function GoalModal({
   isSaving,
   isDeleting,
 }: GoalModalProps) {
+  const [formError, setFormError] = useState("");
+  const [adjustBalance, setAdjustBalance] = useState(false);
   const [form, setForm] = useState<GoalFormValues>(DEFAULT);
 
   useEffect(() => {
+    setAdjustBalance(false);
+    setFormError("");
     if (goal) {
       setForm({
         title: goal.title,
@@ -68,15 +91,15 @@ export function GoalModal({
 
   return (
     <ModalFrame
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="finance-dialog fixed inset-0 z-50 flex items-center justify-center p-4"
       onClose={onClose}
     >
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-card p-4 shadow-xl">
+      <div className="finance-dialog-card relative z-10 max-h-[90dvh] overflow-y-auto w-full max-w-sm rounded-2xl bg-card p-4 shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center justify-between mb-3">
           <h3 className="text-base font-semibold text-foreground">
-            {goal ? "Edit Target" : "Tambah Target"}
+            {goal ? "Edit tabungan" : "Tambah tabungan"}
           </h3>
           <button
             onClick={onClose}
@@ -87,9 +110,9 @@ export function GoalModal({
           </button>
         </div>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
           {/* Title */}
-          <div>
+          <div className="col-span-2">
             <label
               className="block text-xs font-medium text-foreground mb-1"
               htmlFor="field-GoalModal-componentsbudget-0"
@@ -105,6 +128,16 @@ export function GoalModal({
             />
           </div>
 
+          {goal && (
+            <label className="col-span-2 flex items-center gap-2 text-xs">
+              <input
+                type="checkbox"
+                checked={adjustBalance}
+                onChange={(e) => setAdjustBalance(e.target.checked)}
+              />
+              Koreksi saldo secara manual
+            </label>
+          )}
           {/* Target amount */}
           <div>
             <label
@@ -115,6 +148,7 @@ export function GoalModal({
             </label>
             <input
               type="number"
+              step="0.01"
               min={0}
               className="w-full rounded-lg border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
               {...field("target_amount")}
@@ -138,9 +172,11 @@ export function GoalModal({
             </label>
             <input
               type="number"
+              step="0.01"
               min={0}
               className="w-full rounded-lg border border-neutral-300 bg-card px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
               {...field("current_amount")}
+              disabled={!!goal && !adjustBalance}
               onChange={(e) =>
                 setForm((v) => ({
                   ...v,
@@ -152,7 +188,7 @@ export function GoalModal({
           </div>
 
           {/* Deadline */}
-          <div>
+          <div className="col-span-2">
             <label
               className="block text-xs font-medium text-foreground mb-1"
               htmlFor="field-GoalModal-componentsbudget-3"
@@ -168,7 +204,7 @@ export function GoalModal({
           </div>
 
           {/* Notes */}
-          <div>
+          <div className="col-span-2">
             <label
               className="block text-xs font-medium text-foreground mb-1"
               htmlFor="field-GoalModal-componentsbudget-4"
@@ -188,8 +224,16 @@ export function GoalModal({
           </div>
         </div>
 
+        {formError && (
+          <p
+            role="alert"
+            className="mt-3 text-xs text-red-700 dark:text-red-200"
+          >
+            {formError}
+          </p>
+        )}
         {/* Footer */}
-        <div className="mt-5 flex items-center gap-2">
+        <div className="mt-3 flex items-center gap-2">
           {onDelete && (
             <Button
               variant="outline"
@@ -205,8 +249,27 @@ export function GoalModal({
               Batal
             </Button>
             <Button
-              onClick={() => onSave(form)}
-              disabled={isSaving || !form.title || form.target_amount <= 0}
+              onClick={() => {
+                const parsed = goalSchema.safeParse({
+                  ...form,
+                  title: form.title.trim(),
+                  adjust_balance: adjustBalance,
+                });
+                if (!parsed.success) {
+                  setFormError(parsed.error.issues[0].message);
+                  return;
+                }
+                setFormError("");
+                onSave(parsed.data);
+              }}
+              disabled={
+                isSaving ||
+                !form.title.trim() ||
+                !Number.isFinite(form.target_amount) ||
+                form.target_amount <= 0 ||
+                !Number.isFinite(form.current_amount) ||
+                form.current_amount < 0
+              }
               className="bg-primary-500 hover:bg-primary-600"
             >
               {isSaving ? "Menyimpan..." : "Simpan"}

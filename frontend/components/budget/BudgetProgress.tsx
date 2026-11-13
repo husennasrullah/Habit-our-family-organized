@@ -1,20 +1,13 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { rupiah as formatRp } from "@/lib/finance";
 import type { Budget, CategorySummary } from "@/types";
 
 interface BudgetProgressProps {
   budgets: Budget[];
   actuals: CategorySummary[];
   onEdit: (category: string, currentAmount: number, budgetId?: string) => void;
-}
-
-function formatRp(n: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(n);
 }
 
 export function BudgetProgress({

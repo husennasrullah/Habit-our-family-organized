@@ -1,0 +1,8 @@
+=== RUN   TestFinanceValidation
+--- PASS: TestFinanceValidation (0.00s)
+=== RUN   TestFinanceConcurrentDepositsAndLedger
+--- PASS: TestFinanceConcurrentDepositsAndLedger (0.12s)
+=== RUN   TestFinanceShoppingCheckoutAtomicAndScoped
+--- PASS: TestFinanceShoppingCheckoutAtomicAndScoped (0.07s)
+PASS
+ok  	keluarga-app/backend/internal/services	0.193s

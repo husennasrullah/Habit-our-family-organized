@@ -66,6 +66,7 @@ jobs:
       - name: Test
         run: go test ./... -timeout 60s
         env:
+          HABIT_TEST_DATABASE_URL: "host=localhost port=5432 user=keluarga_user password=keluarga_pass dbname=keluarga_test sslmode=disable"
           APP_ENV: test
           DB_HOST: localhost
           DB_PORT: 5432
