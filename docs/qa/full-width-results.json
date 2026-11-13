@@ -1,0 +1,91 @@
+{
+  "results": [
+    {
+      "route": "/trips",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Liburan",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "expectedLeft": 16,
+        "expectedRight": 374
+      }
+    },
+    {
+      "route": "/trips",
+      "width": 1228,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1228,
+      "heading": "Liburan",
+      "geometry": {
+        "left": 232,
+        "right": 1204,
+        "expectedLeft": 232,
+        "expectedRight": 1204
+      }
+    },
+    {
+      "route": "/trips",
+      "width": 1920,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1920,
+      "heading": "Liburan",
+      "geometry": {
+        "left": 288,
+        "right": 1840,
+        "expectedLeft": 288,
+        "expectedRight": 1840
+      }
+    },
+    {
+      "route": "/settings",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Pengaturan",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "expectedLeft": 16,
+        "expectedRight": 374
+      }
+    },
+    {
+      "route": "/settings",
+      "width": 1228,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1228,
+      "heading": "Pengaturan",
+      "geometry": {
+        "left": 232,
+        "right": 1204,
+        "expectedLeft": 232,
+        "expectedRight": 1204
+      }
+    },
+    {
+      "route": "/settings",
+      "width": 1920,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1920,
+      "heading": "Pengaturan",
+      "geometry": {
+        "left": 288,
+        "right": 1840,
+        "expectedLeft": 288,
+        "expectedRight": 1840
+      }
+    }
+  ],
+  "errors": [],
+  "mutations": [],
+  "axeResults": []
+}

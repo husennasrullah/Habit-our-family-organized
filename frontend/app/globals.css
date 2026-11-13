@@ -19,7 +19,7 @@
 
 @layer base {
   :root {
-    --background: 230 45% 98%;
+    --background: 43 44% 97%;
     --foreground: 232 28% 14%;
 
     --card: 0 0% 100%;
@@ -236,7 +236,7 @@
 /* Reference refresh — bright family dashboard, compact desktop density. */
 @layer components {
   .app-shell {
-    background: linear-gradient(125deg, #f7f8ff 0%, #f5f7fc 58%, #f3f8f6 100%);
+    background: linear-gradient(125deg, #fcfaf5 0%, #faf8f2 58%, #f8f9f2 100%);
   }
   .app-content {
     min-width: 0;
@@ -296,12 +296,14 @@
   }
   .sidebar-wordmark {
     color: #182030;
-    font-size: 21px;
+    font-size: 24px;
     font-weight: 800;
     line-height: 1.15;
-    letter-spacing: -0.6px;
+    letter-spacing: -0.9px;
+    -webkit-text-stroke: 0.3px currentColor;
   }
   .sidebar-wordmark > span {
+    -webkit-text-stroke: 0;
     display: block;
     margin-top: 5px;
     font-size: 10.5px;

@@ -190,7 +190,7 @@ function GrowthChart({
         ))}
       </svg>
       {/* Legend */}
-      <div className="mt-2 flex justify-center gap-6">
+      <div className="mt-2 flex justify-center gap-4">
         {hPts.length > 0 && (
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="h-2 w-4 rounded-full bg-primary-600 inline-block" />{" "}
@@ -318,7 +318,7 @@ export default function KidsPage() {
   if (isError) return <QueryError retry={() => void refetch()} />;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* ── Header ──────────────────────────────────────────────── */}
       <PageHeader
         title="Anak"
@@ -411,7 +411,7 @@ export default function KidsPage() {
       )}
 
       {kids.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border dark:border-border bg-card dark:bg-card py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border dark:border-border bg-card dark:bg-card py-10 text-center">
           <Baby className="mb-3 h-12 w-12 text-neutral-200" />
           <p className="text-sm font-medium text-muted-foreground">
             Belum ada profil anak
@@ -508,7 +508,7 @@ export default function KidsPage() {
                 !activeQuery.isPending && (
                   <div className="bg-card dark:bg-card rounded-xl border border-border dark:border-border overflow-hidden">
                     {/* Header tabel */}
-                    <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-50 dark:border-border">
+                    <div className="flex items-center justify-between px-4 py-4 border-b border-neutral-50 dark:border-border">
                       <h3 className="text-sm font-semibold text-foreground dark:text-foreground">
                         Catatan Pertumbuhan
                       </h3>
@@ -522,7 +522,7 @@ export default function KidsPage() {
 
                     {/* Form inline */}
                     {showGrowthForm && (
-                      <div className="px-5 py-4 bg-muted dark:bg-muted border-b border-border dark:border-border">
+                      <div className="px-4 py-4 bg-muted dark:bg-muted border-b border-border dark:border-border">
                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                           <div>
                             <label
@@ -624,7 +624,7 @@ export default function KidsPage() {
 
                     {/* Rows */}
                     {growth.length === 0 ? (
-                      <p className="py-12 text-center text-sm text-muted-foreground">
+                      <p className="py-8 text-center text-sm text-muted-foreground">
                         Belum ada data pertumbuhan
                       </p>
                     ) : (
@@ -685,7 +685,7 @@ export default function KidsPage() {
 
                     {/* Chart tren */}
                     {growth.length >= 2 && (
-                      <div className="px-5 pb-5">
+                      <div className="px-4 pb-5">
                         <GrowthChart data={growth} />
                       </div>
                     )}
@@ -697,13 +697,13 @@ export default function KidsPage() {
                 !activeQuery.isError &&
                 !activeQuery.isPending && (
                   <div className="bg-card dark:bg-card rounded-xl border border-border dark:border-border overflow-hidden">
-                    <div className="px-5 py-4 border-b border-neutral-50 dark:border-border">
+                    <div className="px-4 py-4 border-b border-neutral-50 dark:border-border">
                       <h3 className="text-sm font-semibold text-foreground dark:text-foreground">
                         Jadwal Vaksinasi
                       </h3>
                     </div>
                     {vaccines.length === 0 ? (
-                      <p className="py-12 text-center text-sm text-muted-foreground">
+                      <p className="py-8 text-center text-sm text-muted-foreground">
                         Belum ada data vaksin
                       </p>
                     ) : (
@@ -711,7 +711,7 @@ export default function KidsPage() {
                         {vaccines.map((v) => (
                           <div
                             key={v.id}
-                            className="flex items-center justify-between px-5 py-4"
+                            className="flex items-center justify-between px-4 py-4"
                           >
                             <div>
                               <p className="text-sm font-semibold text-foreground dark:text-foreground">
@@ -762,13 +762,13 @@ export default function KidsPage() {
                 !activeQuery.isError &&
                 !activeQuery.isPending && (
                   <div className="bg-card dark:bg-card rounded-xl border border-border dark:border-border overflow-hidden">
-                    <div className="px-5 py-4 border-b border-neutral-50 dark:border-border">
+                    <div className="px-4 py-4 border-b border-neutral-50 dark:border-border">
                       <h3 className="text-sm font-semibold text-foreground dark:text-foreground">
                         Milestone Tumbuh Kembang
                       </h3>
                     </div>
                     {milestones.length === 0 ? (
-                      <p className="py-12 text-center text-sm text-muted-foreground">
+                      <p className="py-8 text-center text-sm text-muted-foreground">
                         Belum ada milestone
                       </p>
                     ) : (
@@ -778,7 +778,7 @@ export default function KidsPage() {
                             key={m.id}
                             onClick={() => toggleMilestone.mutate(m.id)}
                             className={cn(
-                              "w-full flex items-center gap-4 px-5 py-4 text-left transition-colors",
+                              "w-full flex items-center gap-4 px-4 py-4 text-left transition-colors",
                               m.is_achieved
                                 ? "bg-success-50/40"
                                 : "hover:bg-muted dark:hover:bg-neutral-800",
@@ -830,7 +830,7 @@ export default function KidsPage() {
                 !activeQuery.isError &&
                 !activeQuery.isPending && (
                   <div className="bg-card dark:bg-card rounded-xl border border-border dark:border-border overflow-hidden">
-                    <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-50 dark:border-border">
+                    <div className="flex items-center justify-between px-4 py-4 border-b border-neutral-50 dark:border-border">
                       <h3 className="text-sm font-semibold text-foreground dark:text-foreground">
                         Catatan Kesehatan
                       </h3>
@@ -843,7 +843,7 @@ export default function KidsPage() {
                     </div>
 
                     {showHealthForm && (
-                      <div className="px-5 py-4 bg-muted dark:bg-muted border-b border-border dark:border-border space-y-3">
+                      <div className="px-4 py-4 bg-muted dark:bg-muted border-b border-border dark:border-border space-y-3">
                         <div className="grid grid-cols-2 gap-3">
                           <div>
                             <label
@@ -951,13 +951,13 @@ export default function KidsPage() {
                     )}
 
                     {health.length === 0 ? (
-                      <p className="py-12 text-center text-sm text-muted-foreground">
+                      <p className="py-8 text-center text-sm text-muted-foreground">
                         Belum ada catatan kesehatan
                       </p>
                     ) : (
                       <div className="divide-y divide-neutral-50 dark:divide-neutral-800">
                         {health.map((h) => (
-                          <div key={h.id} className="px-5 py-4">
+                          <div key={h.id} className="px-4 py-4">
                             <div className="flex items-start justify-between gap-2">
                               <p className="text-sm font-semibold text-foreground dark:text-foreground">
                                 {h.description}

@@ -21,14 +21,14 @@ export const metadata: Metadata = {
   title: "HABIT — Our Family, Organized",
   description:
     "Atur jadwal, tugas, kenangan, dan keuangan keluarga bersama dalam satu aplikasi.",
-  manifest: "/manifest.json",
+  manifest: "/manifest.json?v=20261113-logo2",
   other: { "mobile-web-app-capable": "yes" },
   // Apple PWA
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "HABIT",
-    startupImage: "/icons/habit-v2-180.png",
+    startupImage: "/icons/habit-v2-180.png?v=20261113-logo2",
   },
   // Ikon untuk berbagai platform
   icons: {
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     ],
     apple: [
       {
-        url: "/icons/habit-v2-180.png",
+        url: "/icons/habit-v2-180.png?v=20261113-logo2",
         sizes: "180x180",
         type: "image/png",
       },

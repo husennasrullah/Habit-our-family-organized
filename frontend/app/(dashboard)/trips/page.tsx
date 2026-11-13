@@ -133,14 +133,14 @@ export default function TripsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="w-full min-w-0 space-y-4">
       <PageHeader
         title="Liburan"
         description="Rencanakan perjalanan. Sisakan ruang untuk kenangan."
         action={
           <button
             onClick={() => setShowModal(true)}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 text-sm font-medium text-white hover:bg-primary-700"
+            className="inline-flex min-h-9 items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 text-sm font-medium text-white hover:bg-primary-700"
           >
             <Plus size={17} />
             Rencanakan liburan
@@ -173,7 +173,7 @@ export default function TripsPage() {
 
       {/* Trips Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -184,12 +184,12 @@ export default function TripsPage() {
       ) : isError ? (
         <QueryError retry={() => void refetch()} />
       ) : filteredTrips.length === 0 ? (
-        <div className="text-center py-16 bg-card dark:bg-card rounded-2xl border border-dashed border-neutral-300 dark:border-border p-8">
+        <div className="text-center bg-card dark:bg-card rounded-2xl border border-dashed border-neutral-300 dark:border-border px-4 py-8">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 dark:bg-primary-950/50 flex items-center justify-center text-primary-600 dark:text-primary-400">
             <EmptyIllustration name="travel" />
           </div>
           <h3 className="text-lg font-semibold">Belum ada rencana liburan</h3>
-          <p className="text-sm text-muted-foreground dark:text-muted-foreground max-w-md mx-auto mt-1 mb-6">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground max-w-md mx-auto mt-1 mb-4">
             Mulai rencanakan liburan akhir pekan atau liburan sekolah bersama
             keluarga sekarang!
           </p>
@@ -201,7 +201,7 @@ export default function TripsPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredTrips.map((trip) => {
             const packedCount =
               trip.packing_items?.filter((p) => p.is_packed).length ?? 0;
@@ -242,7 +242,7 @@ export default function TripsPage() {
                 </div>
 
                 {/* Card Content */}
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                <div className="p-4 flex-1 flex flex-col justify-between space-y-4">
                   <div>
                     <h3 className="font-bold text-lg text-foreground dark:text-foreground group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-1">
                       {trip.title}
@@ -359,7 +359,7 @@ export default function TripsPage() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowModal(false)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4 my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-lg p-4 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold flex items-center gap-2">
                 <Plane className="w-5 h-5 text-primary-600" /> Rencanakan
@@ -555,7 +555,7 @@ export default function TripsPage() {
                 <button
                   type="submit"
                   disabled={createTrip.isPending}
-                  className="px-5 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition disabled:opacity-50"
                 >
                   {createTrip.isPending ? "Menyimpan..." : "Simpan Liburan"}
                 </button>

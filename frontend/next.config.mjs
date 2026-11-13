@@ -6,6 +6,12 @@ const nextConfig = {
   distDir: process.env.NEXT_BUILD_DIR || ".next",
   // Output standalone — dibutuhkan agar Docker image bisa jalan tanpa node_modules penuh
   output: "standalone",
+  async headers() {
+    return ["/manifest.json", "/sw.js"].map((source) => ({
+      source,
+      headers: [{ key: "Cache-Control", value: "no-cache, must-revalidate" }],
+    }));
+  },
 
   // Izinkan ngrok dan domain eksternal lain saat development
   // Tambah domain ngrok kamu di sini jika berubah, atau pakai wildcard *.ngrok-free.app
@@ -30,6 +36,7 @@ const config = withPWA({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
   register: false, // Registered explicitly by the App Router root layout.
+  publicExcludes: ["!noprecache/**/*", "!manifest.json"],
   importScripts: ["/sw-push.js"],
   buildExcludes: [/app-build-manifest\.json$/],
   cacheStartUrl: false,
@@ -37,6 +44,11 @@ const config = withPWA({
   skipWaiting: true,
   // Cache strategy — gunakan StaleWhileRevalidate untuk halaman utama
   runtimeCaching: [
+    {
+      urlPattern: ({ url }) => url.pathname === "/manifest.json",
+      handler: "NetworkOnly",
+      options: {},
+    },
     {
       urlPattern: ({ request }) => request.mode === "navigate",
       handler: "NetworkOnly",

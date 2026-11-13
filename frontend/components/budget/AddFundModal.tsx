@@ -40,7 +40,7 @@ export function AddFundModal({
       onClose={onClose}
     >
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-xs rounded-2xl bg-card p-6 shadow-xl">
+      <div className="relative z-10 w-full max-w-xs rounded-2xl bg-card p-4 shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-foreground">Tambah Dana</h3>

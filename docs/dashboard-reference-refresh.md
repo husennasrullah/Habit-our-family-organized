@@ -7,7 +7,7 @@ Status: implementasi dan pemeriksaan browser selesai. Acuan visual terbaru adala
 - Dashboard mengikuti contoh pengguna: banner hijau dengan ilustrasi keluarga di kanan, shortcut hijau/oranye/ungu, agenda dan tugas sejajar, lalu strip “Sekilas keluarga” dengan empat tile pastel.
 - Sidebar lebih ramping (208 px; ringkas 80 px), wordmark Habit, menu aktif emerald, ikon seragam, profil dalam kartu ringan, dan dekorasi latar bawah. Drawer mobile, collapse dan akses keyboard dipertahankan.
 - Topbar tidak lagi menampilkan “Ruang keluarga” atau judul halaman. Semua menu memakai satu h1 di konten halaman. Topbar hanya menyediakan drawer, pengingat tugas aktual, tema dan menu akun.
-- Font diganti menjadi Plus Jakarta Sans variable lokal, dengan lisensi OFL. Isi bawaan 13 px, ukuran token sm 13 px/base 14 px, judul halaman 18–22 px, heading sapaan 25–28 px. Tidak memakai CSS zoom atau mengunci zoom browser.
+- Font diganti menjadi Plus Jakarta Sans variable lokal, dengan lisensi OFL. Isi bawaan 13 px, ukuran token sm/base 13 px, judul halaman 20 px, heading sapaan 25–28 px. Tidak memakai CSS zoom atau mengunci zoom browser.
 - Ukuran dan jarak dikompakkan. Pada desktop pendek (tinggi <=800 px), banner/kartu/jarak memakai varian ringkas agar isi utama muat di layar awal. Kontrol perangkat sentuh mempertahankan ukuran lebih lapang.
 - Tombol utama emerald/pill, secondary hijau lembut, serta shortcut outline pastel. Primitive Button disesuaikan karena pengguna secara eksplisit meminta perbaikan tombol; tidak menambah library.
 - Tiga aset baru dibuat dengan built-in imagegen lalu diekspor ke WebP: `family-banner-v3.webp`, `calendar-empty-v3.webp`, `task-empty-v3.webp` di `frontend/public/illustrations/`. Sumber PNG disimpan di `docs/design-reference/`.
@@ -44,3 +44,15 @@ Browser memakai data simulasi, bukan data keluarga pengguna. Tidak mengubah back
 ## Perbaikan overlap sidebar
 
 Offset konten dan padding halaman menggunakan `.app-content`/`.app-main` eksplisit, diselaraskan dengan sidebar 208/80 px. Pemeriksaan browser memastikan banner tidak masuk ke sidebar atau melewati gutter kanan. Bukti pada ukuran laporan pengguna: [1228×620](qa/reference-dashboard-1228x620.png).
+
+## Skala seragam semua menu
+
+Sesuai permintaan lanjutan pengguna, skala font bersama diperkecil: caption 11 px, teks/label 13 px, subjudul 15–17 px, judul halaman 20 px. `PageHeader` memakai ukuran sama pada desktop dan mobile. Padding kartu/form dan gap besar dinormalisasi menjadi 16 px di Kalender, Tugas, Keuangan, Anak, Jadwal Makan, Kenangan, Dokumen, Liburan/detail, Pengaturan, serta dialog modul. Tombol standar 36 px pada desktop; aturan pointer coarse tetap mempertahankan target sentuh 44 px. Tidak memakai zoom browser/CSS. Detail Liburan mengikuti lebar main seperti daftar Liburan.
+
+Bukti visual dan geometri terbaru: `qa/compact-pages-results.json`, screenshot `qa/compact-*-1366.png`.
+
+Verifikasi batch skala seragam: build produksi/lint/TypeScript lulus; 20 pemeriksaan skala/lebar halaman (10 menu × 2 viewport) dan 46 pemeriksaan regresi reference lulus, tanpa overflow/error runtime. Delapan audit axe terpilih bersih.
+
+## Revisi latar light cream
+
+Atas permintaan pengguna, latar light diubah dari kebiruan ke cream tipis #FAF8F2 dengan gradasi #FCFAF5/#F8F9F2. Kartu putih, emerald dan dark theme dipertahankan. Latar manifest/offline diselaraskan.

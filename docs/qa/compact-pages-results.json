@@ -1,0 +1,287 @@
+{
+  "results": [
+    {
+      "route": "/calendar",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Kalender",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "expectedLeft": 16,
+        "expectedRight": 374
+      }
+    },
+    {
+      "route": "/calendar",
+      "width": 1366,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1366,
+      "heading": "Kalender",
+      "geometry": {
+        "left": 232,
+        "right": 1342,
+        "expectedLeft": 232,
+        "expectedRight": 1342
+      }
+    },
+    {
+      "route": "/tasks",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Tugas",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "expectedLeft": 16,
+        "expectedRight": 374
+      }
+    },
+    {
+      "route": "/tasks",
+      "width": 1366,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1366,
+      "heading": "Tugas",
+      "geometry": {
+        "left": 232,
+        "right": 1342,
+        "expectedLeft": 232,
+        "expectedRight": 1342
+      }
+    },
+    {
+      "route": "/budget",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Keuangan",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "expectedLeft": 16,
+        "expectedRight": 374
+      }
+    },
+    {
+      "route": "/budget",
+      "width": 1366,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1366,
+      "heading": "Keuangan",
+      "geometry": {
+        "left": 232,
+        "right": 1342,
+        "expectedLeft": 232,
+        "expectedRight": 1342
+      }
+    },
+    {
+      "route": "/meals",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Jadwal Makan",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "expectedLeft": 16,
+        "expectedRight": 374
+      }
+    },
+    {
+      "route": "/meals",
+      "width": 1366,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1366,
+      "heading": "Jadwal Makan",
+      "geometry": {
+        "left": 232,
+        "right": 1342,
+        "expectedLeft": 232,
+        "expectedRight": 1342
+      }
+    },
+    {
+      "route": "/kids",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Anak",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "expectedLeft": 16,
+        "expectedRight": 374
+      }
+    },
+    {
+      "route": "/kids",
+      "width": 1366,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1366,
+      "heading": "Anak",
+      "geometry": {
+        "left": 232,
+        "right": 1342,
+        "expectedLeft": 232,
+        "expectedRight": 1342
+      }
+    },
+    {
+      "route": "/memories",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Kenangan",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "expectedLeft": 16,
+        "expectedRight": 374
+      }
+    },
+    {
+      "route": "/memories",
+      "width": 1366,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1366,
+      "heading": "Kenangan",
+      "geometry": {
+        "left": 232,
+        "right": 1342,
+        "expectedLeft": 232,
+        "expectedRight": 1342
+      }
+    },
+    {
+      "route": "/documents",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Dokumen",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "expectedLeft": 16,
+        "expectedRight": 374
+      }
+    },
+    {
+      "route": "/documents",
+      "width": 1366,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1366,
+      "heading": "Dokumen",
+      "geometry": {
+        "left": 232,
+        "right": 1342,
+        "expectedLeft": 232,
+        "expectedRight": 1342
+      }
+    },
+    {
+      "route": "/trips",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Liburan",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "expectedLeft": 16,
+        "expectedRight": 374
+      }
+    },
+    {
+      "route": "/trips",
+      "width": 1366,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1366,
+      "heading": "Liburan",
+      "geometry": {
+        "left": 232,
+        "right": 1342,
+        "expectedLeft": 232,
+        "expectedRight": 1342
+      }
+    },
+    {
+      "route": "/settings",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Pengaturan",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "expectedLeft": 16,
+        "expectedRight": 374
+      }
+    },
+    {
+      "route": "/settings",
+      "width": 1366,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1366,
+      "heading": "Pengaturan",
+      "geometry": {
+        "left": 232,
+        "right": 1342,
+        "expectedLeft": 232,
+        "expectedRight": 1342
+      }
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 390,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 390,
+      "heading": "Akhir pekan di Yogyakarta",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "expectedLeft": 16,
+        "expectedRight": 374
+      }
+    },
+    {
+      "route": "/trips/trip-1",
+      "width": 1366,
+      "theme": "light",
+      "mode": "data",
+      "scroll": 1366,
+      "heading": "Akhir pekan di Yogyakarta",
+      "geometry": {
+        "left": 232,
+        "right": 1342,
+        "expectedLeft": 232,
+        "expectedRight": 1342
+      }
+    }
+  ],
+  "errors": [],
+  "mutations": [],
+  "axeResults": []
+}

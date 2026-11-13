@@ -89,7 +89,7 @@ export default function DocumentsPage() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* ── Header ──────────────────────────────────────────────── */}
       <PageHeader
         title="Dokumen"
@@ -174,7 +174,7 @@ export default function DocumentsPage() {
               : "Unggah dokumen keluarga agar lebih mudah ditemukan saat dibutuhkan."
           }
           action={
-            <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl bg-primary-600 px-4 text-sm font-medium text-white focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary">
+            <label className="inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-xl bg-primary-600 px-4 text-sm font-medium text-white focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary">
               <Upload size={16} />
               Unggah dokumen
               <input

@@ -40,12 +40,12 @@ function SectionCard({
 }) {
   return (
     <div className="bg-card dark:bg-card rounded-2xl border border-border dark:border-border overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-border dark:border-border">
+      <div className="px-4 py-2.5 border-b border-border dark:border-border">
         <h2 className="text-sm font-semibold text-foreground dark:text-foreground uppercase tracking-wide">
           {title}
         </h2>
       </div>
-      <div className="p-5">{children}</div>
+      <div className="p-4">{children}</div>
     </div>
   );
 }
@@ -150,7 +150,7 @@ export default function SettingsPage() {
   });
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5">
+    <div className="w-full min-w-0 space-y-4">
       {/* Header */}
       <PageHeader
         title="Pengaturan"

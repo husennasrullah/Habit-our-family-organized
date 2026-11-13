@@ -107,7 +107,7 @@ export default function CalendarPage() {
   // ─── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         title="Kalender"
         description="Waktu untuk yang penting. Atur agenda keluarga bersama."

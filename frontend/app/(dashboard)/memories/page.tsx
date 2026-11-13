@@ -116,7 +116,7 @@ export default function MemoriesPage() {
   );
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* ── Header ──────────────────────────────────────────────── */}
       <PageHeader
         title="Kenangan"
@@ -205,7 +205,7 @@ export default function MemoriesPage() {
                 setSelectedMemory(null);
                 setModalOpen(true);
               }}
-              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-600 px-4 text-sm font-medium text-white"
+              className="inline-flex min-h-9 items-center gap-2 rounded-xl bg-primary-600 px-4 text-sm font-medium text-white"
             >
               <Plus size={16} />
               Tambah kenangan

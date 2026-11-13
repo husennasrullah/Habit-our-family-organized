@@ -72,7 +72,7 @@ export function GoalModal({
       onClose={onClose}
     >
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-card p-6 shadow-xl">
+      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-card p-4 shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-base font-semibold text-foreground">

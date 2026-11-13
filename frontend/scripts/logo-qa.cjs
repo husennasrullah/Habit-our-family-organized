@@ -121,6 +121,7 @@ const origin = process.env.HABIT_QA_URL || "http://localhost:3100";
       value: "logo-qa-token",
       url: origin,
     });
+    await page.evaluate(() => localStorage.setItem("theme", "light"));
     await page.setViewport({ width: 1440, height: 1000 });
     await page.goto(origin + "/dashboard", { waitUntil: "networkidle0" });
     const sidebarLogo = await page.$eval("aside img", (image) => ({
@@ -128,6 +129,14 @@ const origin = process.env.HABIT_QA_URL || "http://localhost:3100";
       loaded: image.complete && image.naturalWidth > 0,
     }));
     assert(sidebarLogo.src.includes("habit-mark-v2") && sidebarLogo.loaded);
+    result.wordmark = await page.$eval(".sidebar-wordmark", (el) => {
+      const style = getComputedStyle(el);
+      return { size: style.fontSize, weight: style.fontWeight, stroke: style.webkitTextStrokeWidth };
+    });
+    assert.equal(result.wordmark.size, "24px");
+    assert.equal(result.wordmark.weight, "800");
+    result.canvas = await page.$eval(".app-shell", (el) => getComputedStyle(el).backgroundImage);
+    assert(result.canvas.includes("250, 248, 242"));
     result.pages.push({ route: "/dashboard", width: 1440, logo: sidebarLogo });
     await page.screenshot({ path: "docs/qa/logo-dashboard-1440.png" });
     assert.equal(result.errors.length, 0);

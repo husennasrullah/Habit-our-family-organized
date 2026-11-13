@@ -100,7 +100,7 @@ export function ExpenseModal({
     >
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="relative z-10 w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl shadow-xl">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">
             {isEditing ? "Edit Pengeluaran" : "Tambah Pengeluaran"}
           </h2>
@@ -116,7 +116,7 @@ export function ExpenseModal({
         <form
           id="expense-form"
           onSubmit={handleSubmit(onSave)}
-          className="px-5 py-4 space-y-4"
+          className="px-4 py-4 space-y-4"
         >
           {/* Amount */}
           <div className="space-y-1">
@@ -181,7 +181,7 @@ export function ExpenseModal({
           </div>
         </form>
 
-        <div className="flex items-center justify-between border-t border-border px-5 py-4">
+        <div className="flex items-center justify-between border-t border-border px-4 py-4">
           {isEditing && onDelete ? (
             <button
               type="button"

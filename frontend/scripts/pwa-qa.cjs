@@ -24,6 +24,13 @@ const origin = process.env.HABIT_QA_URL || "http://localhost:3100";
     const manifest = await client.send("Page.getAppManifest");
     result.manifestErrors = manifest.errors;
     result.manifest = JSON.parse(manifest.data);
+    assert.equal(result.manifest.id, "/dashboard");
+    assert(result.manifest.icons.every((icon) => icon.src.includes("?v=20261113-logo2")));
+    result.manifestCacheControl = await page.evaluate(async () => {
+      const response = await fetch(document.querySelector('link[rel="manifest"]').href);
+      return response.headers.get("cache-control");
+    });
+    assert(result.manifestCacheControl.includes("no-cache"));
     result.serviceWorker = await page.evaluate(async () => {
       const registration = await Promise.race([
         navigator.serviceWorker.ready,

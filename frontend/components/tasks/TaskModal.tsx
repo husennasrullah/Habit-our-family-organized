@@ -101,7 +101,7 @@ export function TaskModal({
 
       <div className="relative z-10 w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">
             {isEditing ? "Edit Tugas" : "Tambah Tugas"}
           </h2>
@@ -118,7 +118,7 @@ export function TaskModal({
         <form
           id="task-form"
           onSubmit={handleSubmit(onSave)}
-          className="px-5 py-4 space-y-4 max-h-[65vh] overflow-y-auto"
+          className="px-4 py-4 space-y-4 max-h-[65vh] overflow-y-auto"
         >
           {/* Title */}
           <div className="space-y-1">
@@ -199,7 +199,7 @@ export function TaskModal({
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-border px-5 py-4">
+        <div className="flex items-center justify-between border-t border-border px-4 py-4">
           {isEditing && onDelete ? (
             <button
               type="button"

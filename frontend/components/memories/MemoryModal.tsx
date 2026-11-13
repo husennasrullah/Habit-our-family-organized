@@ -111,7 +111,7 @@ export function MemoryModal({
 
       <div className="relative z-10 w-full sm:max-w-lg bg-card rounded-t-2xl sm:rounded-2xl shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">
             {isEditing ? "Edit Kenangan" : "Tambah Kenangan"}
           </h2>
@@ -127,7 +127,7 @@ export function MemoryModal({
         <form
           id="memory-form"
           onSubmit={handleSubmit(onSubmit)}
-          className="px-5 py-4 space-y-4 max-h-[65vh] overflow-y-auto"
+          className="px-4 py-4 space-y-4 max-h-[65vh] overflow-y-auto"
         >
           {/* Title */}
           <div className="space-y-1">
@@ -241,7 +241,7 @@ export function MemoryModal({
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-border px-5 py-4">
+        <div className="flex items-center justify-between border-t border-border px-4 py-4">
           {isEditing && onDelete ? (
             <button
               type="button"

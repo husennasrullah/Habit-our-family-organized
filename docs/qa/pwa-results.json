@@ -11,7 +11,7 @@
       "standalone",
       "minimal-ui"
     ],
-    "background_color": "#F6F7FC",
+    "background_color": "#FAF8F2",
     "theme_color": "#007F5B",
     "orientation": "portrait-primary",
     "lang": "id",
@@ -21,25 +21,25 @@
     ],
     "icons": [
       {
-        "src": "/icons/habit-v2-192.png",
+        "src": "/icons/habit-v2-192.png?v=20261113-logo2",
         "sizes": "192x192",
         "type": "image/png",
         "purpose": "any"
       },
       {
-        "src": "/icons/habit-v2-512.png",
+        "src": "/icons/habit-v2-512.png?v=20261113-logo2",
         "sizes": "512x512",
         "type": "image/png",
         "purpose": "any"
       },
       {
-        "src": "/icons/habit-v2-maskable-192.png",
+        "src": "/icons/habit-v2-maskable-192.png?v=20261113-logo2",
         "sizes": "192x192",
         "type": "image/png",
         "purpose": "maskable"
       },
       {
-        "src": "/icons/habit-v2-maskable-512.png",
+        "src": "/icons/habit-v2-maskable-512.png?v=20261113-logo2",
         "sizes": "512x512",
         "type": "image/png",
         "purpose": "maskable"
@@ -52,7 +52,7 @@
         "url": "/calendar",
         "icons": [
           {
-            "src": "/icons/habit-v2-192.png",
+            "src": "/icons/habit-v2-192.png?v=20261113-logo2",
             "sizes": "192x192"
           }
         ]
@@ -63,7 +63,7 @@
         "url": "/tasks",
         "icons": [
           {
-            "src": "/icons/habit-v2-192.png",
+            "src": "/icons/habit-v2-192.png?v=20261113-logo2",
             "sizes": "192x192"
           }
         ]
@@ -74,13 +74,15 @@
         "url": "/budget",
         "icons": [
           {
-            "src": "/icons/habit-v2-192.png",
+            "src": "/icons/habit-v2-192.png?v=20261113-logo2",
             "sizes": "192x192"
           }
         ]
       }
-    ]
+    ],
+    "id": "/dashboard"
   },
+  "manifestCacheControl": "no-cache, must-revalidate",
   "serviceWorker": {
     "scope": "http://localhost:3100/",
     "state": "activating"

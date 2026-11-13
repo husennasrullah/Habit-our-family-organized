@@ -6,11 +6,11 @@
       "theme": "light",
       "logos": [
         {
-          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "src": "http://localhost:3000/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
           "loaded": true
         },
         {
-          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "src": "http://localhost:3000/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
           "loaded": true
         }
       ]
@@ -21,11 +21,11 @@
       "theme": "light",
       "logos": [
         {
-          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "src": "http://localhost:3000/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
           "loaded": true
         },
         {
-          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "src": "http://localhost:3000/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
           "loaded": true
         }
       ]
@@ -36,11 +36,11 @@
       "theme": "dark",
       "logos": [
         {
-          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "src": "http://localhost:3000/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
           "loaded": true
         },
         {
-          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "src": "http://localhost:3000/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
           "loaded": true
         }
       ]
@@ -51,11 +51,11 @@
       "theme": "dark",
       "logos": [
         {
-          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "src": "http://localhost:3000/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
           "loaded": true
         },
         {
-          "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
+          "src": "http://localhost:3000/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
           "loaded": true
         }
       ]
@@ -64,7 +64,7 @@
       "route": "/dashboard",
       "width": 1440,
       "logo": {
-        "src": "http://localhost:3100/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=32&q=75",
+        "src": "http://localhost:3000/_next/image?url=%2Ficons%2Fhabit-mark-v2.png&w=48&q=75",
         "loaded": true
       }
     }
@@ -72,28 +72,28 @@
   "errors": [],
   "icons": [
     {
-      "src": "/icons/habit-v2-192.png",
+      "src": "/icons/habit-v2-192.png?v=20261113-logo2",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any",
       "status": 200
     },
     {
-      "src": "/icons/habit-v2-512.png",
+      "src": "/icons/habit-v2-512.png?v=20261113-logo2",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any",
       "status": 200
     },
     {
-      "src": "/icons/habit-v2-maskable-192.png",
+      "src": "/icons/habit-v2-maskable-192.png?v=20261113-logo2",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable",
       "status": 200
     },
     {
-      "src": "/icons/habit-v2-maskable-512.png",
+      "src": "/icons/habit-v2-maskable-512.png?v=20261113-logo2",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable",
@@ -107,5 +107,11 @@
       32,
       48
     ]
-  }
+  },
+  "wordmark": {
+    "size": "24px",
+    "weight": "800",
+    "stroke": "0.3px"
+  },
+  "canvas": "linear-gradient(125deg, rgb(252, 250, 245) 0%, rgb(250, 248, 242) 58%, rgb(248, 249, 242) 100%)"
 }

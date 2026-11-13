@@ -14,6 +14,35 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 > Selalu update section ini setiap akhir sesi kerja.
 > **Last updated:** 2026-11-13 (Revisi dashboard sesuai referensi, font dan header)
 
+### Pengiriman pembaruan tampilan dan PWA — 2026-11-13
+- Pengguna meminta batch lanjutan dikirim ke origin/main: lebar Liburan/Pengaturan, skala seragam semua menu, wordmark lebih tebal, cache ikon PWA, dan latar cream.
+- Verifikasi tercatat pada bagian di bawah: build/lint/typecheck, pemeriksaan browser dan PWA lulus. Commit dan push biasa ke origin/main, tanpa force push; bukti QA/dokumentasi disertakan. Next step: pantau CI/CD dan review instalasi PWA setelah versi baru tersedia.
+
+### Latar light cream tipis — 2026-11-13
+- Pengguna meminta mencoba latar light cream tipis setelah menanyakan warna latar sebelumnya.
+- `globals.css`: token background 43 44% 97%, app-shell gradient cream #FCFAF5/#FAF8F2/#F8F9F2. Kartu tetap putih, aksen emerald dan dark theme tetap dipertahankan. Manifest background_color dan latar offline diselaraskan #FAF8F2.
+- `logo-qa.cjs` diperluas untuk memeriksa wordmark 24px/800 dan warna canvas light. Verifikasi visual lulus pada dev: canvas cream dan wordmark 24 px/800; lima pemeriksaan logo tanpa error, empat ikon manifest HTTP 200. Perubahan sebelumnya dipertahankan, belum commit/push batch ini.
+
+### Wordmark sidebar dan pembaruan ikon PWA — 2026-11-13
+- Pengguna meminta tulisan Habit lebih bulky dan melaporkan ikon PWA belum memakai logo terbaru.
+- `globals.css`: wordmark 24 px/800 dengan stroke tipis 0.3 px, tracking -0.9 px; tagline tetap ringan.
+- Manifest sudah memakai logo v2 yang sama dengan sidebar. Memperbaiki jalur pembaruan: URL manifest/ikon/Apple diberi versi, id eksplisit `/dashboard` mempertahankan identitas berdasarkan start_url lama; manifest dikeluarkan dari precache dan memakai NetworkOnly, manifest/sw HTTP no-cache, registration updateViaCache none.
+- File: root layout, manifest, next.config, ServiceWorkerRegistration, globals.css, dan pemeriksaan PWA. Build produksi 19 halaman/lint/typecheck lulus sebelum perubahan warna cream; pemeriksaan browser/logo lulus. PWA pada standalone produksi dengan manifest/offline terbaru lulus: HTTP no-cache, id stabil, ikon berversi, worker mengontrol halaman, fallback offline HTTP 200. Perubahan batch sebelumnya dipertahankan; belum commit/push batch lanjutan.
+- Ikon aplikasi yang sudah terpasang dikelola browser/OS; kode tidak dapat memaksa pembaruan ikon launcher saat itu juga. Next step: verifikasi manifest/worker/offline dan review ikon setelah pembaruan instalasi.
+
+### Skala seragam seluruh menu — 2026-11-13
+- Pengguna meminta ukuran font dan tampilan semua menu diperkecil dan diseragamkan dengan dashboard.
+- `tailwind.config.ts`: caption 11 px, teks/label 13 px, subjudul 15–17 px, judul 20 px. `PageHeader` memakai judul 20 px di desktop/mobile. Button standar 36 px, pointer coarse tetap minimum 44 px. ContentState lebih ringkas.
+- Normalisasi padding kartu/dialog 20–24 menjadi 16 px, gap bagian 20–24 menjadi 16 px, empty state dan tombol tambah dipadatkan di seluruh halaman selain dashboard dan komponen modul. Detail Liburan mengikuti lebar main. Data dan alur fitur dipertahankan.
+- Server dev localhost:3000 direstart karena masih menyajikan font token lama (22 px); sesudah restart CSS yang dilayani sudah 20 px. Build menggunakan `.next-qa` agar terisolasi dari dev.
+- Build produksi 19 halaman, lint dan TypeScript lulus. Pemeriksaan terarah 20 skenario (10 menu termasuk detail Liburan × mobile/desktop) lulus: judul 20 px, lebar mengikuti main, tanpa overflow/error runtime. Bukti `docs/qa/compact-*`; regresi dashboard/reference 46 pemeriksaan dan delapan audit axe terpilih juga lulus tanpa error/overflow/pelanggaran. Belum commit/push untuk batch ini.
+
+### Lebar halaman Liburan dan Pengaturan — 2026-11-13
+- Pengguna melaporkan konten kedua menu berkumpul di tengah. Penyebab: wrapper Liburan `max-w-6xl mx-auto` (1152 px) dan Pengaturan `max-w-2xl mx-auto` (672 px).
+- Mengubah wrapper di `frontend/app/(dashboard)/trips/page.tsx` dan `frontend/app/(dashboard)/settings/page.tsx` menjadi `w-full min-w-0`, mengikuti lebar dan gutter `.app-main` yang sama dengan halaman lain. Batas lebar dialog tetap dipertahankan.
+- Verifikasi browser dengan data simulasi: enam pemeriksaan pada 390/1228/1920 px lulus; tepi konten tepat pada gutter main, tanpa overflow/error runtime. Bukti `docs/qa/full-width-results.json` dan `full-width-{trips,settings}-1228.png`. Diff whitespace lulus. Perubahan ini belum commit/push; redesign sebelumnya sudah terkirim pada commit `a20d3a6` ke origin/main.
+- Next step: review hasil visual pengguna; tidak ada perubahan backend atau alur fitur.
+
 ### Pengiriman redesign ke origin — 2026-11-13
 - Pengguna meminta seluruh pekerjaan redesign yang sudah selesai dikirim ke origin.
 - Target: branch `main`, remote `origin`; mencakup redesign semua menu, logo/aset, font, perbaikan PWA, offset sidebar, dokumentasi dan bukti QA. Generated build/cache dan berkas environment tidak disertakan.

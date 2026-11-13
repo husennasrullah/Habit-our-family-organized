@@ -127,7 +127,7 @@ export default function TasksPage() {
   const isLoading = tasksQuery.isPending;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* ── Header ──────────────────────────────────────────────── */}
       <PageHeader
         title="Tugas"
@@ -183,7 +183,7 @@ export default function TasksPage() {
       {tasksQuery.isError ? (
         <QueryError retry={() => void tasksQuery.refetch()} />
       ) : (
-        <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-4">
+        <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-4">
           <div className="grid min-w-0 gap-4 md:grid-cols-3 xl:col-span-3">
             {COLUMNS.map(({ status, label }) => (
               <section
@@ -202,7 +202,7 @@ export default function TasksPage() {
                 {isLoading ? (
                   <Skeleton className="h-40 rounded-2xl" />
                 ) : tasksByStatus[status].length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+                  <div className="rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
                     Belum ada tugas di sini.
                   </div>
                 ) : (

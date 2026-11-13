@@ -19,7 +19,7 @@ const RANK_COLORS = [
 export function Leaderboard({ entries, members }: LeaderboardProps) {
   if (entries.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-card p-6 text-center">
+      <div className="rounded-xl border border-border bg-card p-4 text-center">
         <Trophy className="mx-auto mb-2 h-8 w-8 text-neutral-200" />
         <p className="text-sm text-muted-foreground">
           Belum ada tugas selesai minggu ini

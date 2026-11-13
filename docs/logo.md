@@ -42,3 +42,7 @@ Sumber generator berupa raster; URL warna di prompt adalah arahan warna, bukan k
 - Bukti: [hasil mesin](qa/logo-results.json), [login desktop](qa/logo-login-1440-light.png), [login HP](qa/logo-login-390-light.png), [dashboard](qa/logo-dashboard-1440.png).
 
 Tool built-in imagegen dipakai untuk pembuatan dan penyempurnaan; Sharp hanya mengekspor ukuran/padding platform. Belum commit atau deploy.
+
+## Pembaruan wordmark dan cache PWA — 2026-11-13
+
+Wordmark sidebar diperkuat menjadi 24 px, weight 800, tracking -0.9 px dan stroke 0.3 px; tagline tetap ringan. Ikon PWA tetap berasal dari logo v2 yang sama dengan sidebar, dengan URL berparameter `v=20261113-logo2` untuk memutus pemakaian URL cache lama. Manifest memiliki id `/dashboard` (identitas lama berdasarkan start_url), keluar dari precache, menggunakan NetworkOnly dan HTTP no-cache; worker diperbarui dengan updateViaCache none. Metadata Apple juga memakai URL ikon berversi. Ikon launcher aplikasi yang sudah terpasang mengikuti jadwal pembaruan browser/OS; instalasi ulang dapat diperlukan jika OS tetap menampilkan ikon lama setelah versi baru tersedia.

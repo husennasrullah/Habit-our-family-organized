@@ -338,7 +338,7 @@ export default function TripDetailPage({
 
   if (isLoading) {
     return (
-      <div className="max-w-5xl mx-auto space-y-6">
+      <div className="w-full min-w-0 space-y-4">
         <div className="h-48 rounded-2xl bg-neutral-200 dark:bg-muted animate-pulse" />
         <div className="h-64 rounded-2xl bg-neutral-200 dark:bg-muted animate-pulse" />
       </div>
@@ -510,7 +510,7 @@ export default function TripDetailPage({
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="w-full min-w-0 space-y-4">
       {/* Top Navigation */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link
@@ -682,7 +682,7 @@ export default function TripDetailPage({
           )}
 
           {itineraries.length === 0 ? (
-            <div className="text-center py-12 bg-card dark:bg-card rounded-2xl border border-dashed border-neutral-300 dark:border-border p-6">
+            <div className="text-center py-8 bg-card dark:bg-card rounded-2xl border border-dashed border-neutral-300 dark:border-border p-4">
               <Clock className="w-10 h-10 mx-auto mb-2 text-muted-foreground" />
               <h3 className="font-semibold text-sm">
                 Belum ada agenda perjalanan
@@ -699,7 +699,7 @@ export default function TripDetailPage({
               </button>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {sortedDayNumbers.map((dayNum) => {
                 const dayItems = daysMap[dayNum]
                   .slice()
@@ -926,9 +926,9 @@ export default function TripDetailPage({
 
       {/* ─── TAB 2: PACKING CHECKLIST ────────────────────────────────────── */}
       {activeTab === "packing" && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Progress Header */}
-          <div className="bg-card dark:bg-card p-5 rounded-2xl border border-border/80 dark:border-border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="space-y-1 w-full md:w-auto">
               <h2 className="text-base font-bold">Progress Perlengkapan</h2>
               <p className="text-xs text-muted-foreground">
@@ -952,7 +952,7 @@ export default function TripDetailPage({
 
           {/* Packing Items List */}
           {packingItems.length === 0 ? (
-            <div className="text-center py-12 bg-card dark:bg-card rounded-2xl border border-dashed border-neutral-300 dark:border-border p-6">
+            <div className="text-center py-8 bg-card dark:bg-card rounded-2xl border border-dashed border-neutral-300 dark:border-border p-4">
               <Luggage className="w-10 h-10 mx-auto mb-2 text-muted-foreground" />
               <h3 className="font-semibold text-sm">
                 Daftar packing masih kosong
@@ -1028,9 +1028,9 @@ export default function TripDetailPage({
 
       {/* ─── TAB 3: OVERVIEW & NOTES ─────────────────────────────────────── */}
       {activeTab === "overview" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Info & Catatan */}
-          <div className="bg-card dark:bg-card p-6 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-4">
+          <div className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-4">
             <h3 className="font-bold text-base flex items-center gap-2">
               <Info className="w-5 h-5 text-primary-600" /> Catatan & Akomodasi
             </h3>
@@ -1040,7 +1040,7 @@ export default function TripDetailPage({
           </div>
 
           {/* Peserta & Budget */}
-          <div className="bg-card dark:bg-card p-6 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-5">
+          <div className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-4">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-bold text-base flex items-center gap-2">
@@ -1086,10 +1086,10 @@ export default function TripDetailPage({
 
       {/* ─── TAB 4: EXPENSES & SPLIT BILL ─────────────────────────────────── */}
       {activeTab === "expenses" && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Summary Card */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-card dark:bg-card p-5 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-1">
+            <div className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-1">
               <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
                 <span>Total Pengeluaran Riil</span>
                 <Wallet className="w-4 h-4 text-emerald-600" />
@@ -1107,7 +1107,7 @@ export default function TripDetailPage({
               </div>
             </div>
 
-            <div className="bg-card dark:bg-card p-5 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-1">
+            <div className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-1">
               <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
                 <span>Estimasi Budget Liburan</span>
                 <DollarSign className="w-4 h-4 text-primary-600" />
@@ -1134,7 +1134,7 @@ export default function TripDetailPage({
               </p>
             </div>
 
-            <div className="bg-card dark:bg-card p-5 rounded-2xl border border-border/80 dark:border-border shadow-sm flex flex-col justify-between">
+            <div className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm flex flex-col justify-between">
               <div className="flex items-center justify-between text-muted-foreground text-xs font-medium mb-2">
                 <span>Catat Pengeluaran Baru</span>
                 <Receipt className="w-4 h-4 text-indigo-600" />
@@ -1160,7 +1160,7 @@ export default function TripDetailPage({
 
           {/* Expenses List */}
           {expenses.length === 0 ? (
-            <div className="text-center py-12 bg-card dark:bg-card rounded-2xl border border-dashed border-neutral-300 dark:border-border p-6">
+            <div className="text-center py-8 bg-card dark:bg-card rounded-2xl border border-dashed border-neutral-300 dark:border-border p-4">
               <Receipt className="w-10 h-10 mx-auto mb-2 text-muted-foreground" />
               <h3 className="font-semibold text-sm">
                 Belum ada catatan pengeluaran
@@ -1181,7 +1181,7 @@ export default function TripDetailPage({
               {expenses.map((exp) => (
                 <div
                   key={exp.id}
-                  className="bg-card dark:bg-card p-5 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-4"
+                  className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-4"
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-border dark:border-border pb-3">
                     <div className="space-y-1">
@@ -1239,8 +1239,8 @@ export default function TripDetailPage({
 
       {/* ─── TAB 5: DOCUMENTS & TICKETS ──────────────────────────────────── */}
       {activeTab === "documents" && (
-        <div className="space-y-6">
-          <div className="bg-card dark:bg-card p-5 rounded-2xl border border-border/80 dark:border-border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="space-y-4">
+          <div className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="space-y-1">
               <h2 className="text-base font-bold">
                 Dokumen & E-Tiket Perjalanan
@@ -1259,7 +1259,7 @@ export default function TripDetailPage({
           </div>
 
           {documents.length === 0 ? (
-            <div className="text-center py-12 bg-card dark:bg-card rounded-2xl border border-dashed border-neutral-300 dark:border-border p-6">
+            <div className="text-center py-8 bg-card dark:bg-card rounded-2xl border border-dashed border-neutral-300 dark:border-border p-4">
               <FileText className="w-10 h-10 mx-auto mb-2 text-muted-foreground" />
               <h3 className="font-semibold text-sm">
                 Belum ada dokumen yang diunggah
@@ -1374,7 +1374,7 @@ export default function TripDetailPage({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowEditTripModal(false)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4 my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-lg p-4 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold flex items-center gap-2">
                 <Pencil className="w-5 h-5 text-primary-600" /> Edit Rencana
@@ -1603,7 +1603,7 @@ export default function TripDetailPage({
                 <button
                   type="submit"
                   disabled={updateTrip.isPending}
-                  className="px-5 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition disabled:opacity-50"
                 >
                   {updateTrip.isPending ? "Menyimpan..." : "Simpan Perubahan"}
                 </button>
@@ -1622,7 +1622,7 @@ export default function TripDetailPage({
             setAddBudgetRows([]);
           }}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 sm:p-6 shadow-2xl space-y-4 my-4 sm:my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 sm:p-4 shadow-2xl space-y-4 my-4 sm:my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold">Tambah Jadwal Aktivitas</h3>
               <button
@@ -1915,7 +1915,7 @@ export default function TripDetailPage({
           className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setEditingItinerary(null)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 sm:p-6 shadow-2xl space-y-4 my-4 sm:my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 sm:p-4 shadow-2xl space-y-4 my-4 sm:my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold">Edit Jadwal Aktivitas</h3>
               <button
@@ -2202,7 +2202,7 @@ export default function TripDetailPage({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowPackingModal(false)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 shadow-2xl space-y-4">
             <h3 className="text-lg font-bold">Tambah Barang Bawaan</h3>
             <form onSubmit={handlePackingSubmit} className="space-y-4">
               <div>
@@ -2307,7 +2307,7 @@ export default function TripDetailPage({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowExpenseModal(false)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4 my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-lg p-4 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold flex items-center gap-2">
                 <Receipt className="w-5 h-5 text-indigo-600" /> Catat
@@ -2474,7 +2474,7 @@ export default function TripDetailPage({
                 <button
                   type="submit"
                   disabled={addExpense.isPending}
-                  className="px-5 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition disabled:opacity-50"
                 >
                   {addExpense.isPending ? "Menyimpan..." : "Simpan Pengeluaran"}
                 </button>
@@ -2490,7 +2490,7 @@ export default function TripDetailPage({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowDocModal(false)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4 my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold flex items-center gap-2">
                 <UploadCloud className="w-5 h-5 text-primary-600" /> Upload
@@ -2599,7 +2599,7 @@ export default function TripDetailPage({
                 <button
                   type="submit"
                   disabled={uploadDoc.isPending || !docFile}
-                  className="px-5 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition disabled:opacity-50"
                 >
                   {uploadDoc.isPending ? "Mengupload..." : "Upload File"}
                 </button>
@@ -2615,7 +2615,7 @@ export default function TripDetailPage({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowMemberModal(false)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4 my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold flex items-center gap-2">
                 <Users className="w-5 h-5 text-indigo-600" /> Kelola Anggota
@@ -2695,7 +2695,7 @@ export default function TripDetailPage({
                 type="button"
                 onClick={handleSaveMembers}
                 disabled={updateTrip.isPending}
-                className="px-5 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition disabled:opacity-50"
+                className="px-4 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition disabled:opacity-50"
               >
                 {updateTrip.isPending ? "Menyimpan..." : "Simpan Peserta"}
               </button>

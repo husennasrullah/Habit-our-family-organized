@@ -134,7 +134,7 @@ function MealDetailModal({
     >
       <div className="bg-card dark:bg-card w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl">
         {/* Header */}
-        <div className="flex items-start justify-between px-5 pt-5 pb-4 border-b border-border dark:border-border">
+        <div className="flex items-start justify-between px-4 pt-5 pb-4 border-b border-border dark:border-border">
           <div className="flex items-center gap-2.5">
             <span className="text-2xl">{mealMeta?.emoji}</span>
             <div>
@@ -156,7 +156,7 @@ function MealDetailModal({
         </div>
 
         {/* Body */}
-        <div className="px-5 py-5 space-y-4">
+        <div className="px-4 py-5 space-y-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
               Menu
@@ -201,7 +201,7 @@ function MealDetailModal({
         </div>
 
         {/* Footer actions */}
-        <div className="px-5 pb-5 flex gap-2">
+        <div className="px-4 pb-5 flex gap-2">
           <button
             onClick={() => onDelete(meal.id)}
             disabled={isDeleting}
@@ -278,13 +278,13 @@ function MealFormModal({
       onClose={onClose}
     >
       <div className="bg-card dark:bg-card rounded-2xl shadow-xl w-full max-w-md">
-        <div className="px-5 py-4 border-b border-border dark:border-border">
+        <div className="px-4 py-4 border-b border-border dark:border-border">
           <h2 className="text-base font-semibold text-foreground dark:text-neutral-50">
             {editingMeal ? "Edit" : "Tambah"} {mealLabel}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">{dateLabel}</p>
         </div>
-        <div className="p-5 space-y-4">
+        <div className="p-4 space-y-4">
           <div>
             <label
               className="text-xs font-medium text-foreground dark:text-muted-foreground"
@@ -333,7 +333,7 @@ function MealFormModal({
             />
           </div>
         </div>
-        <div className="px-5 pb-5 flex gap-2 justify-end">
+        <div className="px-4 pb-5 flex gap-2 justify-end">
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-lg text-sm font-medium text-foreground dark:text-foreground border border-border dark:border-border hover:bg-muted dark:hover:bg-neutral-800"
@@ -440,7 +440,7 @@ export default function MealsPage() {
     toDateStr(weekStart) === toDateStr(startOfWeek(today, { weekStartsOn: 1 }));
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* ── Header ───────────────────────────────────────────── */}
       <PageHeader
         title="Jadwal Makan"
@@ -522,7 +522,7 @@ export default function MealsPage() {
             {MEAL_TYPES.map((type) => (
               <section
                 key={type.value}
-                className="rounded-2xl border border-border bg-card p-5"
+                className="rounded-2xl border border-border bg-card p-4"
               >
                 <div className="mb-4 flex items-center justify-between gap-2">
                   <h2 className="text-base font-semibold">{type.label}</h2>
@@ -553,7 +553,7 @@ export default function MealsPage() {
                     )}
                     <button
                       onClick={() => openAdd(weekDays[activeDay], type.value)}
-                      className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border text-sm text-primary-700 dark:text-primary-200"
+                      className="flex min-h-9 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border text-sm text-primary-700 dark:text-primary-200"
                     >
                       <Plus size={16} />
                       Tambah menu

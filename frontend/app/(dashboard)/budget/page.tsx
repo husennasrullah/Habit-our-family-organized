@@ -227,7 +227,7 @@ export default function BudgetPage() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <PageHeader
         title="Keuangan"
@@ -300,7 +300,7 @@ export default function BudgetPage() {
           TAB 1 — KEUANGAN KELUARGA
       ══════════════════════════════════════════════════════════════════════ */}
       {mainTab === "keuangan" && (
-        <div className="space-y-5">
+        <div className="space-y-4">
           {/* Month navigator + summary */}
           <div className="rounded-xl border border-border dark:border-border bg-card dark:bg-card p-4">
             <div className="flex items-center justify-between mb-3">
@@ -536,7 +536,7 @@ export default function BudgetPage() {
             className="absolute inset-0 bg-black/40"
             onClick={() => setBudgetModal(false)}
           />
-          <div className="relative z-10 w-full max-w-sm rounded-2xl bg-card dark:bg-card p-6 shadow-xl">
+          <div className="relative z-10 w-full max-w-sm rounded-2xl bg-card dark:bg-card p-4 shadow-xl">
             <h3 className="mb-4 text-base font-semibold text-foreground dark:text-neutral-50">
               Target Budget — {editCategory}
             </h3>
