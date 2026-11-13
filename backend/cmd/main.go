@@ -251,6 +251,7 @@ func main() {
 	trips.Patch("/:id/expenses/:expense_id/splits/:split_id/toggle", tripHandler.ToggleExpenseSplit)
 	// Trips - Documents & Tickets
 	trips.Post("/:id/documents", tripHandler.UploadDocument)
+	trips.Get("/:id/documents/:doc_id/download", tripHandler.DownloadDocument)
 	trips.Delete("/:id/documents/:doc_id", tripHandler.DeleteDocument)
 
 	// Push Notification routes

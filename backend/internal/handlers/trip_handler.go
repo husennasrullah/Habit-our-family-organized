@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"io"
 	"keluarga-app/backend/internal/services"
+	"mime"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -402,4 +404,34 @@ func (h *TripHandler) DeleteDocument(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{"message": "dokumen berhasil dihapus"})
+}
+
+// DownloadDocument godoc
+// @Summary Unduh dokumen perjalanan milik keluarga
+// @Tags trips
+// @Security BearerAuth
+// @Router /trips/{id}/documents/{doc_id}/download [get]
+func (h *TripHandler) DownloadDocument(c *fiber.Ctx) error {
+	tripID, e := uuid.Parse(c.Params("id"))
+	if e != nil {
+		return c.SendStatus(400)
+	}
+	docID, e := uuid.Parse(c.Params("doc_id"))
+	if e != nil {
+		return c.SendStatus(400)
+	}
+	stream, contentType, name, _, err := h.svc.DocumentStream(docID, tripID, getFamilyID(c))
+	if err != nil {
+		return c.Status(404).JSON(fiber.Map{"message": "dokumen tidak tersedia"})
+	}
+	defer stream.Close()
+	data, err := io.ReadAll(io.LimitReader(stream, 10*1024*1024+1))
+	if err != nil || len(data) > 10*1024*1024 {
+		return c.Status(500).JSON(fiber.Map{"message": "dokumen tidak dapat dibaca"})
+	}
+	c.Set("Content-Type", contentType)
+	c.Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": name}))
+	c.Set("Cache-Control", "private, no-store")
+	c.Set("X-Content-Type-Options", "nosniff")
+	return c.Send(data)
 }

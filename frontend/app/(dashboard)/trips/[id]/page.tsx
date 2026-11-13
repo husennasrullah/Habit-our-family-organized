@@ -5,46 +5,41 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { ModalFrame } from "@/components/shared/ModalFrame";
 
 import { useState } from "react";
-import { api } from "@/lib/api";
+import { toast } from "sonner";
+import { isAxiosError } from "axios";
+import { ItineraryBoard } from "@/components/trips/ItineraryBoard";
+import { TripBudgetSummary } from "@/components/trips/TripBudgetSummary";
+import { TripExpensesPanel } from "@/components/trips/TripExpensesPanel";
+import { tripDuration } from "@/lib/trips";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
   ArrowLeft,
   Users,
-  Clock,
   Plus,
   Trash2,
-  ExternalLink,
   Luggage,
   ListTodo,
   Info,
   DollarSign,
   Pencil,
-  ChevronDown,
-  ChevronUp,
   Receipt,
   FileText,
   UploadCloud,
   Download,
-  Wallet,
 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   useTrip,
+  downloadTripDocument,
   useUpdateTrip,
   useAddItinerary,
   useUpdateItinerary,
   useDeleteItinerary,
-  useAddItineraryBudget,
-  useDeleteItineraryBudget,
   useAddPackingItem,
   useTogglePackingItem,
   useDeletePackingItem,
-  useAddTripExpense,
-  useDeleteTripExpense,
   useUploadTripDocument,
   useDeleteTripDocument,
-  tripKeys,
 } from "@/hooks/useTrips";
 import { useFamilyMembers } from "@/hooks/useFamilyMembers";
 import type { TripItinerary, TripStatus } from "@/types";
@@ -73,7 +68,6 @@ export default function TripDetailPage({
 }) {
   const routeParams = useParams();
   const id = (params?.id || routeParams?.id) as string;
-  const queryClient = useQueryClient();
   const { data: trip, isLoading, isError, refetch } = useTrip(id);
   const { data: members = [] } = useFamilyMembers();
 
@@ -84,25 +78,26 @@ export default function TripDetailPage({
   const addPacking = useAddPackingItem(id);
   const togglePacking = useTogglePackingItem(id);
   const deletePacking = useDeletePackingItem(id);
-  const addExpense = useAddTripExpense(id);
-  const deleteExpense = useDeleteTripExpense(id);
   const uploadDoc = useUploadTripDocument(id);
   const deleteDoc = useDeleteTripDocument(id);
 
   const [activeTab, setActiveTab] = useState<
     "itinerary" | "packing" | "expenses" | "documents" | "overview"
   >("itinerary");
-  const [expandedBudgets, setExpandedBudgets] = useState<
-    Record<string, boolean>
-  >({});
-
-  const toggleBudgetExpand = (itineraryId: string) => {
-    setExpandedBudgets((prev) => ({
-      ...prev,
-      [itineraryId]: !prev[itineraryId],
-    }));
-  };
-
+  const saveError = (error: unknown) =>
+    toast.error(
+      isAxiosError(error) && typeof error.response?.data?.message === "string"
+        ? error.response.data.message
+        : "Perubahan gagal disimpan. Coba lagi.",
+    );
+  const budgetPayload = (rows: BudgetRow[]) =>
+    rows
+      .filter((row) => row.label.trim() || row.amount)
+      .map((row) => ({
+        ...(row.id ? { id: row.id } : {}),
+        label: row.label.trim(),
+        amount: Number(row.amount),
+      }));
   // ── Edit Trip modal ────────────────────────────────────────────────────────
   const [showEditTripModal, setShowEditTripModal] = useState(false);
   const [editTripForm, setEditTripForm] = useState({
@@ -134,22 +129,26 @@ export default function TripDetailPage({
   };
 
   const handleEditTripSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await updateTrip.mutateAsync({
-      id,
-      payload: {
-        title: editTripForm.title,
-        destination: editTripForm.destination,
-        start_date: editTripForm.start_date,
-        end_date: editTripForm.end_date,
-        budget_estimate: Number(editTripForm.budget_estimate) || 0,
-        cover_image_url: editTripForm.cover_image_url,
-        notes: editTripForm.notes,
-        status: editTripForm.status,
-        member_ids: editTripForm.member_ids,
-      },
-    });
-    setShowEditTripModal(false);
+    try {
+      e.preventDefault();
+      await updateTrip.mutateAsync({
+        id,
+        payload: {
+          title: editTripForm.title,
+          destination: editTripForm.destination,
+          start_date: editTripForm.start_date,
+          end_date: editTripForm.end_date,
+          budget_estimate: Number(editTripForm.budget_estimate) || 0,
+          cover_image_url: editTripForm.cover_image_url,
+          notes: editTripForm.notes,
+          status: editTripForm.status,
+          member_ids: editTripForm.member_ids,
+        },
+      });
+      setShowEditTripModal(false);
+    } catch (error) {
+      saveError(error);
+    }
   };
 
   const handleEditTripMemberToggle = (memberId: string) => {
@@ -191,12 +190,6 @@ export default function TripDetailPage({
   // budget rows di dalam modal edit
   const [budgetRows, setBudgetRows] = useState<BudgetRow[]>([]);
 
-  const addBudgetHook = useAddItineraryBudget(id, editingItinerary?.id ?? "");
-  const deleteBudgetHook = useDeleteItineraryBudget(
-    id,
-    editingItinerary?.id ?? "",
-  );
-
   const openEditItineraryModal = (item: TripItinerary) => {
     setEditingItinerary(item);
     setEditItineraryForm({
@@ -220,63 +213,21 @@ export default function TripDetailPage({
 
   const handleEditItinerarySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingItinerary || !editItineraryForm.title) return;
-
-    // 1. Update itinerary fields
-    await updateItinerary.mutateAsync({
-      itineraryId: editingItinerary.id,
-      payload: {
-        day_number: Number(editItineraryForm.day_number),
-        time_start: editItineraryForm.time_start,
-        time_end: editItineraryForm.time_end,
-        title: editItineraryForm.title,
-        location: editItineraryForm.location,
-        location_url: editItineraryForm.location_url,
-        notes: editItineraryForm.notes,
-      },
-    });
-
-    // 2. Hapus budget items yang sudah dihapus dari rows
-    const existingItems = editingItinerary.budget_items ?? [];
-    const existingIds = existingItems.map((b) => b.id);
-    const keptIds = budgetRows.filter((r) => r.id).map((r) => r.id!);
-    const toDelete = existingIds.filter((eid) => !keptIds.includes(eid));
-    for (const bid of toDelete) {
-      await deleteBudgetHook.mutateAsync(bid);
+    if (!editingItinerary || updateItinerary.isPending) return;
+    try {
+      await updateItinerary.mutateAsync({
+        itineraryId: editingItinerary.id,
+        payload: {
+          ...editItineraryForm,
+          day_number: Number(editItineraryForm.day_number),
+          budget_items: budgetPayload(budgetRows),
+        },
+      });
+      setEditingItinerary(null);
+      toast.success("Kegiatan dan rincian biaya disimpan");
+    } catch (error) {
+      saveError(error);
     }
-
-    // 3. Update budget items yang sudah ada tapi nilainya berubah (delete + re-add)
-    for (const row of budgetRows) {
-      if (row.id) {
-        const original = existingItems.find((b) => b.id === row.id);
-        const labelChanged = original && original.label !== row.label.trim();
-        const amountChanged =
-          original && original.amount !== Number(row.amount);
-        if (
-          (labelChanged || amountChanged) &&
-          row.label.trim() &&
-          Number(row.amount) > 0
-        ) {
-          await deleteBudgetHook.mutateAsync(row.id);
-          await addBudgetHook.mutateAsync({
-            label: row.label.trim(),
-            amount: Number(row.amount),
-          });
-        }
-      }
-    }
-
-    // 4. Tambah budget items baru (yang belum punya id)
-    for (const row of budgetRows) {
-      if (!row.id && row.label.trim() && Number(row.amount) > 0) {
-        await addBudgetHook.mutateAsync({
-          label: row.label.trim(),
-          amount: Number(row.amount),
-        });
-      }
-    }
-
-    setEditingItinerary(null);
   };
 
   // ── Packing modal ──────────────────────────────────────────────────────────
@@ -285,17 +236,6 @@ export default function TripDetailPage({
     item_name: "",
     category: "Pakaian",
     assigned_to: "",
-  });
-
-  // ── Expense modal ──────────────────────────────────────────────────────────
-  const [showExpenseModal, setShowExpenseModal] = useState(false);
-  const [expenseForm, setExpenseForm] = useState({
-    title: "",
-    amount: "",
-    category: "Kuliner",
-    date: new Date().toISOString().slice(0, 10),
-    paid_by: "",
-    notes: "",
   });
 
   // ── Document modal ─────────────────────────────────────────────────────────
@@ -326,14 +266,18 @@ export default function TripDetailPage({
   };
 
   const handleSaveMembers = async () => {
-    if (!trip) return;
-    await updateTrip.mutateAsync({
-      id,
-      payload: {
-        member_ids: selectedMemberIds,
-      },
-    });
-    setShowMemberModal(false);
+    try {
+      if (!trip) return;
+      await updateTrip.mutateAsync({
+        id,
+        payload: {
+          member_ids: selectedMemberIds,
+        },
+      });
+      setShowMemberModal(false);
+    } catch (error) {
+      saveError(error);
+    }
   };
 
   if (isLoading) {
@@ -361,80 +305,53 @@ export default function TripDetailPage({
     );
   }
 
-  const itineraries = trip.itineraries ?? [];
   const packingItems = trip.packing_items ?? [];
-
-  // Group itineraries by day
-  const daysMap = itineraries.reduce(
-    (acc, item) => {
-      if (!acc[item.day_number]) acc[item.day_number] = [];
-      acc[item.day_number].push(item);
-      return acc;
-    },
-    {} as Record<number, typeof itineraries>,
-  );
-
-  const sortedDayNumbers = Object.keys(daysMap)
-    .map(Number)
-    .sort((a, b) => a - b);
 
   const handleItinerarySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!itineraryForm.title) return;
-
-    const newItem = await addItinerary.mutateAsync({
-      day_number: Number(itineraryForm.day_number),
-      time_start: itineraryForm.time_start,
-      time_end: itineraryForm.time_end,
-      title: itineraryForm.title,
-      location: itineraryForm.location,
-      location_url: itineraryForm.location_url,
-      notes: itineraryForm.notes,
-    });
-
-    // Simpan budget rows ke itinerary yang baru dibuat
-    if (newItem) {
-      for (const row of addBudgetRows) {
-        if (row.label.trim() && Number(row.amount) > 0) {
-          await api.post(`/trips/${id}/itineraries/${newItem.id}/budgets`, {
-            label: row.label.trim(),
-            amount: Number(row.amount),
-          });
-        }
-      }
-      // Invalidate agar budget_items ikut ter-load
-      queryClient.invalidateQueries({ queryKey: tripKeys.detail(id) });
+    if (addItinerary.isPending) return;
+    try {
+      await addItinerary.mutateAsync({
+        ...itineraryForm,
+        day_number: Number(itineraryForm.day_number),
+        budget_items: budgetPayload(addBudgetRows),
+      });
+      setShowItineraryModal(false);
+      setItineraryForm({
+        day_number: 1,
+        time_start: "09:00",
+        time_end: "11:00",
+        title: "",
+        location: "",
+        location_url: "",
+        notes: "",
+      });
+      setAddBudgetRows([]);
+      toast.success("Kegiatan dan rincian biaya disimpan");
+    } catch (error) {
+      saveError(error);
     }
-
-    setShowItineraryModal(false);
-    setItineraryForm({
-      day_number: 1,
-      time_start: "09:00",
-      time_end: "11:00",
-      title: "",
-      location: "",
-      location_url: "",
-      notes: "",
-    });
-    setAddBudgetRows([]);
   };
-
   const handlePackingSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!packingForm.item_name) return;
+    try {
+      e.preventDefault();
+      if (!packingForm.item_name) return;
 
-    await addPacking.mutateAsync({
-      item_name: packingForm.item_name,
-      category: packingForm.category,
-      assigned_to: packingForm.assigned_to || null,
-    });
+      await addPacking.mutateAsync({
+        item_name: packingForm.item_name,
+        category: packingForm.category,
+        assigned_to: packingForm.assigned_to || null,
+      });
 
-    setShowPackingModal(false);
-    setPackingForm({
-      item_name: "",
-      category: "Pakaian",
-      assigned_to: "",
-    });
+      setShowPackingModal(false);
+      setPackingForm({
+        item_name: "",
+        category: "Pakaian",
+        assigned_to: "",
+      });
+    } catch (error) {
+      saveError(error);
+    }
   };
 
   const packedCount = packingItems.filter((i) => i.is_packed).length;
@@ -443,70 +360,35 @@ export default function TripDetailPage({
       ? Math.round((packedCount / packingItems.length) * 100)
       : 0;
 
-  const totalItineraryBudget = itineraries.reduce(
-    (sum, item) =>
-      sum + (item.budget_items ?? []).reduce((s, b) => s + b.amount, 0),
-    0,
-  );
-
-  const expenses = trip.expenses ?? [];
   const documents = trip.documents ?? [];
-
-  const totalActualExpense = expenses.reduce(
-    (sum, e) => sum + (e.amount || 0),
-    0,
-  );
-  const budgetEstimate = trip.budget_estimate || 0;
-  const expensePercentage =
-    budgetEstimate > 0
-      ? Math.min(Math.round((totalActualExpense / budgetEstimate) * 100), 100)
-      : 0;
-  const isOverBudget =
-    budgetEstimate > 0 && totalActualExpense > budgetEstimate;
-
-  const handleExpenseSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!expenseForm.title || !expenseForm.amount) return;
-
-    await addExpense.mutateAsync({
-      title: expenseForm.title,
-      amount: Number(expenseForm.amount),
-      category: expenseForm.category,
-      date: expenseForm.date,
-      paid_by: expenseForm.paid_by || null,
-      notes: expenseForm.notes,
-    });
-
-    setShowExpenseModal(false);
-    setExpenseForm({
-      title: "",
-      amount: "",
-      category: "Kuliner",
-      date: new Date().toISOString().slice(0, 10),
-      paid_by: "",
-      notes: "",
-    });
-  };
-
+  const expenses = trip.expenses ?? [];
   const handleDocSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!docFile) return;
+    try {
+      e.preventDefault();
+      if (!docFile) return;
+      if (docFile.size > 10 * 1024 * 1024) {
+        toast.error("Ukuran dokumen maksimal 10 MB");
+        return;
+      }
 
-    const fd = new FormData();
-    fd.append("file", docFile);
-    fd.append("title", docForm.title || docFile.name);
-    fd.append("doc_type", docForm.doc_type);
-    fd.append("notes", docForm.notes);
+      const fd = new FormData();
+      fd.append("file", docFile);
+      fd.append("title", docForm.title || docFile.name);
+      fd.append("doc_type", docForm.doc_type);
+      fd.append("notes", docForm.notes);
 
-    await uploadDoc.mutateAsync(fd);
+      await uploadDoc.mutateAsync(fd);
 
-    setShowDocModal(false);
-    setDocFile(null);
-    setDocForm({
-      title: "",
-      doc_type: "ticket",
-      notes: "",
-    });
+      setShowDocModal(false);
+      setDocFile(null);
+      setDocForm({
+        title: "",
+        doc_type: "ticket",
+        notes: "",
+      });
+    } catch (error) {
+      saveError(error);
+    }
   };
 
   return (
@@ -541,6 +423,7 @@ export default function TripDetailPage({
         description={`${trip.destination} · ${new Date(trip.start_date).toLocaleDateString("id-ID")} – ${new Date(trip.end_date).toLocaleDateString("id-ID")}`}
       />
 
+      <TripBudgetSummary trip={trip} />
       {/* Main Tabs */}
       <div className="flex items-center gap-2 border-b border-border dark:border-border pb-2 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
         <button
@@ -608,323 +491,25 @@ export default function TripDetailPage({
 
       {/* ─── TAB 1: ITINERARY ────────────────────────────────────────────── */}
       {activeTab === "itinerary" && (
-        <div className="space-y-4">
-          {/* Header + budget summary bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-xs text-muted-foreground">
-                {itineraries.length} aktivitas
-                {totalItineraryBudget > 0 && (
-                  <span className="ml-2 font-semibold text-foreground dark:text-foreground">
-                    · Estimasi Rp {totalItineraryBudget.toLocaleString("id-ID")}
-                  </span>
-                )}
-              </p>
-            </div>
-            <button
-              onClick={() => setShowItineraryModal(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white rounded-xl text-xs font-semibold hover:bg-primary-700 transition"
-            >
-              <Plus className="w-4 h-4" /> Tambah Aktivitas
-            </button>
-          </div>
-
-          {/* Budget vs estimasi trip */}
-          {totalItineraryBudget > 0 && trip.budget_estimate > 0 && (
-            <div className="px-4 py-3.5 rounded-2xl bg-card dark:bg-card border border-border dark:border-border shadow-sm space-y-1.5">
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-semibold text-foreground dark:text-foreground">
-                  Alokasi Rencana Aktivitas vs Total Budget
-                </span>
-                <span
-                  className={`font-bold ${totalItineraryBudget > trip.budget_estimate ? "text-rose-600" : "text-emerald-600"}`}
-                >
-                  {Math.round(
-                    (totalItineraryBudget / trip.budget_estimate) * 100,
-                  )}
-                  %
-                </span>
-              </div>
-              <div className="w-full h-2 bg-muted dark:bg-muted rounded-full overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all ${totalItineraryBudget > trip.budget_estimate ? "bg-rose-500" : "bg-emerald-500"}`}
-                  style={{
-                    width: `${Math.min((totalItineraryBudget / trip.budget_estimate) * 100, 100)}%`,
-                  }}
-                />
-              </div>
-              <div className="flex items-center justify-between text-xs text-muted-foreground dark:text-muted-foreground pt-0.5">
-                <span>
-                  Rencana aktivitas:{" "}
-                  <b>Rp {totalItineraryBudget.toLocaleString("id-ID")}</b> dari
-                  total budget{" "}
-                  <b>Rp {trip.budget_estimate.toLocaleString("id-ID")}</b>
-                </span>
-                <span>
-                  {totalItineraryBudget > trip.budget_estimate ? (
-                    <span className="text-rose-600 font-semibold">
-                      Melebihi Rp{" "}
-                      {(
-                        totalItineraryBudget - trip.budget_estimate
-                      ).toLocaleString("id-ID")}
-                    </span>
-                  ) : (
-                    <span className="text-emerald-600 font-semibold">
-                      Sisa Rp{" "}
-                      {(
-                        trip.budget_estimate - totalItineraryBudget
-                      ).toLocaleString("id-ID")}
-                    </span>
-                  )}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {itineraries.length === 0 ? (
-            <div className="text-center py-8 bg-card dark:bg-card rounded-2xl border border-dashed border-neutral-300 dark:border-border p-4">
-              <Clock className="w-10 h-10 mx-auto mb-2 text-muted-foreground" />
-              <h3 className="font-semibold text-sm">
-                Belum ada agenda perjalanan
-              </h3>
-              <p className="text-xs text-muted-foreground mt-1 mb-4">
-                Tambahkan jadwal kegiatan seru untuk hari pertama dan
-                seterusnya.
-              </p>
-              <button
-                onClick={() => setShowItineraryModal(true)}
-                className="px-3 py-1.5 bg-primary-600 text-white rounded-lg text-xs font-semibold"
-              >
-                + Tambah Agenda
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {sortedDayNumbers.map((dayNum) => {
-                const dayItems = daysMap[dayNum]
-                  .slice()
-                  .sort((a, b) =>
-                    (a.time_start ?? "").localeCompare(b.time_start ?? ""),
-                  );
-                const dayBudget = dayItems.reduce(
-                  (s, item) =>
-                    s +
-                    (item.budget_items ?? []).reduce(
-                      (ss, b) => ss + b.amount,
-                      0,
-                    ),
-                  0,
-                );
-                return (
-                  <div
-                    key={dayNum}
-                    className="bg-card dark:bg-card rounded-2xl border border-border/80 dark:border-border shadow-sm overflow-hidden"
-                  >
-                    {/* Day header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-border dark:border-border bg-muted dark:bg-muted/50">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="w-7 h-7 rounded-lg bg-primary-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
-                          H{dayNum}
-                        </span>
-                        <span className="font-bold text-sm">
-                          Hari ke-{dayNum}
-                        </span>
-                        {trip.start_date &&
-                          (() => {
-                            const d = new Date(trip.start_date);
-                            d.setDate(d.getDate() + dayNum - 1);
-                            return (
-                              <span className="text-xs text-muted-foreground dark:text-muted-foreground font-medium">
-                                {d.toLocaleDateString("id-ID", {
-                                  weekday: "long",
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                })}
-                              </span>
-                            );
-                          })()}
-                        <span className="text-xs text-muted-foreground">
-                          {dayItems.length} aktivitas
-                        </span>
-                      </div>
-                      {dayBudget > 0 && (
-                        <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-full">
-                          Rp {dayBudget.toLocaleString("id-ID")}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Timeline */}
-                    <div className="px-4 py-3">
-                      {dayItems.map((item, idx) => {
-                        const itemBudget = (item.budget_items ?? []).reduce(
-                          (s, b) => s + b.amount,
-                          0,
-                        );
-                        const isLast = idx === dayItems.length - 1;
-                        return (
-                          <div key={item.id} className="flex gap-3 group">
-                            {/* Waktu + garis vertikal */}
-                            <div className="flex flex-col items-center w-14 shrink-0">
-                              <span className="text-xs font-semibold text-muted-foreground dark:text-muted-foreground tabular-nums leading-none pt-0.5">
-                                {item.time_start || "—"}
-                              </span>
-                              <div
-                                className="w-px flex-1 bg-neutral-200 dark:bg-neutral-700 mt-1.5 mb-0"
-                                style={{ minHeight: isLast ? 0 : 32 }}
-                              />
-                            </div>
-
-                            {/* Dot */}
-                            <div className="flex flex-col items-center shrink-0 mt-0.5">
-                              <div className="w-2.5 h-2.5 rounded-full bg-primary-500 ring-2 ring-white dark:ring-neutral-900 shrink-0" />
-                            </div>
-
-                            {/* Konten item */}
-                            <div className={`flex-1 pb-4 ${isLast ? "" : ""}`}>
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-semibold text-sm text-foreground dark:text-foreground leading-snug">
-                                    {item.title}
-                                  </p>
-
-                                  {item.location && (
-                                    <div className="flex items-center gap-1 mt-0.5">
-                                      <span className="text-xs text-muted-foreground dark:text-muted-foreground truncate">
-                                        {item.location}
-                                      </span>
-                                      {item.location_url && (
-                                        <a
-                                          href={item.location_url}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-primary-500 shrink-0"
-                                        >
-                                          <ExternalLink className="w-3 h-3" />
-                                        </a>
-                                      )}
-                                    </div>
-                                  )}
-
-                                  {item.notes && (
-                                    <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-0.5 line-clamp-2">
-                                      {item.notes}
-                                    </p>
-                                  )}
-
-                                  {/* Rincian Budget per item (Collapsible/Dropdown) */}
-                                  {item.budget_items &&
-                                    item.budget_items.length > 0 && (
-                                      <div className="mt-2.5 rounded-xl border border-border/70 dark:border-border bg-muted/70 dark:bg-muted/40 overflow-hidden transition-all">
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            toggleBudgetExpand(item.id)
-                                          }
-                                          className="w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-muted/60 dark:hover:bg-neutral-800/80 transition"
-                                          aria-label="Tampilkan rincian"
-                                        >
-                                          <div className="flex items-center gap-1.5 font-medium text-foreground dark:text-foreground">
-                                            <DollarSign className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                                            <span>Estimasi Biaya</span>
-                                            <span className="text-xs text-muted-foreground font-normal">
-                                              ({item.budget_items.length} item)
-                                            </span>
-                                          </div>
-                                          <div className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400">
-                                            <span>
-                                              Rp{" "}
-                                              {itemBudget.toLocaleString(
-                                                "id-ID",
-                                              )}
-                                            </span>
-                                            {expandedBudgets[item.id] ? (
-                                              <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" />
-                                            ) : (
-                                              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-                                            )}
-                                          </div>
-                                        </button>
-
-                                        {expandedBudgets[item.id] && (
-                                          <div className="px-3 pb-2.5 pt-1 border-t border-border/50 dark:border-border/50 space-y-1.5 bg-white/40 dark:bg-card/40">
-                                            {item.budget_items.map((b) => (
-                                              <div
-                                                key={b.id}
-                                                className="flex items-center justify-between text-xs py-0.5"
-                                              >
-                                                <span className="text-foreground dark:text-foreground flex items-center gap-1.5">
-                                                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-                                                  {b.label}
-                                                </span>
-                                                <span className="font-medium text-foreground dark:text-foreground">
-                                                  Rp{" "}
-                                                  {b.amount.toLocaleString(
-                                                    "id-ID",
-                                                  )}
-                                                </span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        )}
-                                      </div>
-                                    )}
-                                </div>
-
-                                {/* Aksi */}
-                                <div className="flex items-center gap-0.5 opacity-100 transition shrink-0">
-                                  <button
-                                    onClick={() => openEditItineraryModal(item)}
-                                    className="p-1.5 text-muted-foreground hover:text-primary-600 rounded-lg transition"
-                                    title="Edit"
-                                    aria-label="Edit"
-                                  >
-                                    <Pencil className="w-3.5 h-3.5" />
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      if (
-                                        window.confirm(
-                                          "Hapus agenda perjalanan ini?",
-                                        )
-                                      )
-                                        deleteItinerary.mutate(item.id);
-                                    }}
-                                    disabled={deleteItinerary.isPending}
-                                    className="p-1.5 text-muted-foreground hover:text-rose-600 rounded-lg transition"
-                                    title="Hapus"
-                                    aria-label="Hapus"
-                                  >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                              </div>
-
-                              {/* Waktu selesai jika ada */}
-                              {item.time_end && (
-                                <div className="flex items-center gap-1 mt-1">
-                                  <div className="w-14 shrink-0 -ml-[4.25rem] text-right pr-3">
-                                    <span className="text-xs text-muted-foreground tabular-nums">
-                                      {item.time_end}
-                                    </span>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        <ItineraryBoard
+          trip={trip}
+          onAdd={(day) => {
+            if (day) setItineraryForm((v) => ({ ...v, day_number: day }));
+            setShowItineraryModal(true);
+          }}
+          onEdit={openEditItineraryModal}
+          onDelete={async (itemId) => {
+            if (!confirm("Hapus kegiatan beserta rincian biayanya?")) return;
+            try {
+              await deleteItinerary.mutateAsync(itemId);
+            } catch (error) {
+              saveError(error);
+            }
+          }}
+          deleting={deleteItinerary.isPending}
+        />
       )}
 
-      {/* ─── TAB 2: PACKING CHECKLIST ────────────────────────────────────── */}
       {activeTab === "packing" && (
         <div className="space-y-4">
           {/* Progress Header */}
@@ -982,7 +567,13 @@ export default function TripDetailPage({
                     <input
                       type="checkbox"
                       checked={item.is_packed}
-                      onChange={() => togglePacking.mutate(item.id)}
+                      onChange={() => {
+                        void togglePacking
+                          .mutateAsync(item.id)
+                          .catch(saveError);
+                      }}
+                      disabled={togglePacking.isPending}
+                      aria-label={`Tandai ${item.item_name} sudah disiapkan`}
                       className="w-5 h-5 rounded border-neutral-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                     />
                     <div className="min-w-0 flex-1">
@@ -1011,7 +602,9 @@ export default function TripDetailPage({
                   <button
                     onClick={() => {
                       if (window.confirm("Hapus barang bawaan ini?"))
-                        deletePacking.mutate(item.id);
+                        void deletePacking
+                          .mutateAsync(item.id)
+                          .catch(saveError);
                     }}
                     disabled={deletePacking.isPending}
                     className="text-muted-foreground hover:text-rose-600 p-1 rounded-lg transition"
@@ -1085,159 +678,8 @@ export default function TripDetailPage({
       )}
 
       {/* ─── TAB 4: EXPENSES & SPLIT BILL ─────────────────────────────────── */}
-      {activeTab === "expenses" && (
-        <div className="space-y-4">
-          {/* Summary Card */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-1">
-              <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-                <span>Total Pengeluaran Riil</span>
-                <Wallet className="w-4 h-4 text-emerald-600" />
-              </div>
-              <p className="text-2xl font-semibold text-foreground dark:text-white">
-                Rp {totalActualExpense.toLocaleString("id-ID")}
-              </p>
-              <div className="w-full h-1.5 bg-muted dark:bg-muted rounded-full overflow-hidden mt-3">
-                <div
-                  className={`h-full rounded-full transition-all duration-300 ${
-                    isOverBudget ? "bg-rose-500" : "bg-emerald-500"
-                  }`}
-                  style={{ width: `${expensePercentage}%` }}
-                />
-              </div>
-            </div>
+      {activeTab === "expenses" && <TripExpensesPanel trip={trip} />}
 
-            <div className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-1">
-              <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-                <span>Estimasi Budget Liburan</span>
-                <DollarSign className="w-4 h-4 text-primary-600" />
-              </div>
-              <p className="text-2xl font-semibold text-foreground dark:text-white">
-                Rp {budgetEstimate.toLocaleString("id-ID")}
-              </p>
-              <p className="text-xs text-muted-foreground mt-2">
-                {isOverBudget ? (
-                  <span className="text-rose-600 font-semibold">
-                    Over-budget Rp{" "}
-                    {(totalActualExpense - budgetEstimate).toLocaleString(
-                      "id-ID",
-                    )}
-                  </span>
-                ) : (
-                  <span className="text-emerald-600 font-semibold">
-                    Sisa Rp{" "}
-                    {(budgetEstimate - totalActualExpense).toLocaleString(
-                      "id-ID",
-                    )}
-                  </span>
-                )}
-              </p>
-            </div>
-
-            <div className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm flex flex-col justify-between">
-              <div className="flex items-center justify-between text-muted-foreground text-xs font-medium mb-2">
-                <span>Catat Pengeluaran Baru</span>
-                <Receipt className="w-4 h-4 text-indigo-600" />
-              </div>
-              <button
-                onClick={() => {
-                  setExpenseForm({
-                    title: "",
-                    amount: "",
-                    category: "Kuliner",
-                    date: new Date().toISOString().slice(0, 10),
-                    paid_by: trip.members?.[0]?.id || "",
-                    notes: "",
-                  });
-                  setShowExpenseModal(true);
-                }}
-                className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-primary-600 text-white rounded-xl text-xs font-semibold hover:bg-primary-700 transition"
-              >
-                <Plus className="w-4 h-4" /> Tambah Pengeluaran
-              </button>
-            </div>
-          </div>
-
-          {/* Expenses List */}
-          {expenses.length === 0 ? (
-            <div className="text-center py-8 bg-card dark:bg-card rounded-2xl border border-dashed border-neutral-300 dark:border-border p-4">
-              <Receipt className="w-10 h-10 mx-auto mb-2 text-muted-foreground" />
-              <h3 className="font-semibold text-sm">
-                Belum ada catatan pengeluaran
-              </h3>
-              <p className="text-xs text-muted-foreground mt-1 mb-4">
-                Catat biaya makan, transportasi, tiket, atau hotel selama
-                liburan.
-              </p>
-              <button
-                onClick={() => setShowExpenseModal(true)}
-                className="px-3 py-1.5 bg-primary-600 text-white rounded-lg text-xs font-semibold"
-              >
-                + Tambah Pengeluaran
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {expenses.map((exp) => (
-                <div
-                  key={exp.id}
-                  className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm space-y-4"
-                >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-border dark:border-border pb-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-50 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400">
-                          {exp.category}
-                        </span>
-                        <h4 className="font-bold text-base text-foreground dark:text-foreground">
-                          {exp.title}
-                        </h4>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {exp.date
-                          ? new Date(exp.date).toLocaleDateString("id-ID", {
-                              dateStyle: "medium",
-                            })
-                          : "-"}{" "}
-                        • Dibayar oleh:{" "}
-                        <span className="font-semibold text-foreground dark:text-foreground">
-                          {exp.payer?.name ?? "Tidak diset"}
-                        </span>
-                      </p>
-                    </div>
-
-                    <div className="flex items-center justify-between md:justify-end gap-3">
-                      <span className="text-lg font-semibold text-foreground dark:text-foreground">
-                        Rp {exp.amount.toLocaleString("id-ID")}
-                      </span>
-                      <button
-                        onClick={() => {
-                          if (window.confirm("Hapus pengeluaran ini?"))
-                            deleteExpense.mutate(exp.id);
-                        }}
-                        disabled={deleteExpense.isPending}
-                        className="text-muted-foreground hover:text-rose-600 p-1.5 rounded-lg transition"
-                        title="Hapus"
-                        aria-label="Hapus"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {exp.notes && (
-                    <p className="text-xs text-muted-foreground bg-muted dark:bg-muted/40 p-2.5 rounded-xl">
-                      💬 {exp.notes}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ─── TAB 5: DOCUMENTS & TICKETS ──────────────────────────────────── */}
       {activeTab === "documents" && (
         <div className="space-y-4">
           <div className="bg-card dark:bg-card p-4 rounded-2xl border border-border/80 dark:border-border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
@@ -1324,7 +766,9 @@ export default function TripDetailPage({
                         <button
                           onClick={() => {
                             if (window.confirm("Hapus dokumen perjalanan ini?"))
-                              deleteDoc.mutate(doc.id);
+                              void deleteDoc
+                                .mutateAsync(doc.id)
+                                .catch(saveError);
                           }}
                           disabled={deleteDoc.isPending}
                           className="text-muted-foreground hover:text-rose-600 p-1 rounded-lg transition"
@@ -1351,14 +795,19 @@ export default function TripDetailPage({
 
                     <div className="pt-3 border-t border-border dark:border-border flex items-center justify-between text-xs text-muted-foreground">
                       <span>{(doc.file_size / 1024).toFixed(0)} KB</span>
-                      <a
-                        href={`http://localhost:8080/storage/${doc.file_path}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 font-semibold text-primary-600 hover:underline"
+                      <button
+                        onClick={async () => {
+                          try {
+                            await downloadTripDocument(id, doc);
+                          } catch (error) {
+                            saveError(error);
+                          }
+                        }}
+                        className="inline-flex items-center gap-1 rounded-lg px-2 py-1 font-semibold text-primary-700 dark:text-primary-200"
                       >
-                        <Download className="w-3.5 h-3.5" /> Download / Buka
-                      </a>
+                        <Download className="h-3.5 w-3.5" />
+                        Unduh dokumen
+                      </button>
                     </div>
                   </div>
                 );
@@ -1371,7 +820,7 @@ export default function TripDetailPage({
       {/* ─── MODAL: Edit Trip ─────────────────────────────────────────────── */}
       {showEditTripModal && (
         <ModalFrame
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
+          className="trip-dialog fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowEditTripModal(false)}
         >
           <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-lg p-4 shadow-2xl space-y-4 my-8">
@@ -1616,7 +1065,7 @@ export default function TripDetailPage({
       {/* ─── MODAL: Add Itinerary ─────────────────────────────────────────── */}
       {showItineraryModal && (
         <ModalFrame
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
+          className="trip-dialog fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => {
             setShowItineraryModal(false);
             setAddBudgetRows([]);
@@ -1638,17 +1087,7 @@ export default function TripDetailPage({
             </div>
             <form onSubmit={handleItinerarySubmit} className="space-y-4">
               {(() => {
-                const tripDays =
-                  trip?.start_date && trip?.end_date
-                    ? Math.max(
-                        1,
-                        Math.round(
-                          (new Date(trip.end_date).getTime() -
-                            new Date(trip.start_date).getTime()) /
-                            86400000,
-                        ) + 1,
-                      )
-                    : undefined;
+                const tripDays = tripDuration(trip.start_date, trip.end_date);
                 return (
                   <div>
                     <label
@@ -1912,7 +1351,7 @@ export default function TripDetailPage({
       {/* ─── MODAL: Edit Itinerary ────────────────────────────────────────── */}
       {editingItinerary && (
         <ModalFrame
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
+          className="trip-dialog fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setEditingItinerary(null)}
         >
           <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 sm:p-4 shadow-2xl space-y-4 my-4 sm:my-8">
@@ -1927,17 +1366,7 @@ export default function TripDetailPage({
             </div>
             <form onSubmit={handleEditItinerarySubmit} className="space-y-4">
               {(() => {
-                const tripDays =
-                  trip?.start_date && trip?.end_date
-                    ? Math.max(
-                        1,
-                        Math.round(
-                          (new Date(trip.end_date).getTime() -
-                            new Date(trip.start_date).getTime()) /
-                            86400000,
-                        ) + 1,
-                      )
-                    : undefined;
+                const tripDays = tripDuration(trip.start_date, trip.end_date);
                 return (
                   <div>
                     <label
@@ -2177,16 +1606,10 @@ export default function TripDetailPage({
                 </button>
                 <button
                   type="submit"
-                  disabled={
-                    updateItinerary.isPending ||
-                    addBudgetHook.isPending ||
-                    deleteBudgetHook.isPending
-                  }
+                  disabled={updateItinerary.isPending}
                   className="px-4 py-2 text-xs font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition disabled:opacity-50"
                 >
-                  {updateItinerary.isPending ||
-                  addBudgetHook.isPending ||
-                  deleteBudgetHook.isPending
+                  {updateItinerary.isPending
                     ? "Menyimpan..."
                     : "Simpan Perubahan"}
                 </button>
@@ -2199,7 +1622,7 @@ export default function TripDetailPage({
       {/* ─── MODAL: Add Packing Item ──────────────────────────────────────── */}
       {showPackingModal && (
         <ModalFrame
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
+          className="trip-dialog fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowPackingModal(false)}
         >
           <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 shadow-2xl space-y-4">
@@ -2301,193 +1724,10 @@ export default function TripDetailPage({
         </ModalFrame>
       )}
 
-      {/* ─── MODAL: Add Expense & Split Bill ──────────────────────────────── */}
-      {showExpenseModal && (
-        <ModalFrame
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
-          onClose={() => setShowExpenseModal(false)}
-        >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-lg p-4 shadow-2xl space-y-4 my-8">
-            <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
-              <h3 className="text-lg font-bold flex items-center gap-2">
-                <Receipt className="w-5 h-5 text-indigo-600" /> Catat
-                Pengeluaran Liburan
-              </h3>
-              <button
-                onClick={() => setShowExpenseModal(false)}
-                className="text-muted-foreground hover:text-foreground dark:hover:text-neutral-200"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleExpenseSubmit} className="space-y-4">
-              <div>
-                <label
-                  className="block text-xs font-semibold text-foreground dark:text-foreground mb-1"
-                  htmlFor="field-page-tripsid-25"
-                >
-                  Nama / Keperluan Pengeluaran *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Contoh: Makan Siang di Resto Sunda, Bensin & Tol, Tiket Masuk"
-                  value={expenseForm.title}
-                  onChange={(e) =>
-                    setExpenseForm({ ...expenseForm, title: e.target.value })
-                  }
-                  className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-border bg-card dark:bg-muted focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  id="field-page-tripsid-25"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label
-                    className="block text-xs font-semibold text-foreground dark:text-foreground mb-1"
-                    htmlFor="field-page-tripsid-26"
-                  >
-                    Nominal (Rp) *
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    required
-                    placeholder="Contoh: 150000"
-                    value={expenseForm.amount}
-                    onChange={(e) =>
-                      setExpenseForm({ ...expenseForm, amount: e.target.value })
-                    }
-                    className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-border bg-card dark:bg-muted focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    id="field-page-tripsid-26"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    className="block text-xs font-semibold text-foreground dark:text-foreground mb-1"
-                    htmlFor="field-page-tripsid-27"
-                  >
-                    Kategori
-                  </label>
-                  <select
-                    value={expenseForm.category}
-                    onChange={(e) =>
-                      setExpenseForm({
-                        ...expenseForm,
-                        category: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-border bg-card dark:bg-muted focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    id="field-page-tripsid-27"
-                  >
-                    <option value="Kuliner">Kuliner & Makan</option>
-                    <option value="Transportasi">
-                      Transportasi / BBM / Tol
-                    </option>
-                    <option value="Penginapan">Penginapan & Hotel</option>
-                    <option value="Tiket/Wisata">Tiket & Wisata</option>
-                    <option value="Belanja/Oleh-oleh">
-                      Belanja / Oleh-oleh
-                    </option>
-                    <option value="Lain-lain">Lain-lain</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label
-                    className="block text-xs font-semibold text-foreground dark:text-foreground mb-1"
-                    htmlFor="field-page-tripsid-28"
-                  >
-                    Tanggal Transaksi
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={expenseForm.date}
-                    onChange={(e) =>
-                      setExpenseForm({ ...expenseForm, date: e.target.value })
-                    }
-                    className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-border bg-card dark:bg-muted focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    id="field-page-tripsid-28"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    className="block text-xs font-semibold text-foreground dark:text-foreground mb-1"
-                    htmlFor="field-page-tripsid-29"
-                  >
-                    Ditalangi / Dibayar Oleh
-                  </label>
-                  <select
-                    value={expenseForm.paid_by}
-                    onChange={(e) =>
-                      setExpenseForm({
-                        ...expenseForm,
-                        paid_by: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-border bg-card dark:bg-muted focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    id="field-page-tripsid-29"
-                  >
-                    <option value="">-- Pilih yang Membayar --</option>
-                    {(trip.members ?? []).map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label
-                  className="block text-xs font-semibold text-foreground dark:text-foreground mb-1"
-                  htmlFor="field-page-tripsid-30"
-                >
-                  Catatan (Opsional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Keterangan tambahan..."
-                  value={expenseForm.notes}
-                  onChange={(e) =>
-                    setExpenseForm({ ...expenseForm, notes: e.target.value })
-                  }
-                  className="w-full px-3 py-2 text-sm rounded-xl border border-neutral-300 dark:border-border bg-card dark:bg-muted focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  id="field-page-tripsid-30"
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-3 border-t border-border dark:border-border">
-                <button
-                  type="button"
-                  onClick={() => setShowExpenseModal(false)}
-                  className="px-4 py-2 text-sm font-medium rounded-xl hover:bg-muted dark:hover:bg-neutral-800 text-foreground dark:text-foreground"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={addExpense.isPending}
-                  className="px-4 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition disabled:opacity-50"
-                >
-                  {addExpense.isPending ? "Menyimpan..." : "Simpan Pengeluaran"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </ModalFrame>
-      )}
-
       {/* ─── MODAL: Upload Document / Ticket ──────────────────────────────── */}
       {showDocModal && (
         <ModalFrame
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
+          className="trip-dialog fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowDocModal(false)}
         >
           <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 shadow-2xl space-y-4 my-8">
@@ -2612,7 +1852,7 @@ export default function TripDetailPage({
       {/* ─── MODAL: Manage Trip Members ──────────────────────────────────── */}
       {showMemberModal && (
         <ModalFrame
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
+          className="trip-dialog fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowMemberModal(false)}
         >
           <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 shadow-2xl space-y-4 my-8">

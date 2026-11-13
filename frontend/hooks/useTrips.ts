@@ -55,6 +55,7 @@ export function useCreateTrip() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: tripKeys.all });
+      qc.invalidateQueries({ queryKey: ["events"] });
     },
   });
 }
@@ -62,12 +63,22 @@ export function useCreateTrip() {
 export function useUpdateTrip() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, payload }: { id: string; payload: UpdateTripPayload }) => {
-      const { data } = await api.put<ApiResponse<Trip>>(`/trips/${id}`, payload);
+    mutationFn: async ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: UpdateTripPayload;
+    }) => {
+      const { data } = await api.put<ApiResponse<Trip>>(
+        `/trips/${id}`,
+        payload,
+      );
       return data.data;
     },
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: tripKeys.all });
+      qc.invalidateQueries({ queryKey: ["events"] });
       qc.invalidateQueries({ queryKey: tripKeys.detail(vars.id) });
     },
   });
@@ -81,6 +92,7 @@ export function useDeleteTrip() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: tripKeys.all });
+      qc.invalidateQueries({ queryKey: ["events"] });
     },
   });
 }
@@ -91,7 +103,10 @@ export function useAddItinerary(tripId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (payload: CreateItineraryPayload) => {
-      const { data } = await api.post<ApiResponse<TripItinerary>>(`/trips/${tripId}/itineraries`, payload);
+      const { data } = await api.post<ApiResponse<TripItinerary>>(
+        `/trips/${tripId}/itineraries`,
+        payload,
+      );
       return data.data;
     },
     onSuccess: () => {
@@ -104,10 +119,16 @@ export function useAddItinerary(tripId: string) {
 export function useUpdateItinerary(tripId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ itineraryId, payload }: { itineraryId: string; payload: Partial<CreateItineraryPayload> }) => {
+    mutationFn: async ({
+      itineraryId,
+      payload,
+    }: {
+      itineraryId: string;
+      payload: Partial<CreateItineraryPayload>;
+    }) => {
       const { data } = await api.put<ApiResponse<TripItinerary>>(
         `/trips/${tripId}/itineraries/${itineraryId}`,
-        payload
+        payload,
       );
       return data.data;
     },
@@ -139,7 +160,7 @@ export function useAddItineraryBudget(tripId: string, itineraryId: string) {
     mutationFn: async (payload: CreateItineraryBudgetPayload) => {
       const { data } = await api.post<ApiResponse<TripItineraryBudget>>(
         `/trips/${tripId}/itineraries/${itineraryId}/budgets`,
-        payload
+        payload,
       );
       return data.data;
     },
@@ -153,7 +174,9 @@ export function useDeleteItineraryBudget(tripId: string, itineraryId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (budgetId: string) => {
-      await api.delete(`/trips/${tripId}/itineraries/${itineraryId}/budgets/${budgetId}`);
+      await api.delete(
+        `/trips/${tripId}/itineraries/${itineraryId}/budgets/${budgetId}`,
+      );
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: tripKeys.detail(tripId) });
@@ -167,7 +190,10 @@ export function useAddPackingItem(tripId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (payload: CreatePackingItemPayload) => {
-      const { data } = await api.post<ApiResponse<TripPackingItem>>(`/trips/${tripId}/packing`, payload);
+      const { data } = await api.post<ApiResponse<TripPackingItem>>(
+        `/trips/${tripId}/packing`,
+        payload,
+      );
       return data.data;
     },
     onSuccess: () => {
@@ -181,7 +207,9 @@ export function useTogglePackingItem(tripId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (itemId: string) => {
-      const { data } = await api.patch<ApiResponse<TripPackingItem>>(`/trips/${tripId}/packing/${itemId}/toggle`);
+      const { data } = await api.patch<ApiResponse<TripPackingItem>>(
+        `/trips/${tripId}/packing/${itemId}/toggle`,
+      );
       return data.data;
     },
     onSuccess: () => {
@@ -210,7 +238,10 @@ export function useAddTripExpense(tripId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (payload: CreateTripExpensePayload) => {
-      const { data } = await api.post<ApiResponse<TripExpense>>(`/trips/${tripId}/expenses`, payload);
+      const { data } = await api.post<ApiResponse<TripExpense>>(
+        `/trips/${tripId}/expenses`,
+        payload,
+      );
       return data.data;
     },
     onSuccess: () => {
@@ -236,9 +267,15 @@ export function useDeleteTripExpense(tripId: string) {
 export function useToggleExpenseSplit(tripId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ expenseId, splitId }: { expenseId: string; splitId: string }) => {
+    mutationFn: async ({
+      expenseId,
+      splitId,
+    }: {
+      expenseId: string;
+      splitId: string;
+    }) => {
       const { data } = await api.patch<ApiResponse<TripExpenseSplit>>(
-        `/trips/${tripId}/expenses/${expenseId}/splits/${splitId}/toggle`
+        `/trips/${tripId}/expenses/${expenseId}/splits/${splitId}/toggle`,
       );
       return data.data;
     },
@@ -254,9 +291,13 @@ export function useUploadTripDocument(tripId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (formData: FormData) => {
-      const { data } = await api.post<ApiResponse<TripDocument>>(`/trips/${tripId}/documents`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const { data } = await api.post<ApiResponse<TripDocument>>(
+        `/trips/${tripId}/documents`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
       return data.data;
     },
     onSuccess: () => {
@@ -277,4 +318,38 @@ export function useDeleteTripDocument(tripId: string) {
       qc.invalidateQueries({ queryKey: tripKeys.list() });
     },
   });
+}
+
+export function useUpdateTripExpense(tripId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      expenseId,
+      payload,
+    }: {
+      expenseId: string;
+      payload: CreateTripExpensePayload;
+    }) =>
+      (
+        await api.put<ApiResponse<TripExpense>>(
+          `/trips/${tripId}/expenses/${expenseId}`,
+          payload,
+        )
+      ).data.data,
+    onSuccess: () => qc.invalidateQueries({ queryKey: tripKeys.all }),
+  });
+}
+export async function downloadTripDocument(tripId: string, doc: TripDocument) {
+  const response = await api.get(
+    `/trips/${tripId}/documents/${doc.id}/download`,
+    { responseType: "blob" },
+  );
+  const url = URL.createObjectURL(response.data);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = doc.file_name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

@@ -100,3 +100,12 @@ Add a dedicated Family Trip & Vacation Planner feature to the Keluarga applicati
   - `backend/go.mod`
   - `frontend/package.json`
 - **Status**: [x] done
+
+## Pembenahan lanjutan — 2026-11-13
+- [x] Transaksi trip/kalender dan itinerary/budget, validasi keluarga/anggota/tanggal/nominal.
+- [x] Ringkasan anggaran/estimasi/aktual, jadwal terurut dan peringatan bentrok, edit pengeluaran dan pembagian/pelunasan.
+- [x] Download dokumen melalui endpoint berautentikasi, penolakan upload tanpa storage, modal ringkas.
+- [x] Unit tests logika kritis, backend go test, build produksi/lint/typecheck frontend.
+- [ ] QA browser/API/storage dan integrasi PostgreSQL khusus Liburan. Belum commit/push.
+
+Tanggal pengeluaran dapat berada sebelum/setelah perjalanan untuk reservasi atau koreksi. Jam kegiatan yang bentrok diperingatkan, tidak ditolak. Pembagian yang diubah menghitung ulang pelunasan; edit metadata mempertahankan status sebelumnya.

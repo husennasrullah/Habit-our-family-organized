@@ -12,7 +12,29 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-13 (Revisi dashboard sesuai referensi, font dan header)
+> **Last updated:** 2026-11-13 (Pengiriman pembenahan menu Liburan)
+
+### Pengiriman pembenahan menu Liburan — 2026-11-13
+- Pengguna meminta pembaruan panduan agent serta commit dan push perubahan Liburan ke origin. Panduan resmi repo menggunakan nama `agents.md`; tidak membuat file duplikat `agent.md`.
+- Cakupan pengiriman: service/repository/handler/routes backend, validasi dan tes trip, halaman detail/komponen/hooks/types/helper/styles frontend, tes frontend dan family-trip-planner-plan.md. Tidak menyertakan environment, cache build atau artefak PWA hasil build.
+- Verifikasi implementasi sebelumnya: go test ./..., npm run test, build produksi frontend berikut lint/typecheck lulus; diff whitespace bersih. QA browser/API/storage dan integrasi PostgreSQL khusus Liburan belum dilakukan dan tetap dicatat sebagai tindak lanjut.
+- Target origin/main dengan push biasa tanpa force. Next steps: pantau CI/CD, lalu verifikasi alur Liburan di deployment dan database pengujian terisolasi.
+
+### Lanjutan implementasi menu Liburan — 2026-11-13
+- Melanjutkan perubahan belum di-commit: service/repository/handler/routes Trips, halaman detail, hooks/types, komponen ItineraryBoard/TripBudgetSummary/TripExpensesPanel dan helper trips.
+- Penyimpanan trip+kalender serta itinerary+rincian biaya memakai transaksi; validasi keluarga/anggota perjalanan, tanggal/jam/nominal, update field kosong/nol, edit pengeluaran, pembagian rata/custom/tanpa pembagian dan pelunasan telah tersedia. Bentrok kegiatan ditampilkan sebagai peringatan; tanggal transaksi boleh di luar perjalanan untuk uang muka/reservasi.
+- Lanjutan sesi ini: memperbaiki lint, normalisasi tanggal itinerary hasil PostgreSQL, filter hari setelah kegiatan dihapus, modal ringkas maksimal 360 px termasuk form pengeluaran yang dapat discroll, menolak upload bila storage tidak tersedia. Liburan dibatalkan tidak membuat event; akhir kalender memakai 23:59:59 WIB hari pulang agar tidak tampil sehari lebih lama.
+- Tes baru: backend trip_validation_test.go (tanggal/hari/jam, normalisasi, budget invalid/duplikat, pembayar, jumlah pembagian, pembulatan, kalender); frontend tests/trips.test.cjs (alokasi, bentrok, tanggal lintas tahun, budget kosong, pelunasan).
+- Verifikasi: npm run test dan build produksi terisolasi .next-qa (19 halaman, lint/typecheck) lulus; go test ./... lulus. Tes PostgreSQL bersyarat tidak dijalankan tanpa HABIT_TEST_DATABASE_URL; browser/API/storage langsung belum diverifikasi sesi ini. Tidak ada migrasi atau mutasi data keluarga.
+- Next steps: review tampilan dan alur Liburan di browser serta uji transaksi/family isolation dengan database pengujian terisolasi sebelum pengiriman. Belum commit/push.
+
+### Review menu Liburan — 2026-11-13
+- Pengguna meminta pemeriksaan menu Liburan setelah pembenahan Keuangan. Membaca daftar/detail trips, hooks, service/repository/handler/routes trip; tidak mengubah fitur/database atau menjalankan mutasi pengujian.
+- Fitur tersedia: CRUD/status perjalanan, anggota, itinerary harian dan rincian estimasi biaya, checklist packing, pengeluaran/pembayar, dokumen/tiket, serta integrasi event kalender. API split bill/update expense tersedia tetapi UI detail belum memuat pembagian/pelunasan atau edit pengeluaran.
+- Temuan prioritas: AddItineraryBudget/DeleteItineraryBudget menerima familyID tetapi hanya memeriksa itinerary+trip, belum memeriksa trip milik keluarga JWT. MemberIDs dan PaidBy/Splits juga perlu validasi keanggotaan keluarga/perjalanan. Temuan berdasarkan source, tanpa mencoba akses data keluarga lain.
+- Penyimpanan/edit itinerary dan rincian budget di frontend memakai beberapa request; perubahan nominal menghapus lalu membuat rincian baru, sehingga dapat tersimpan sebagian/hilang jika request berikutnya gagal. Pembuatan event kalender dan trip juga terpisah, error kalender diabaikan.
+- Tanggal pengeluaran default memakai UTC toISOString; backend belum memvalidasi urutan/rentang tanggal, hari itinerary, jam dan bentrok secara memadai. UpdateTrip hanya menerima budget >0 dan teks nonkosong sehingga sejumlah field tidak bisa dikosongkan/reset0. Ringkasan pengeluaran masih memakai angka0 untuk budget belum diatur.
+- Rekomendasi: family isolation dan transaksi atomik dahulu, kemudian validasi tanggal/nominal, ringkasan estimasi-vs-aktual yang jelas, UI split bill/pelunasan/edit, serta modal/ceklis ringkas seperti Keuangan. Next step menunggu arahan pengguna untuk implementasi; file yang diubah sesi review ini hanya agents.md.
 
 ### Pengiriman pembenahan Keuangan — 2026-11-13
 - Pengguna meminta commit dan push pembenahan Keuangan ke origin/main, termasuk migrasi tambahan 011, API/ledger/checkout, tampilan/modal ringkas, tes, dokumentasi dan bukti QA.

@@ -392,7 +392,7 @@ export interface TripExpense {
   date: string;
   paid_by?: string | null;
   notes: string;
-  split_type: "all" | "custom";
+  split_type: "all" | "custom" | "none";
   payer?: FamilyMember;
   splits?: TripExpenseSplit[];
   created_at: string;
@@ -463,6 +463,7 @@ export interface UpdateTripPayload {
 }
 
 export interface CreateItineraryPayload {
+  budget_items?: { id?: string; label: string; amount: number }[];
   day_number: number;
   date?: string | null;
   time_start?: string;
@@ -492,7 +493,7 @@ export interface CreateTripExpensePayload {
   date?: string;
   paid_by?: string | null;
   notes?: string;
-  split_type?: "all" | "custom";
+  split_type?: "all" | "custom" | "none";
   splits?: Array<{
     member_id: string;
     amount: number;

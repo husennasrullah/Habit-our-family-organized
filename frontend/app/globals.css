@@ -1637,3 +1637,31 @@
     }
   }
 }
+
+/* Compact vacation forms, including expense forms rendered directly in the portal. */
+@layer components {
+  .trip-dialog > div:not(.absolute),
+  .trip-dialog > form {
+    width: 100%;
+    max-width: 360px;
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin-block: auto;
+  }
+  .trip-dialog input,
+  .trip-dialog select,
+  .trip-dialog textarea {
+    min-width: 0;
+    font-size: 13px;
+  }
+  .trip-dialog input:not([type="checkbox"]),
+  .trip-dialog select { min-height: 36px; }
+  @media (pointer: coarse) {
+    .trip-dialog input,
+    .trip-dialog select,
+    .trip-dialog textarea { font-size: 16px; }
+    .trip-dialog input:not([type="checkbox"]),
+    .trip-dialog select { min-height: 44px; }
+  }
+}
