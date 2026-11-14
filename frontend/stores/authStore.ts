@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import type { AuthUser } from "@/types";
 
 interface AuthState {
+  authVersion: number;
   user: AuthUser | null;
   accessToken: string | null;
   isAuthenticated: boolean;
@@ -18,6 +19,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
+      authVersion: 0,
       user: null,
       accessToken: null,
       isAuthenticated: false,
@@ -32,7 +34,12 @@ export const useAuthStore = create<AuthState>()(
           // Simpan juga ke cookie agar middleware (server-side) bisa baca
           document.cookie = `access_token=${accessToken}; path=/; max-age=${15 * 60}; SameSite=Lax`;
         }
-        set({ user, accessToken, isAuthenticated: true });
+        set((state) => ({
+          user,
+          accessToken,
+          isAuthenticated: true,
+          authVersion: state.authVersion + 1,
+        }));
       },
 
       setUser: (user) => set({ user }),
@@ -51,7 +58,12 @@ export const useAuthStore = create<AuthState>()(
           localStorage.removeItem("refresh_token");
           document.cookie = "access_token=; path=/; max-age=0; SameSite=Lax";
         }
-        set({ user: null, accessToken: null, isAuthenticated: false });
+        set((state) => ({
+          user: null,
+          accessToken: null,
+          isAuthenticated: false,
+          authVersion: state.authVersion + 1,
+        }));
       },
 
       setLoading: (isLoading) => set({ isLoading }),
@@ -64,6 +76,6 @@ export const useAuthStore = create<AuthState>()(
         accessToken: state.accessToken,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

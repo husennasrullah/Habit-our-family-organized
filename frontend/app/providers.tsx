@@ -1,54 +1,51 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState, useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
-import axios from "axios";
+import { refreshSession, isInvalidSession } from "@/lib/authSession";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api/v1";
-
-/**
- * AuthSync: saat Zustand hydrate dari localStorage setelah page refresh,
- * coba refresh token dulu untuk mendapatkan access token baru.
- * Jika refresh berhasil → set cookie baru.
- * Jika refresh gagal (token benar-benar expired) → clearAuth + redirect login.
- */
 function AuthSync() {
-  const { accessToken, isAuthenticated, setAccessToken, clearAuth } =
-    useAuthStore();
   const router = useRouter();
-
+  const qc = useQueryClient();
   useEffect(() => {
-    if (!isAuthenticated || !accessToken) return;
-
-    // Coba refresh untuk mendapatkan token baru (sekaligus memperpanjang cookie)
-    // Kirim refresh_token di body sebagai fallback saat cross-origin (ngrok dev)
-    const storedRefresh =
-      typeof window !== "undefined"
-        ? localStorage.getItem("refresh_token")
-        : null;
-    axios
-      .post(
-        `${BASE_URL}/auth/refresh`,
-        storedRefresh ? { refresh_token: storedRefresh } : {},
-        { withCredentials: false },
-      )
-      .then(({ data }) => {
-        const newToken: string = data.data.access_token;
-        setAccessToken(newToken);
-      })
-      .catch(() => {
-        // Refresh gagal → token benar-benar expired → logout
-        clearAuth();
-        router.push("/login");
-      });
-    // Hanya jalankan sekali saat komponen mount (hydrate pertama kali)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+    const sync = (event: StorageEvent) => {
+      if (event.key !== "keluarga-auth") return;
+      try {
+        const state = event.newValue ? JSON.parse(event.newValue).state : null;
+        if (!state?.isAuthenticated) {
+          useAuthStore.getState().clearAuth();
+          void qc.cancelQueries();
+          qc.clear();
+          router.replace("/login");
+        }
+      } catch {
+        /* Ignore malformed state from another tab. */
+      }
+    };
+    window.addEventListener("storage", sync);
+    return () => window.removeEventListener("storage", sync);
+  }, [qc, router]);
+  useEffect(() => {
+    const state = useAuthStore.getState();
+    if (!state.isAuthenticated) return;
+    const generation = state.authVersion;
+    void refreshSession().catch((error) => {
+      if (
+        isInvalidSession(error) &&
+        useAuthStore.getState().authVersion === generation
+      ) {
+        useAuthStore.getState().clearAuth();
+        router.replace("/login");
+      }
+    });
+  }, [router]);
   return null;
 }
 

@@ -2,12 +2,17 @@ package storage
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/url"
 	"strings"
+	"sync"
+	"syscall"
 	"time"
 
 	"keluarga-app/backend/internal/config"
@@ -20,9 +25,16 @@ import (
 // MinIO SDK juga kompatibel dengan Cloudflare R2 dan AWS S3 —
 // cukup ganti endpoint + credentials di .env.
 type minioStorage struct {
-	client    *minio.Client
-	bucket    string
-	publicURL string // base URL untuk akses publik, kosong = pakai presigned URL
+	client          *minio.Client
+	bucket          string
+	publicURL       string // base URL untuk akses publik, kosong = pakai presigned URL
+	region          string
+	autoCreate      bool
+	bucketMu        sync.Mutex
+	bucketReady     bool
+	nextBucketCheck time.Time
+	probeTimeout    time.Duration
+	retryInterval   time.Duration
 }
 
 // noopStorage adalah fallback ketika MinIO tidak tersedia.
@@ -98,41 +110,131 @@ func NewClient(cfg *config.StorageConfig) (Storage, error) {
 	if err != nil {
 		return nil, errors.New("STORAGE_ENDPOINT tidak valid")
 	}
+	client := &minioStorage{client: mc, bucket: cfg.Bucket, publicURL: strings.TrimRight(cfg.PublicURL, "/"), region: region, autoCreate: cfg.AutoCreateBucket, probeTimeout: 2 * time.Second, retryInterval: 10 * time.Second}
 	if cfg.AutoCreateBucket {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-		exists, err := mc.BucketExists(ctx, cfg.Bucket)
-		if err != nil {
-			return nil, errors.New("bucket storage tidak dapat diperiksa; periksa koneksi dan izin")
-		}
-		if !exists {
-			if err := mc.MakeBucket(ctx, cfg.Bucket, minio.MakeBucketOptions{Region: region}); err != nil {
-				return nil, errors.New("bucket storage gagal dibuat; buat bucket atau periksa izin")
-			}
-		}
+		_ = client.ensureBucket(context.Background())
 	}
-	log.Printf("storage: provider=%s configured (ssl=%v)", provider, secure)
-	return &minioStorage{client: mc, bucket: cfg.Bucket, publicURL: strings.TrimRight(cfg.PublicURL, "/")}, nil
+	log.Printf("storage: provider=%s configured (ssl=%v); storage failures do not stop the API", provider, secure)
+	return client, nil
 }
 
-// NewMinIOStorage is retained for existing callers.
-func NewMinIOStorage(cfg *config.StorageConfig) Storage {
+// NewClientOrDisabled keeps every storage failure isolated to file features.
+func NewClientOrDisabled(cfg *config.StorageConfig) Storage {
 	client, err := NewClient(cfg)
 	if err != nil {
-		log.Printf("storage: %v", err)
+		log.Printf("storage: file features disabled: %v; API remains available", err)
 		return &noopStorage{}
 	}
 	return client
 }
 
+// Safe diagnostics retain actionable error categories without URLs, credentials or response bodies.
+func storageFailureReason(err error) string {
+	if errors.Is(err, syscall.ECONNREFUSED) {
+		return "connection_refused"
+	}
+	if errors.Is(err, context.DeadlineExceeded) {
+		return "timeout"
+	}
+	var dns *net.DNSError
+	if errors.As(err, &dns) {
+		return "dns_lookup_failed"
+	}
+	var cert x509.UnknownAuthorityError
+	if errors.As(err, &cert) {
+		return "tls_unknown_authority"
+	}
+	var invalidCert x509.CertificateInvalidError
+	if errors.As(err, &invalidCert) {
+		return "tls_certificate_invalid"
+	}
+	var hostCert x509.HostnameError
+	if errors.As(err, &hostCert) {
+		return "tls_hostname_mismatch"
+	}
+	var record tls.RecordHeaderError
+	if errors.As(err, &record) {
+		return "tls_protocol_mismatch"
+	}
+	response := minio.ToErrorResponse(err)
+	if response.Code != "" {
+		code := response.Code
+		if len(code) > 64 {
+			return "provider_error"
+		}
+		for _, c := range code {
+			if !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_' || c == '-') {
+				return "provider_error"
+			}
+		}
+		return fmt.Sprintf("s3_code=%s http_status=%d", code, response.StatusCode)
+	}
+	var network net.Error
+	if errors.As(err, &network) {
+		if network.Timeout() {
+			return "network_timeout"
+		}
+		return "network_connection_failed"
+	}
+	return "storage_request_failed"
+}
+func (s *minioStorage) ensureBucket(parent context.Context) error {
+	if !s.autoCreate {
+		return nil
+	}
+	s.bucketMu.Lock()
+	defer s.bucketMu.Unlock()
+	if s.bucketReady {
+		return nil
+	}
+	if time.Now().Before(s.nextBucketCheck) {
+		return errStorageUnavailable
+	}
+	ctx, cancel := context.WithTimeout(parent, s.probeTimeout)
+	defer cancel()
+	exists, err := s.client.BucketExists(ctx, s.bucket)
+	operation := "check_bucket"
+	if err == nil && !exists {
+		operation = "create_bucket"
+		err = s.client.MakeBucket(ctx, s.bucket, minio.MakeBucketOptions{Region: s.region})
+		if code := minio.ToErrorResponse(err).Code; code == "BucketAlreadyOwnedByYou" {
+			err = nil
+		}
+	}
+	if err != nil {
+		s.nextBucketCheck = time.Now().Add(s.retryInterval)
+		log.Printf("storage: %s unavailable (%s); file operation disabled, retry after %s; API remains available", operation, storageFailureReason(err), s.retryInterval)
+		return errStorageUnavailable
+	}
+	s.bucketReady = true
+	s.nextBucketCheck = time.Time{}
+	log.Printf("storage: bucket ready; file operations available")
+	return nil
+}
+
+// NewMinIOStorage is retained for existing callers.
+func NewMinIOStorage(cfg *config.StorageConfig) Storage { return NewClientOrDisabled(cfg) }
+
 // Upload menyimpan file dan mengembalikan object key (bukan full URL).
 // Simpan key ini ke database; gunakan PresignedURL atau PublicURL saat serving.
 func (s *minioStorage) Upload(ctx context.Context, key, contentType string, r io.Reader, size int64) (string, error) {
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	if err := s.ensureBucket(ctx); err != nil {
+		return "", err
+	}
 	_, err := s.client.PutObject(ctx, s.bucket, key, r, size, minio.PutObjectOptions{
 		ContentType: contentType,
 	})
 	if err != nil {
-		return "", fmt.Errorf("storage: upload '%s' failed: %w", key, err)
+		if s.autoCreate {
+			s.bucketMu.Lock()
+			s.bucketReady = false
+			s.nextBucketCheck = time.Now().Add(s.retryInterval)
+			s.bucketMu.Unlock()
+		}
+		log.Printf("storage: upload failed (%s); API remains available", storageFailureReason(err))
+		return "", errStorageUnavailable
 	}
 	return key, nil
 }

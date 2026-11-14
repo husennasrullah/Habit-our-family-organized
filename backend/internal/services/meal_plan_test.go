@@ -35,7 +35,7 @@ func TestMealValidation(t *testing.T) {
 
 func TestMealCRUDAndPushOwnership(t *testing.T) {
 	db := financeDB(t)
-	if err := db.AutoMigrate(&models.MealPlan{}, &models.PushSubscription{}); err != nil {
+	if err := db.AutoMigrate(&models.MealPlan{}, &models.PushSubscription{}, &models.AuthSession{}); err != nil {
 		t.Fatal(err)
 	}
 	family, other, actor, stranger := uuid.New(), uuid.New(), uuid.New(), uuid.New()

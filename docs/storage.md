@@ -16,7 +16,7 @@ Semua modul memakai `storage.NewClient`: foto kenangan, dokumen keluarga dan lam
 | `STORAGE_PUBLIC_URL` | Opsional untuk fitur media existing. Dokumen keluarga selalu melewati API privat, mengabaikan nilai ini |
 | `DOCUMENT_ENCRYPTION_KEY` | Opsional, 32 byte dalam 64 karakter hex; AES-256-GCM dokumen sensitif |
 
-Konfigurasi cloud yang tidak lengkap ditolak; credentials dev MinIO tidak otomatis dipakai untuk cloud. Startup gagal dengan pesan aman jika konfigurasi tidak valid atau provisioning bucket gagal. `disabled` menonaktifkan operasi storage sambil membiarkan aplikasi berjalan. Tanpa auto-create, akses provider baru diperiksa saat operasi file.
+Konfigurasi cloud yang tidak lengkap ditolak; credentials dev MinIO tidak otomatis dipakai untuk cloud. Konfigurasi yang tidak valid menonaktifkan fitur file dengan pesan log aman; backend tetap berjalan. Pemeriksaan/provisioning bucket dibatasi dua detik dan tidak fatal. Saat gagal, upload ditolak sementara; percobaan upload setelah jeda sepuluh detik memeriksa ulang bucket dan dapat pulih tanpa restart. Kegagalan upload juga masuk jeda/recheck pada mode auto-create. `disabled` menonaktifkan operasi storage sambil membiarkan aplikasi berjalan. Tanpa auto-create, akses provider baru diperiksa saat operasi file.
 
 ## Contoh MinIO lokal
 
@@ -91,3 +91,13 @@ Untuk media selain Dokumen, alur URL existing tetap berlaku; endpoint presigned 
 `cd backend && go test ./... && go vet ./...` menjalankan tes config/provider/validasi/role. Isi `HABIT_TEST_DATABASE_URL` ke PostgreSQL khusus pengujian untuk mengaktifkan lifecycle Dokumen; tes membuat dan menghapus schema sementara. Tidak memakai keluarga nyata.
 
 Build frontend dengan `NEXT_BUILD_DIR=.next-qa npm run build`, jalankan pada port 3100, lalu jalankan `node frontend/scripts/documents-qa.cjs` dari root. Script memakai Chrome headless dan API fixture, melewati service worker khusus fixture agar request tidak keluar ke API asli. Audit membutuhkan axe-core lokal: simpan `https://cdn.jsdelivr.net/npm/axe-core@4.10.3/axe.min.js` di `/tmp/habit-documents-axe.min.js` atau set `HABIT_AXE_PATH`. Hasil dan screenshot berada di `docs/qa/documents-modern-*`. Tes SDK memakai endpoint HTTP mock; hasil bukan verifikasi credentials/provider cloud nyata.
+
+## Pemulihan storage dan healthcheck production — 2026-11-14
+
+Storage tidak lagi menjadi syarat agar API hidup. Log membedakan kode S3/status HTTP, DNS, connection refused, timeout dan masalah TLS tanpa mencetak access key, secret, session token, URL request atau body error provider. Konfigurasi provider yang tidak valid menggunakan adapter nonaktif; perbaikan env perlu recreate backend. Enkripsi yang salah konfigurasi menonaktifkan enkripsi tambahan, bukan seluruh API; file yang sudah terenkripsi tetap gagal dibuka sampai kunci benar dipulihkan.
+
+Jika bucket sudah disiapkan dan credential tidak memiliki izin HEAD/create bucket, set `STORAGE_AUTO_CREATE_BUCKET=false`; operasi file kemudian memakai izin object provider langsung. Ini tidak memperbaiki credential salah atau MinIO yang belum berjalan. Jangan mengubah credential/bucket/volume tanpa memastikan konfigurasi dan data lama.
+
+Healthcheck PostgreSQL production memakai `pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"` dengan escaping Compose. Nama user berbeda dari database tidak lagi memicu probe ke database bernama user. Pembaruan healthcheck memerlukan recreate container postgres dengan volume yang sama; tidak perlu membuat database bernama user atau menghapus volume. Workflow CD juga menjalankan `docker compose -f docker-compose.prod.yml up -d --no-deps postgres` sebelum pembaruan aplikasi supaya perubahan healthcheck diterapkan. Container PostgreSQL dapat direcreate sebentar bila konfigurasi berubah; volume data tetap dipertahankan.
+
+Log incident yang dilaporkan pengguna membuktikan crash saat pengecekan bucket; akar kegagalan koneksi/izin MinIO belum diverifikasi langsung di server. Perubahan ini menjaga API tersedia dan menyediakan diagnosis yang lebih spesifik pada deployment berikutnya.

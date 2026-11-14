@@ -61,3 +61,8 @@ func (r *FamilyMemberRepository) GetByFamilyID(familyID uuid.UUID) ([]models.Fam
 func (r *FamilyMemberRepository) DeleteByID(id, familyID uuid.UUID) error {
 	return r.db.Where("id = ? AND family_id = ?", id, familyID).Delete(&models.FamilyMember{}).Error
 }
+
+// Transaction serializes account mutations with authentication/session changes.
+func (r *FamilyMemberRepository) Transaction(fn func(*gorm.DB) error) error {
+	return r.db.Transaction(fn)
+}

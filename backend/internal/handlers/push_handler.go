@@ -33,6 +33,9 @@ type subscribeRequest struct {
 func (h *PushHandler) Subscribe(c *fiber.Ctx) error {
 	familyID := getFamilyID(c)
 	memberID := getUserID(c)
+	if familyID == uuid.Nil {
+		return c.Status(400).JSON(fiber.Map{"message": "belum bergabung ke keluarga"})
+	}
 
 	var req subscribeRequest
 	if err := c.BodyParser(&req); err != nil || req.Endpoint == "" {
@@ -42,12 +45,14 @@ func (h *PushHandler) Subscribe(c *fiber.Ctx) error {
 	if err := pushvalidation.Validate(req.Endpoint, req.P256DH, req.Auth); err != nil {
 		return c.Status(400).JSON(fiber.Map{"message": err.Error()})
 	}
+	sid, _ := c.Locals("session_id").(uuid.UUID)
 	sub := &models.PushSubscription{
-		FamilyID: familyID,
-		MemberID: memberID,
-		Endpoint: req.Endpoint,
-		P256DH:   req.P256DH,
-		Auth:     req.Auth,
+		SessionID: &sid,
+		FamilyID:  familyID,
+		MemberID:  memberID,
+		Endpoint:  req.Endpoint,
+		P256DH:    req.P256DH,
+		Auth:      req.Auth,
 	}
 	if err := h.repo.Upsert(sub); err != nil {
 		if errors.Is(err, repositories.ErrPushSubscriptionOwned) {
@@ -102,7 +107,8 @@ func getFamilyIDFromUUID(c *fiber.Ctx) uuid.UUID {
 // @Success 200 {object} map[string]interface{}
 // @Router /push/subscription [get]
 func (h *PushHandler) Status(c *fiber.Ctx) error {
-	subscribed, err := h.repo.IsSubscribed(c.Query("endpoint"), getFamilyID(c), getUserID(c))
+	sid, _ := c.Locals("session_id").(uuid.UUID)
+	subscribed, err := h.repo.IsSubscribed(c.Query("endpoint"), getFamilyID(c), getUserID(c), sid)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"message": "gagal memeriksa notifikasi"})
 	}

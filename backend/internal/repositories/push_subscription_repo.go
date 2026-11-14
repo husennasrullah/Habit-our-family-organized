@@ -23,7 +23,7 @@ func NewPushSubscriptionRepository(db *gorm.DB) *PushSubscriptionRepository {
 func (r *PushSubscriptionRepository) Upsert(s *models.PushSubscription) error {
 	result := r.db.Unscoped().Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "endpoint"}},
-		DoUpdates: clause.Assignments(map[string]interface{}{"p256_dh": s.P256DH, "auth": s.Auth, "deleted_at": nil, "updated_at": time.Now()}),
+		DoUpdates: clause.Assignments(map[string]interface{}{"session_id": s.SessionID, "p256_dh": s.P256DH, "auth": s.Auth, "deleted_at": nil, "updated_at": time.Now()}),
 		Where:     clause.Where{Exprs: []clause.Expression{clause.Expr{SQL: "push_subscriptions.family_id = ? AND push_subscriptions.member_id = ?", Vars: []interface{}{s.FamilyID, s.MemberID}}}},
 	}).Create(s)
 	if result.Error != nil {
@@ -42,7 +42,7 @@ func (r *PushSubscriptionRepository) DeleteByEndpoint(endpoint string, familyID,
 // GetByFamily mengambil semua subscription aktif dalam satu keluarga
 func (r *PushSubscriptionRepository) GetByFamily(familyID uuid.UUID) ([]models.PushSubscription, error) {
 	var subs []models.PushSubscription
-	if err := r.db.Where("family_id = ?", familyID).Find(&subs).Error; err != nil {
+	if err := r.db.Where("family_id = ?", familyID).Where("session_id IS NULL OR EXISTS (SELECT 1 FROM auth_sessions WHERE auth_sessions.id = push_subscriptions.session_id AND auth_sessions.deleted_at IS NULL AND auth_sessions.expires_at > ?)", time.Now()).Find(&subs).Error; err != nil {
 		return nil, err
 	}
 	return subs, nil
@@ -59,8 +59,12 @@ func (r *PushSubscriptionRepository) GetAllFamilyIDs() ([]uuid.UUID, error) {
 	return ids, nil
 }
 
-func (r *PushSubscriptionRepository) IsSubscribed(endpoint string, familyID, memberID uuid.UUID) (bool, error) {
+func (r *PushSubscriptionRepository) IsSubscribed(endpoint string, familyID, memberID uuid.UUID, sessionIDs ...uuid.UUID) (bool, error) {
 	var count int64
-	err := r.db.Model(&models.PushSubscription{}).Where("endpoint = ? AND family_id = ? AND member_id = ?", endpoint, familyID, memberID).Count(&count).Error
+	q := r.db.Model(&models.PushSubscription{}).Where("endpoint = ? AND family_id = ? AND member_id = ?", endpoint, familyID, memberID)
+	if len(sessionIDs) > 0 {
+		q = q.Where("session_id = ?", sessionIDs[0])
+	}
+	err := q.Count(&count).Error
 	return count > 0, err
 }

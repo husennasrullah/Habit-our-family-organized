@@ -12,7 +12,36 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-14 (Pembenahan Dokumen dan storage via env)
+> **Last updated:** 2026-11-14 (Hotfix storage nonfatal dan pengiriman gabungan)
+
+### Hotfix storage nonfatal dan pengiriman gabungan — 2026-11-14
+- Pengguna melaporkan habit_backend crash loop sesudah migrasi saat cek bucket, serta log Postgres database bernama user tidak ada. Meminta storage tidak fatal: fitur file saja dinonaktifkan saat belum siap/tidak tersedia, dan secara eksplisit meminta hotfix digabung dengan seluruh Pengaturan lalu push origin.
+- Main memakai NewClientOrDisabled: config storage salah menjadi noop/file unavailable, bukan log.Fatal. Probe/provision bucket dua detik tidak fatal; upload diblokir sementara saat probe gagal, retry terkontrol sepuluh detik dan pulih pada permintaan file berikutnya. Upload dibatasi 30 detik; error upload memicu backoff/recheck pada auto-create. Kunci enkripsi tidak valid menonaktifkan fitur enkripsi tambahan tanpa menjatuhkan API; ciphertext lama tetap gagal dibuka sampai kunci benar.
+- Log aman membedakan S3 code/status, DNS, connection refused, timeout dan TLS tanpa mencetak credential, request URL/body provider. Penyebab awal koneksi/izin production belum diverifikasi langsung; tidak mengklaim MinIO sudah pulih.
+- Healthcheck Postgres menyebut POSTGRES_USER dan POSTGRES_DB secara eksplisit dengan escaping Compose, bukan fallback database=user. CD menerapkan config postgres via up -d --no-deps sebelum update aplikasi; container dapat direcreate jika konfigurasi berubah, volume tetap dipertahankan. Tidak membuat DB bernama user atau mengubah credential/data/volume.
+- File hotfix: backend/pkg/storage/minio.go+storage_test.go, backend/cmd/main.go, docker-compose.prod.yml, .github/workflows/cd.yml, docs/storage.md dan panduan. Digabung dengan seluruh file Pengaturan/sesi/migrasi 014/tes/QA yang telah selesai di bawah; worktree darurat dari origin dibuat tetapi tidak dipakai untuk pengiriman setelah pengguna meminta penggabungan.
+- Verifikasi hotfix: go test ./... dan go vet lulus; SDK mock membuktikan startup tidak abort saat bucket 403, upload unavailable, recovery setelah provider pulih, fallback config invalid, dan redaksi log. Compose healthcheck serta YAML/shell CD tervalidasi. Verifikasi Pengaturan tetap 23 tes frontend/build/lint/typecheck, integrasi PostgreSQL dan browser 32 pemeriksaan/enam audit axe lulus; tidak mengulang frontend tanpa perubahan source baru.
+- Pengiriman: commit/push gabungan biasa ke origin/main sesuai instruksi pengguna. Next steps: pantau CI/CD, cek backend tetap running dan log storage spesifik di production; login ulang satu kali/aktifkan ulang push untuk transisi sesi. Akses server production tidak dilakukan pada sesi ini.
+
+### Pembenahan Pengaturan dan sesi — 2026-11-14
+- Pengguna menyetujui seluruh temuan Pengaturan dibenahi. Profil/foto/nama keluarga/anggota/role/kode undangan/notifikasi/password/logout kini punya alur UI lengkap, form 360 px, loading/error/pending, tema terang/gelap dan target touch. Profil diambil ulang dari API; query keluarga/anggota terikat keluarga; clipboard gagal ditangani dan error anggota tidak menjadi empty state.
+- Backend family: self/admin aktual, validasi nama/warna/tanggal/enum role, family row lock dan perlindungan admin terakhir termasuk perubahan bersamaan. Remove anggota melepas keluarga, mencabut sesi/push dan mempertahankan akun/histori. Undangan acak kriptografis hanya admin, rotasi+expiry tujuh hari dan join transactional. Avatar JPG/PNG 2 MB/2048 px di-crop/encode JPEG 256 px, storage bersama dan proxy keluarga; komponen bersama dipakai settings/sidebar/topbar/leaderboard.
+- Auth: auth_sessions di PostgreSQL dengan hash refresh, JWT typed access/refresh+session_id/HS256, middleware memeriksa sesi dan role/family terkini. Logout per sesi mencabut access/refresh dan push; password mencabut sesi/push perangkat lain. Refresh stabil sampai expiry asli, single-flight frontend dengan guard versi state, sinkron profil/token dan pembedaan 401 vs gangguan sementara 503. Cache/token dibersihkan setelah logout sukses, tab lain disinkronkan. Bug dialog membaca user null saat logout ditemukan browser dan diperbaiki.
+- Google: state acak cookie HttpOnly 10 menit, verified email, linking akun terfilter/lock, cookie Path=/ dan Secure produksi, token query dihapus dari history callback sebelum fetch. Tidak mengklaim transport callback sudah memakai one-time code.
+- File: services/repositories/handlers/model family/auth/push, middleware/JWT/main/AutoMigrate, migrasi tambahan 014_account_sessions.sql, halaman settings/onboarding/callback, provider/store/API/hook auth, avatar/layout/leaderboard/globals, tes/QA, family-hub-plan.md dan docs/settings-improvements.md.
+- Verifikasi: go test ./... dengan integrasi PostgreSQL schema temporer dan go vet lulus; JWT/API menolak refresh sebagai bearer, role aktual, logout/password/detach, self/admin/isolation, dua admin demote serentak, undangan/expiry, foto dan SQL 014 idempoten lulus. 23 tes frontend dan build produksi 19 halaman/lint/typecheck lulus. Browser fixture 32 pemeriksaan dan enam audit axe terarah bersih, tanpa runtime error/overflow pada 375/390/768/1440 terang/gelap; screenshot direview. Bukti docs/qa/settings-modern-results.json.
+- Batas/transisi: token lama memerlukan login ulang satu kali, subscription push tanpa sesi dinonaktifkan dan perlu diaktifkan ulang. OAuth Google/perangkat push nyata belum diuji. Tidak mengubah env/data keluarga asli atau menerapkan migrasi ke DB aplikasi lokal. Tidak menambah 2FA/reset email/device list atau role policy modul lain. WebSocket existing dicek pada handshake, belum ada penutupan paksa koneksi lama.
+- Implementasi/verifikasi selesai; pengguna kemudian meminta penggabungan hotfix storage dan push seluruh perubahan ke origin/main. Next steps: pantau deployment/login ulang dan notifikasi.
+
+### Review menu Pengaturan — 2026-11-14
+- Pengguna meminta pemeriksaan Pengaturan. Membaca halaman settings, hook/API/store/provider auth, handler/service/repository/model family/member, auth/JWT/middleware/routes, QA avatar existing dan Task 2.3/9.3. Review source, tanpa browser/API/mutasi/build/tes runtime baru.
+- UI tersedia: toggle tema, profil/foto fallback/provider login/role, nama keluarga/kode undangan/salin, daftar anggota serta logout. Belum ada edit profil/avatar, edit nama keluarga, kelola anggota/role, rotasi kode undangan, pengaturan notifikasi/keamanan atau ganti password di halaman ini.
+- Temuan prioritas: UpdateMember hanya menerima callerRole tanpa callerID; pemeriksaan keluarga target ada, tetapi pengguna biasa dapat mengubah nama/warna/tanggal lahir anggota lain dalam keluarga melalui API. Role hanya diubah bila callerRole admin, jadi bukan temuan eskalasi role langsung lewat field ini.
+- Validasi nama/warna/tanggal lahir/enum role belum tersedia. Admin dapat mengubah role/hapus dirinya atau admin terakhir tanpa perlindungan maupun transaksi/lock. DeleteByID melakukan soft-delete akun anggota, bukan detach family; RowsAffected tidak diperiksa.
+- Middleware memakai role/family JWT tanpa memeriksa status anggota terkini; role lama atau akun yang dihapus masih dapat memakai access token sampai expired. GenerateAccess/GenerateRefresh memakai claim/validasi sama tanpa token type, sehingga token refresh juga tidak dibedakan oleh auth middleware; perlu audit perbaikan auth bersama saat implementasi.
+- Logout menghapus key Redis tetapi Refresh tidak memeriksa Redis/revocation, sehingga refresh token lama belum dicabut efektif. Handler mengabaikan error logout; frontend clearAuth berjalan finally tetapi tidak membersihkan cache React Query atau subscription push, dan tombol tidak punya pending/error. Tidak menguji pengiriman push atau replay token nyata.
+- Kode undangan ditampilkan melalui API/UI ke seluruh role keluarga tanpa rotasi/expiry; InviteCodeBox tidak menangani clipboard ditolak/tidak tersedia. Query keluarga/anggota tidak memuat familyId pada cache key. Profil memakai user dari store, tidak mengambil profil terbaru di halaman. Error anggota masih dapat disertai tampilan kosong Belum ada anggota; tanpa keluarga belum ada tombol menuju onboarding.
+- QA existing hanya fallback avatar (kosong/rusak/spasi/valid), bukan alur mutasi profil/keluarga atau pencabutan sesi. File diubah hanya agents.md; belum commit/push. Next steps: otorisasi self/admin + validasi + perlindungan admin terakhir dan sesi dahulu, lalu lengkapi form profil/anggota serta UX sesuai arahan pengguna.
 
 ### Pembenahan Dokumen dan storage via env — 2026-11-14
 - Pengguna meminta storage dinamis via env sekaligus seluruh temuan review Dokumen dibenahi, kemudian meminta commit/push ke origin setelah selesai.
@@ -289,6 +318,18 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Hotfix storage nonfatal dan pengiriman gabungan — 2026-11-14
+- Fitur storage gagal secara terisolasi, retry/recovery dan log aman; healthcheck Postgres/CD diperbaiki. Digabung dengan Pengaturan untuk push origin/main sesuai permintaan. Detail pada STATUS TERKINI.
+
+
+#### Pembenahan Pengaturan dan sesi — 2026-11-14
+- UI Pengaturan lengkap, otorisasi/last-admin, undangan/foto, sesi DB/revocation dan auth client, migrasi 014, tes serta dokumentasi selesai. Detail verifikasi dan batas transisi pada STATUS TERKINI; belum commit/push task ini.
+
+
+#### Review menu Pengaturan — 2026-11-14
+- Hanya agents.md diperbarui dengan temuan UI settings, otorisasi profil, validasi/admin terakhir, logout/sesi dan UX; fitur belum diubah.
+
 
 #### Pembenahan Dokumen dan storage via env — 2026-11-14
 - Provider factory/konfigurasi deployment, API Dokumen privat dan enkripsi, CRUD metadata/UI, migrasi 013, tes serta dokumentasi selesai; detail dan batas verifikasi pada STATUS TERKINI. Pengiriman origin/main diminta pengguna.

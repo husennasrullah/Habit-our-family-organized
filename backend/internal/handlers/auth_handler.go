@@ -1,6 +1,12 @@
 package handlers
 
 import (
+	"crypto/rand"
+	"crypto/subtle"
+	"encoding/hex"
+	"errors"
+	"github.com/google/uuid"
+	"os"
 	"time"
 
 	"keluarga-app/backend/internal/config"
@@ -110,12 +116,24 @@ func (h *AuthHandler) GetMe(c *fiber.Ctx) error {
 // @Router /auth/logout [post]
 func (h *AuthHandler) Logout(c *fiber.Ctx) error {
 	userID := getUserID(c)
-	_ = h.authService.Logout(userID)
+	sid, _ := c.Locals("session_id").(uuid.UUID)
+	var req struct {
+		Endpoint string `json:"endpoint"`
+	}
+	if len(c.Body()) > 0 {
+		if err := c.BodyParser(&req); err != nil {
+			return c.Status(400).JSON(fiber.Map{"message": "request tidak valid"})
+		}
+	}
+	if err := h.authService.LogoutSession(userID, sid, req.Endpoint); err != nil {
+		return c.Status(503).JSON(fiber.Map{"message": "belum berhasil mencabut sesi; coba lagi"})
+	}
 
 	c.Cookie(&fiber.Cookie{
 		Name:    "refresh_token",
 		Value:   "",
 		Expires: time.Now().Add(-time.Hour),
+		Path:    "/", Secure: os.Getenv("APP_ENV") == "production", SameSite: "Lax",
 		HTTPOnly: true,
 	})
 
@@ -128,16 +146,19 @@ func (h *AuthHandler) Logout(c *fiber.Ctx) error {
 // @Success 200 {object} map[string]interface{}
 // @Router /auth/refresh [post]
 func (h *AuthHandler) Refresh(c *fiber.Ctx) error {
-	// Coba dari cookie dulu (same-origin / production)
-	// Fallback ke body JSON untuk dev cross-origin (ngrok, dsb)
-	refreshToken := c.Cookies("refresh_token")
-	if refreshToken == "" {
-		var body struct {
-			RefreshToken string `json:"refresh_token"`
-		}
-		_ = c.BodyParser(&body)
-		refreshToken = body.RefreshToken
+	var body struct {
+		RefreshToken string `json:"refresh_token"`
 	}
+	if len(c.Body()) > 0 {
+		if err := c.BodyParser(&body); err != nil {
+			return c.Status(400).JSON(fiber.Map{"message": "request tidak valid"})
+		}
+	}
+	refreshToken := body.RefreshToken
+	if refreshToken == "" {
+		refreshToken = c.Cookies("refresh_token")
+	}
+
 	if refreshToken == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "refresh token tidak ditemukan",
@@ -146,14 +167,18 @@ func (h *AuthHandler) Refresh(c *fiber.Ctx) error {
 
 	resp, err := h.authService.Refresh(refreshToken)
 	if err != nil {
+		if !errors.Is(err, services.ErrSession) {
+			return c.Status(503).JSON(fiber.Map{"message": "sesi belum dapat diperbarui; coba lagi"})
+		}
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": err.Error(),
 			"code":    "INVALID_REFRESH_TOKEN",
 		})
 	}
 
+	setRefreshCookie(c, resp.RefreshToken)
 	return c.JSON(fiber.Map{
-		"data":    fiber.Map{"access_token": resp.AccessToken},
+		"data":    fiber.Map{"access_token": resp.AccessToken, "refresh_token": resp.RefreshToken, "member": resp.Member},
 		"message": "token diperbarui",
 	})
 }
@@ -163,7 +188,12 @@ func (h *AuthHandler) Refresh(c *fiber.Ctx) error {
 // @Tags auth
 // @Router /auth/google [get]
 func (h *AuthHandler) GoogleAuth(c *fiber.Ctx) error {
-	state := "keluarga-oauth-state" // TODO: pakai CSRF-safe random state
+	raw := make([]byte, 32)
+	if _, err := rand.Read(raw); err != nil {
+		return c.SendStatus(500)
+	}
+	state := hex.EncodeToString(raw)
+	c.Cookie(&fiber.Cookie{Name: "oauth_state", Value: state, Path: "/", HTTPOnly: true, Secure: os.Getenv("APP_ENV") == "production", SameSite: "Lax", MaxAge: 600})
 	url := h.authService.GoogleAuthURL(state)
 	return c.Redirect(url, fiber.StatusTemporaryRedirect)
 }
@@ -173,6 +203,11 @@ func (h *AuthHandler) GoogleAuth(c *fiber.Ctx) error {
 // @Tags auth
 // @Router /auth/google/callback [get]
 func (h *AuthHandler) GoogleCallback(c *fiber.Ctx) error {
+	state := c.Cookies("oauth_state")
+	if state == "" || subtle.ConstantTimeCompare([]byte(state), []byte(c.Query("state"))) != 1 {
+		return c.Status(400).JSON(fiber.Map{"message": "sesi login Google tidak valid; mulai kembali"})
+	}
+	c.Cookie(&fiber.Cookie{Name: "oauth_state", Value: "", Path: "/", MaxAge: -1, HTTPOnly: true, Secure: os.Getenv("APP_ENV") == "production", SameSite: "Lax"})
 	code := c.Query("code")
 	if code == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -204,8 +239,29 @@ func setRefreshCookie(c *fiber.Ctx, token string) {
 		Name:     "refresh_token",
 		Value:    token,
 		HTTPOnly: true,
-		Secure:   false, // set true di production
+		Secure:   os.Getenv("APP_ENV") == "production",
+		Path:     "/",
 		SameSite: "Lax",
 		MaxAge:   7 * 24 * 60 * 60,
 	})
+}
+
+// ChangePassword godoc
+// @Summary Ganti password dan cabut sesi perangkat lain
+// @Tags auth
+// @Security BearerAuth
+// @Router /auth/password [put]
+func (h *AuthHandler) ChangePassword(c *fiber.Ctx) error {
+	var req struct {
+		CurrentPassword string `json:"current_password"`
+		NewPassword     string `json:"new_password"`
+	}
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"message": "request tidak valid"})
+	}
+	sid, _ := c.Locals("session_id").(uuid.UUID)
+	if err := h.authService.ChangePassword(getUserID(c), sid, req.CurrentPassword, req.NewPassword); err != nil {
+		return c.Status(400).JSON(fiber.Map{"message": err.Error()})
+	}
+	return c.JSON(fiber.Map{"message": "password diperbarui; perangkat lain perlu masuk kembali"})
 }

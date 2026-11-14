@@ -19,6 +19,8 @@ function CallbackContent() {
       return;
     }
 
+    // Remove credentials from browser history/referrers before any authenticated request.
+    window.history.replaceState(null, "", window.location.pathname);
     // Simpan access token & refresh token sementara
     localStorage.setItem("access_token", token);
     if (refreshToken) {

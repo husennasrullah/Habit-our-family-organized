@@ -1,6 +1,5 @@
 "use client";
-import { useState } from "react";
-import Image from "next/image";
+import { MemberAvatar as ProfileAvatar } from "@/components/shared/MemberAvatar";
 import { Trophy, Star } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { LeaderboardEntry } from "@/hooks/useTasks";
@@ -13,23 +12,9 @@ interface LeaderboardProps {
   onRetry?: () => void;
 }
 function MemberAvatar({ member }: { member?: FamilyMember }) {
-  const [failed, setFailed] = useState<string | null>(null);
-  const src = member?.avatar_url?.trim();
   return (
     <span className="task-ranking-avatar">
-      {src && src !== failed ? (
-        <Image
-          src={src}
-          alt=""
-          width={30}
-          height={30}
-          unoptimized
-          onError={() => setFailed(src)}
-          className="h-full w-full rounded-full object-cover"
-        />
-      ) : (
-        (member?.name?.[0] ?? "?").toUpperCase()
-      )}
+      {member ? <ProfileAvatar member={member} size={30} /> : "?"}
     </span>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import { MemberAvatar } from "@/components/shared/MemberAvatar";
 
 import { HabitMark } from "@/components/brand/HabitMark";
 import { HabitWordmark } from "@/components/brand/HabitWordmark";
@@ -184,7 +185,11 @@ export function Sidebar() {
               className="sidebar-profile"
             >
               <span className="sidebar-avatar">
-                {user.name.slice(0, 1).toUpperCase()}
+                {user.avatar_url ? (
+                  <MemberAvatar member={user} size={36} />
+                ) : (
+                  user.name.slice(0, 1).toUpperCase()
+                )}
               </span>
               <span
                 className={cn(

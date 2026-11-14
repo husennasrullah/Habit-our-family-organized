@@ -1272,3 +1272,13 @@ Sudah punya keluarga?
 - [x] Migrasi tambahan 011, tes konkurensi PostgreSQL, browser/responsif/aksesibilitas dan curl API lokal.
 
 Detail implementasi dan bukti: [finance-improvements.md](docs/finance-improvements.md).
+
+## Pembenahan Pengaturan dan sesi — 2026-11-14
+
+- [x] Otorisasi self/admin, validasi profil/role/warna/tanggal dan perlindungan admin terakhir dalam transaksi.
+- [x] Edit profil/foto dan nama keluarga, edit/keluarkan anggota, kode undangan admin dengan expiry/rotasi.
+- [x] Sesi per perangkat tersimpan di DB, pemisahan access/refresh, revocation logout/password/detach dan role aktual.
+- [x] Kontrol notifikasi perangkat, ganti password (email/both), panduan keamanan Google, cache/logout dan state/error yang konsisten.
+- [x] Migrasi tambahan 014, tes/integrasi terisolasi dan QA browser.
+
+Detail implementasi dan batas: [settings-improvements.md](docs/settings-improvements.md). Task lama yang mencakup fitur lain tidak ditutup otomatis.

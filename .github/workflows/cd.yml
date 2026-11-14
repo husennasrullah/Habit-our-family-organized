@@ -173,6 +173,9 @@ jobs:
 
             docker compose -f docker-compose.prod.yml pull frontend backend
 
+            # Apply healthcheck changes without replacing the persistent database volume.
+            docker compose -f docker-compose.prod.yml up -d --no-deps postgres
+
             docker compose -f docker-compose.prod.yml up -d \
               --no-deps \
               --remove-orphans \

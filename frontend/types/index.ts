@@ -120,7 +120,8 @@ export type AuthProvider = "email" | "google" | "both";
 export interface Family {
   id: string;
   name: string;
-  invite_code: string;
+  invite_code?: string;
+  invite_expires_at?: string;
   created_at: string;
   updated_at: string;
 }

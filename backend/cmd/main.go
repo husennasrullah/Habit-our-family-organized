@@ -45,10 +45,7 @@ func main() {
 
 	// ─── Storage ──────────────────────────────────────────────────────────────
 	// Shared provider for memories, documents and trips.
-	storageClient, storageErr := storage.NewClient(&cfg.Storage)
-	if storageErr != nil {
-		log.Fatalf("storage: %v", storageErr)
-	}
+	storageClient := storage.NewClientOrDisabled(&cfg.Storage)
 
 	// ─── Repositories ─────────────────────────────────────────────────────────
 	memberRepo   := repositories.NewFamilyMemberRepository(database.DB)
@@ -67,7 +64,7 @@ func main() {
 
 	// ─── Services ─────────────────────────────────────────────────────────────
 	authService     := services.NewAuthService(memberRepo, jwtManager, database.RDB, &cfg.Google)
-	familyService   := services.NewFamilyService(familyRepo, memberRepo)
+	familyService   := services.NewFamilyService(familyRepo, memberRepo, storageClient)
 	eventService    := services.NewEventService(eventRepo)
 	taskService     := services.NewTaskService(taskRepo)
 	budgetService   := services.NewBudgetService(expenseRepo, budgetRepo, shoppingRepo)
@@ -75,7 +72,8 @@ func main() {
 	kidsService     := services.NewKidsService(kidsRepo)
 	docService, docErr := services.NewDocumentServiceWithKey(docRepo, storageClient, cfg.Storage.EncryptionKey)
 	if docErr != nil {
-		log.Fatal(docErr)
+		log.Printf("documents: encryption disabled (%v); API remains available",docErr)
+		docService=services.NewDocumentService(docRepo,storageClient)
 	}
 	mealPlanService := services.NewMealPlanService(mealRepo)
 	goalService     := services.NewFinancialGoalService(goalRepo)
@@ -120,7 +118,7 @@ func main() {
 	api := app.Group("/api/v1")
 
 	// JWT middleware — dipakai di semua protected routes
-	authMw := middleware.AuthMiddlewareWithManager(jwtManager)
+	authMw := middleware.AuthMiddlewareWithManager(jwtManager, authService.ValidateSession)
 
 	// Auth routes (public)
 	auth := api.Group("/auth")
@@ -134,11 +132,16 @@ func main() {
 	authProtected := api.Group("/auth", authMw)
 	authProtected.Post("/logout", authHandler.Logout)
 	authProtected.Get("/me", authHandler.GetMe)
+	authProtected.Put("/password", authHandler.ChangePassword)
 
 	// Family routes
 	family := api.Group("/family", authMw)
 	family.Post("", familyHandler.CreateFamily)
 	family.Get("", familyHandler.GetFamily)
+	family.Put("", middleware.RequireRole("admin"), familyHandler.UpdateFamily)
+	family.Post("/invite-code", middleware.RequireRole("admin"), familyHandler.RotateInvite)
+	family.Post("/avatar", familyHandler.UploadAvatar)
+	family.Get("/members/:id/avatar", familyHandler.Avatar)
 	family.Post("/join", familyHandler.JoinFamily)
 	family.Get("/members", familyHandler.GetMembers)
 	family.Put("/members/:id", familyHandler.UpdateMember)
@@ -282,7 +285,7 @@ func main() {
 	push := api.Group("/push")
 	push.Get("/subscription", authMw, pushHandler.Status)
 	push.Get("/vapid-key", handlers.GetVAPIDPublicKey(cfg.Push.VAPIDPublicKey, cfg.Push.VAPIDPrivateKey))
-	push.Post("/subscribe",   authMw, pushHandler.Subscribe)
+	push.Post("/subscribe",   authMw, middleware.RequireRole("admin", "member"), pushHandler.Subscribe)
 	push.Delete("/subscribe", authMw, pushHandler.Unsubscribe)
 
 	// WebSocket route

@@ -4,7 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"net/mail"
+	"strings"
+	"unicode/utf8"
 
 	"keluarga-app/backend/internal/config"
 	"keluarga-app/backend/internal/models"
@@ -71,6 +75,12 @@ func NewAuthService(
 
 // Register — email/password
 func (s *AuthService) Register(req RegisterRequest) (*AuthResponse, error) {
+	req.Name = strings.TrimSpace(req.Name)
+	req.Email = strings.TrimSpace(req.Email)
+	address, emailErr := mail.ParseAddress(req.Email)
+	if n := utf8.RuneCountInString(req.Name); n < 2 || n > 100 || emailErr != nil || address.Address != req.Email || len(req.Password) < 8 || len(req.Password) > 72 {
+		return nil, errors.New("nama/email/password tidak valid; password 8–72 byte")
+	}
 	existing, err := s.memberRepo.GetByEmail(req.Email)
 	if err != nil {
 		return nil, err
@@ -116,27 +126,6 @@ func (s *AuthService) Login(req LoginRequest) (*AuthResponse, error) {
 	return s.buildAuthResponse(member)
 }
 
-// Refresh — validasi signature & expiry JWT, kembalikan token baru
-func (s *AuthService) Refresh(refreshToken string) (*AuthResponse, error) {
-	claims, err := s.jwtManager.Validate(refreshToken)
-	if err != nil {
-		return nil, errors.New("refresh token tidak valid")
-	}
-
-	member, err := s.memberRepo.GetByID(claims.UserID)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.buildAuthResponse(member)
-}
-
-// Logout — hapus refresh token dari Redis
-func (s *AuthService) Logout(userID uuid.UUID) error {
-	key := fmt.Sprintf("refresh:%s", userID)
-	return s.rdb.Del(context.Background(), key).Err()
-}
-
 // GoogleAuthURL — kembalikan URL consent Google
 func (s *AuthService) GoogleAuthURL(state string) string {
 	return s.oauthCfg.AuthCodeURL(state, oauth2.AccessTypeOffline)
@@ -159,6 +148,9 @@ func (s *AuthService) GoogleCallback(ctx context.Context, code string) (*AuthRes
 		return nil, err
 	}
 
+	if info.VerifiedEmail == nil || !*info.VerifiedEmail || info.Email == "" {
+		return nil, errors.New("email Google belum terverifikasi")
+	}
 	// Cek by google_id dulu
 	member, err := s.memberRepo.GetByGoogleID(info.Id)
 	if err != nil {
@@ -177,15 +169,20 @@ func (s *AuthService) GoogleCallback(ctx context.Context, code string) (*AuthRes
 	}
 
 	if member != nil {
-		// Email ada tapi belum link Google → link sekarang
-		member.GoogleID = info.Id
-		if member.AvatarURL == "" && info.Picture != "" {
-			member.AvatarURL = info.Picture
-		}
-		if member.AuthProvider == "email" {
-			member.AuthProvider = "both"
-		}
-		if err := s.memberRepo.Update(member); err != nil {
+		err := s.memberRepo.Transaction(func(tx *gorm.DB) error {
+			if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(member, "id = ?", member.ID).Error; err != nil {
+				return err
+			}
+			updates := map[string]interface{}{"google_id": info.Id}
+			if member.AvatarURL == "" && info.Picture != "" {
+				updates["avatar_url"] = info.Picture
+			}
+			if member.AuthProvider == "email" {
+				updates["auth_provider"] = "both"
+			}
+			return tx.Model(member).Updates(updates).Error
+		})
+		if err != nil {
 			return nil, err
 		}
 		return s.buildAuthResponse(member)
@@ -213,33 +210,9 @@ func (s *AuthService) GoogleCallback(ctx context.Context, code string) (*AuthRes
 
 // GetMemberByID — ambil data member berdasarkan ID
 func (s *AuthService) GetMemberByID(id uuid.UUID) (*models.FamilyMember, error) {
-	return s.memberRepo.GetByID(id)
-}
-
-// buildAuthResponse — buat access & refresh token, simpan refresh ke Redis
-func (s *AuthService) buildAuthResponse(member *models.FamilyMember) (*AuthResponse, error) {
-	familyID := uuid.Nil
-	if member.FamilyID != nil {
-		familyID = *member.FamilyID
+	member, err := s.memberRepo.GetByID(id)
+	if member != nil {
+		stripFamilyInvite(member)
 	}
-
-	accessToken, err := s.jwtManager.GenerateAccess(member.ID, familyID, member.Role)
-	if err != nil {
-		return nil, err
-	}
-
-	refreshToken, err := s.jwtManager.GenerateRefresh(member.ID, familyID, member.Role)
-	if err != nil {
-		return nil, err
-	}
-
-	// Simpan refresh token di Redis (TTL 7 hari)
-	key := fmt.Sprintf("refresh:%s", member.ID)
-	s.rdb.Set(context.Background(), key, refreshToken, 7*24*time.Hour)
-
-	return &AuthResponse{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		Member:       member,
-	}, nil
+	return member, err
 }

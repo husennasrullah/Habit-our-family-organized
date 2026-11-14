@@ -1,0 +1,71 @@
+{
+  "checks": [
+    "self profile saves name and clears birth date",
+    "last-admin error displayed without closing form",
+    "family rename saves",
+    "invite clipboard success",
+    "clipboard denied shows manual-copy guidance",
+    "invite rotation confirmed and refreshed",
+    "admin edits member",
+    "member removal confirmation",
+    "avatar upload refreshes protected image",
+    "password server error and success",
+    "375 light: settings layout no overflow",
+    "375 light: dialog width and focus",
+    "375 dark: settings layout no overflow",
+    "375 dark: dialog width and focus",
+    "390 light: settings layout no overflow",
+    "390 light: dialog width and focus",
+    "390 dark: settings layout no overflow",
+    "390 dark: dialog width and focus",
+    "768 light: settings layout no overflow",
+    "768 light: dialog width and focus",
+    "768 dark: settings layout no overflow",
+    "768 dark: dialog width and focus",
+    "1440 light: settings layout no overflow",
+    "1440 light: dialog width and focus",
+    "1440 dark: settings layout no overflow",
+    "1440 dark: dialog width and focus",
+    "member error is not empty state",
+    "Google account uses Google security controls",
+    "member cannot see invite or admin controls",
+    "unaffiliated account has onboarding action",
+    "failed logout keeps local session for retry",
+    "successful logout clears auth and reaches login"
+  ],
+  "screenshots": [
+    "settings-modern-390-light.png",
+    "settings-modern-profile-light.png",
+    "settings-modern-390-dark.png",
+    "settings-modern-profile-dark.png",
+    "settings-modern-1440-light.png",
+    "settings-modern-1440-dark.png"
+  ],
+  "runtimeErrors": [],
+  "audits": [
+    {
+      "name": "settings 390 light",
+      "violations": []
+    },
+    {
+      "name": "profile dialog light",
+      "violations": []
+    },
+    {
+      "name": "settings 390 dark",
+      "violations": []
+    },
+    {
+      "name": "profile dialog dark",
+      "violations": []
+    },
+    {
+      "name": "settings 1440 light",
+      "violations": []
+    },
+    {
+      "name": "settings 1440 dark",
+      "violations": []
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 "use client";
+import { MemberAvatar } from "@/components/shared/MemberAvatar";
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -132,7 +133,11 @@ export function Topbar() {
               aria-label={`Buka menu akun ${user.name}`}
             >
               <span className="account-avatar">
-                {user.name.slice(0, 1).toUpperCase()}
+                {user.avatar_url ? (
+                  <MemberAvatar member={user} size={28} />
+                ) : (
+                  user.name.slice(0, 1).toUpperCase()
+                )}
               </span>
               <span className="hidden max-w-28 truncate text-xs font-semibold sm:block">
                 {user.name.split(" ")[0]}

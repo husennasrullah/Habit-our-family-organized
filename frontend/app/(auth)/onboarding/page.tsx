@@ -35,17 +35,14 @@ export default function OnboardingPage() {
 
   const refreshAndRedirect = async () => {
     try {
-      const { data: refreshRes } = await authApi.refresh();
-      const newToken = (refreshRes as { data: { access_token: string } }).data
-        .access_token;
-      if (newToken) {
-        localStorage.setItem("access_token", newToken);
-        document.cookie = `access_token=${newToken}; path=/; max-age=${15 * 60}; SameSite=Lax`;
-      }
+      await authApi.refresh();
       const { data: meRes } = await authApi.getMe();
       if (meRes.data) setUser(meRes.data);
     } catch {
-      // tetap redirect meski refresh gagal
+      setServerError(
+        "Keluarga tersimpan, tetapi sesi belum diperbarui. Muat ulang untuk mencoba lagi.",
+      );
+      return;
     }
     router.push("/dashboard");
   };
