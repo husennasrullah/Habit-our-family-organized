@@ -52,14 +52,15 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="auth-form-content w-full space-y-6">
       {/* Heading */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          Buat akun baru 🏠
+        <p className="auth-form-kicker">LANGKAH KECIL PERTAMA</p>
+        <h1 className="auth-form-title">
+          Mulai cerita keluargamu.
         </h1>
         <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-          Mulai kelola kehidupan keluarga bersama Habit.
+          Buat akun untuk keseharian yang lebih teratur, bersama.
         </p>
       </div>
 
@@ -67,7 +68,7 @@ export default function RegisterPage() {
         {serverError && (
           <p
             role="alert"
-            className="rounded-xl bg-red-50 border border-red-100 px-3.5 py-2.5 text-sm text-red-600"
+            className="rounded-xl bg-red-50 border border-red-100 px-3.5 py-2.5 text-sm text-red-700 dark:bg-red-950/40 dark:border-red-900 dark:text-red-200"
           >
             {serverError}
           </p>
@@ -76,7 +77,7 @@ export default function RegisterPage() {
         {/* Nama */}
         <div className="space-y-1.5">
           <label
-            className="text-xs font-bold text-foreground uppercase tracking-wide"
+            className="auth-label"
             htmlFor="field-page-authregister-0"
           >
             Nama
@@ -88,19 +89,21 @@ export default function RegisterPage() {
               placeholder="Nama lengkap"
               autoComplete="name"
               {...register("name")}
-              className="w-full h-[50px] rounded-xl bg-muted border border-border pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 focus:bg-card transition-all"
+              className="auth-input pl-10 pr-4"
               id="field-page-authregister-0"
+              aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? "field-page-authregister-0-error" : undefined}
             />
           </div>
           {errors.name && (
-            <p className="text-xs text-red-500">{errors.name.message}</p>
+            <p id="field-page-authregister-0-error" className="text-xs text-red-600 dark:text-red-300">{errors.name.message}</p>
           )}
         </div>
 
         {/* Email */}
         <div className="space-y-1.5">
           <label
-            className="text-xs font-bold text-foreground uppercase tracking-wide"
+            className="auth-label"
             htmlFor="field-page-authregister-1"
           >
             Email
@@ -112,19 +115,21 @@ export default function RegisterPage() {
               placeholder="nama@email.com"
               autoComplete="email"
               {...register("email")}
-              className="w-full h-[50px] rounded-xl bg-muted border border-border pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 focus:bg-card transition-all"
+              className="auth-input pl-10 pr-4"
               id="field-page-authregister-1"
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "field-page-authregister-1-error" : undefined}
             />
           </div>
           {errors.email && (
-            <p className="text-xs text-red-500">{errors.email.message}</p>
+            <p id="field-page-authregister-1-error" className="text-xs text-red-600 dark:text-red-300">{errors.email.message}</p>
           )}
         </div>
 
         {/* Password */}
         <div className="space-y-1.5">
           <label
-            className="text-xs font-bold text-foreground uppercase tracking-wide"
+            className="auth-label"
             htmlFor="field-page-authregister-2"
           >
             Password
@@ -136,14 +141,17 @@ export default function RegisterPage() {
               placeholder="Min. 8 karakter"
               autoComplete="new-password"
               {...register("password")}
-              className="w-full h-[50px] rounded-xl bg-muted border border-border pl-10 pr-11 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 focus:bg-card transition-all"
+              className="auth-input pl-10 pr-12"
               id="field-page-authregister-2"
+              aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? "field-page-authregister-2-error" : undefined}
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Sembunyikan password"
+              className="auth-password-toggle"
+              aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+              aria-pressed={showPassword}
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -153,14 +161,14 @@ export default function RegisterPage() {
             </button>
           </div>
           {errors.password && (
-            <p className="text-xs text-red-500">{errors.password.message}</p>
+            <p id="field-page-authregister-2-error" className="text-xs text-red-600 dark:text-red-300">{errors.password.message}</p>
           )}
         </div>
 
         {/* Konfirmasi Password */}
         <div className="space-y-1.5">
           <label
-            className="text-xs font-bold text-foreground uppercase tracking-wide"
+            className="auth-label"
             htmlFor="field-page-authregister-3"
           >
             Konfirmasi Password
@@ -172,14 +180,17 @@ export default function RegisterPage() {
               placeholder="Ulangi password"
               autoComplete="new-password"
               {...register("confirmPassword")}
-              className="w-full h-[50px] rounded-xl bg-muted border border-border pl-10 pr-11 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 focus:bg-card transition-all"
+              className="auth-input pl-10 pr-12"
               id="field-page-authregister-3"
+              aria-invalid={!!errors.confirmPassword}
+              aria-describedby={errors.confirmPassword ? "field-page-authregister-3-error" : undefined}
             />
             <button
               type="button"
               onClick={() => setShowConfirm((v) => !v)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Sembunyikan password"
+              className="auth-password-toggle"
+              aria-label={showConfirm ? "Sembunyikan konfirmasi password" : "Tampilkan konfirmasi password"}
+              aria-pressed={showConfirm}
             >
               {showConfirm ? (
                 <EyeOff className="h-4 w-4" />
@@ -189,7 +200,7 @@ export default function RegisterPage() {
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="text-xs text-red-500">
+            <p id="field-page-authregister-3-error" className="text-xs text-red-600 dark:text-red-300">
               {errors.confirmPassword.message}
             </p>
           )}
@@ -199,9 +210,9 @@ export default function RegisterPage() {
         <Button
           type="submit"
           loading={isSubmitting}
-          className="w-full h-[50px] font-bold rounded-xl text-sm bg-primary-600 hover:bg-primary-700 shadow-sm border-0"
+          className="auth-submit w-full h-[48px] font-bold rounded-xl text-sm bg-primary-600 hover:bg-primary-700 border-0"
         >
-          Daftar ke Habit →
+          Buat akun Habit →
         </Button>
 
         {/* Divider */}
@@ -215,7 +226,7 @@ export default function RegisterPage() {
 
         {/* Google */}
         <a
-          href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google`}
+          href={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api/v1"}/auth/google`}
           className="flex w-full items-center justify-center gap-2.5 h-[48px] rounded-xl border border-border bg-card px-4 text-sm font-semibold text-foreground hover:bg-muted hover:border-neutral-300 transition-all"
         >
           <GoogleIcon />
@@ -239,7 +250,7 @@ export default function RegisterPage() {
 
 function GoogleIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 48 48">
+    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
       <path
         fill="#EA4335"
         d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"

@@ -50,14 +50,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="auth-form-content w-full space-y-6">
       {/* Heading */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          Selamat datang kembali
+        <p className="auth-form-kicker">RUANG KELUARGAMU MENANTI</p>
+        <h1 className="auth-form-title">
+          Senang kamu kembali.
         </h1>
         <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-          Masuk ke Habit dan lanjutkan mengatur kehidupan keluargamu.
+          Masuk dan lanjutkan cerita keluargamu.
         </p>
       </div>
 
@@ -65,7 +66,7 @@ export default function LoginPage() {
         {serverError && (
           <p
             role="alert"
-            className="rounded-xl bg-red-50 border border-red-100 px-3.5 py-2.5 text-sm text-red-600"
+            className="rounded-xl bg-red-50 border border-red-100 px-3.5 py-2.5 text-sm text-red-700 dark:bg-red-950/40 dark:border-red-900 dark:text-red-200"
           >
             {serverError}
           </p>
@@ -74,7 +75,7 @@ export default function LoginPage() {
         {/* Email */}
         <div className="space-y-1.5">
           <label
-            className="text-xs font-bold text-foreground uppercase tracking-wide"
+            className="auth-label"
             htmlFor="field-page-authlogin-0"
           >
             Email
@@ -86,19 +87,21 @@ export default function LoginPage() {
               placeholder="nama@email.com"
               autoComplete="email"
               {...register("email")}
-              className="w-full h-[50px] rounded-xl bg-muted border border-border pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 focus:bg-card transition-all"
+              className="auth-input pl-10 pr-4"
               id="field-page-authlogin-0"
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "field-page-authlogin-0-error" : undefined}
             />
           </div>
           {errors.email && (
-            <p className="text-xs text-red-500">{errors.email.message}</p>
+            <p id="field-page-authlogin-0-error" className="text-xs text-red-600 dark:text-red-300">{errors.email.message}</p>
           )}
         </div>
 
         {/* Password */}
         <div className="space-y-1.5">
           <label
-            className="text-xs font-bold text-foreground uppercase tracking-wide"
+            className="auth-label"
             htmlFor="field-page-authlogin-1"
           >
             Password
@@ -110,14 +113,17 @@ export default function LoginPage() {
               placeholder="Masukkan password"
               autoComplete="current-password"
               {...register("password")}
-              className="w-full h-[50px] rounded-xl bg-muted border border-border pl-10 pr-11 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 focus:bg-card transition-all"
+              className="auth-input pl-10 pr-12"
               id="field-page-authlogin-1"
+              aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? "field-page-authlogin-1-error" : undefined}
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Sembunyikan password"
+              className="auth-password-toggle"
+              aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+              aria-pressed={showPassword}
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -127,7 +133,7 @@ export default function LoginPage() {
             </button>
           </div>
           {errors.password && (
-            <p className="text-xs text-red-500">{errors.password.message}</p>
+            <p id="field-page-authlogin-1-error" className="text-xs text-red-600 dark:text-red-300">{errors.password.message}</p>
           )}
         </div>
 
@@ -135,7 +141,7 @@ export default function LoginPage() {
         <Button
           type="submit"
           loading={isSubmitting}
-          className="w-full h-[50px] font-bold rounded-xl text-sm bg-primary-600 hover:bg-primary-700 shadow-sm border-0"
+          className="auth-submit w-full h-[48px] font-bold rounded-xl text-sm bg-primary-600 hover:bg-primary-700 border-0"
         >
           Masuk ke Habit →
         </Button>
@@ -151,7 +157,7 @@ export default function LoginPage() {
 
         {/* Google */}
         <a
-          href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google`}
+          href={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api/v1"}/auth/google`}
           className="flex w-full items-center justify-center gap-2.5 h-[48px] rounded-xl border border-border bg-card px-4 text-sm font-semibold text-foreground hover:bg-muted hover:border-neutral-300 transition-all"
         >
           <GoogleIcon />
@@ -175,7 +181,7 @@ export default function LoginPage() {
 
 function GoogleIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 48 48">
+    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
       <path
         fill="#EA4335"
         d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"

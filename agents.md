@@ -12,7 +12,21 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-13 (Penerapan logo Habit v3 di seluruh lini)
+> **Last updated:** 2026-11-14 (Pembaruan login dan registrasi PWA)
+
+### Pembaruan login dan registrasi PWA — 2026-11-14
+- Pengguna meminta tampilan login/registrasi PWA lebih menarik karena mobile hanya menampilkan form putih, lalu meminta push ke origin setelah selesai.
+- Layout auth bersama memakai panel emerald, latar cream, ilustrasi keluarga existing, aksen amber dan kartu form membulat. Cerita/ilustrasi kini terlihat di mobile; desktop dua kolom. Safe area atas/bawah, scroll alami, ukuran input 16 px dan kontrol tema tersedia. Onboarding mengikuti layout yang sama.
+- Login/registrasi: copy baru, input/tombol bersama, nama akses toggle password mengikuti status, aria-invalid/describedby menghubungkan pesan validasi, error server mendukung tema gelap, URL Google memiliki fallback API lokal. Tidak mengubah alur autentikasi/backend/schema/dependency.
+- File: frontend/app/(auth)/layout.tsx, login/page.tsx, register/page.tsx, app/globals.css; script frontend/scripts/auth-welcome-qa.cjs dan docs/qa/auth-welcome-*.
+- Verifikasi: build produksi 19 halaman berikut lint/typecheck lulus; browser Chrome 32 pemeriksaan login/register/onboarding pada 360/390/768/1440 px terang/gelap, ilustrasi/warna heading/tanpa overflow, validasi dan toggle password lulus tanpa error runtime. Screenshot mobile/desktop direview. Tidak menguji login/registrasi akun nyata atau perangkat PWA fisik.
+- Pengiriman: commit/push biasa origin/main sesuai permintaan pengguna. Next steps: pantau CI/CD dan review tampilan login/registrasi pada PWA deployment. Generated build/worker tidak disertakan.
+
+### Pembacaan konteks proyek — 2026-11-14
+- Membaca agents.md, AGENT.md, README, rencana utama, struktur file, package frontend, entry point/rute backend, provider frontend, API client dan navigasi.
+- Memahami Habit sebagai PWA keluarga dengan Next.js 14/TypeScript dan Go/Fiber/GORM; aturan utama mencakup isolasi keluarga melalui JWT, migrasi tambahan, pengerjaan sesuai scope dan pembaruan panduan setiap selesai bekerja.
+- Status terbaru tetap penerapan brand Habit v3 pada 2026-11-13. Sejumlah status historis/checkbox rencana belum sinkron; cocokkan dengan catatan terbaru dan source sebelum implementasi.
+- Working tree bersih sebelum pencatatan ini. File diubah hanya agents.md; tidak menjalankan aplikasi/tes/build atau mengubah fitur/data. Next steps: mengikuti arahan task berikutnya dari pengguna; tidak commit/push.
 
 ### Penerapan logo Habit v3 di seluruh lini — 2026-11-13
 - Pengguna menyetujui Hadir Bersama, meminta penerapan seluruh lini termasuk PWA dan tulisan tab browser, lalu meminta langsung push origin setelah selesai. Menggunakan aset SVG pilihan utama dan proporsi ringkas yang sudah direview.
@@ -254,6 +268,21 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Pembaruan login dan registrasi PWA — 2026-11-14
+- Layout/header emerald dan ilustrasi mobile, kartu form, tema gelap, validasi aksesibel dan QA auth diperbarui; detail pada STATUS TERKINI. Pengiriman origin/main diminta pengguna.
+
+
+#### Pembaruan login dan registrasi PWA — 2026-11-14
+- Pengguna meminta tampilan login/registrasi PWA lebih menarik karena mobile hanya menampilkan form putih, lalu meminta push ke origin setelah selesai.
+- Layout auth bersama memakai panel emerald, latar cream, ilustrasi keluarga existing, aksen amber dan kartu form membulat. Cerita/ilustrasi kini terlihat di mobile; desktop dua kolom. Safe area atas/bawah, scroll alami, ukuran input 16 px dan kontrol tema tersedia. Onboarding mengikuti layout yang sama.
+- Login/registrasi: copy baru, input/tombol bersama, nama akses toggle password mengikuti status, aria-invalid/describedby menghubungkan pesan validasi, error server mendukung tema gelap, URL Google memiliki fallback API lokal. Tidak mengubah alur autentikasi/backend/schema/dependency.
+- File: frontend/app/(auth)/layout.tsx, login/page.tsx, register/page.tsx, app/globals.css; script frontend/scripts/auth-welcome-qa.cjs dan docs/qa/auth-welcome-*.
+- Verifikasi: build produksi 19 halaman berikut lint/typecheck lulus; browser Chrome 32 pemeriksaan login/register/onboarding pada 360/390/768/1440 px terang/gelap, ilustrasi/warna heading/tanpa overflow, validasi dan toggle password lulus tanpa error runtime. Screenshot mobile/desktop direview. Tidak menguji login/registrasi akun nyata atau perangkat PWA fisik.
+- Pengiriman: commit/push biasa origin/main sesuai permintaan pengguna. Next steps: pantau CI/CD dan review tampilan login/registrasi pada PWA deployment. Generated build/worker tidak disertakan.
+
+### Pembacaan konteks proyek — 2026-11-14
+- Hanya agents.md diperbarui untuk mencatat pembacaan konteks, aturan kerja dan status terbaru; belum ada perubahan implementasi.
 
 #### Penerapan Habit Hadir Bersama v3 — 2026-11-13
 - Simbol/wordmark diselaraskan di UI, judul tab dan nama brand diperbarui, favicon/Apple/PWA/shortcut/offline/push/badge memakai v3. Build/lint/typecheck, 22 tes, validasi aset dan 16 pemeriksaan browser/PWA lulus. Detail file pada STATUS TERKINI dan docs/logo.md; commit/push sesuai permintaan pengguna.
