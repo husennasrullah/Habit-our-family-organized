@@ -4,6 +4,9 @@ import "github.com/google/uuid"
 
 // Document — dokumen penting keluarga tersimpan di object storage
 type Document struct {
+	FileName             string `gorm:"default:''" json:"file_name"`
+	ContentType          string `gorm:"default:''" json:"content_type"`
+	StorageDeletePending bool   `gorm:"default:false;index" json:"storage_delete_pending"`
 	BaseModel
 	FamilyID    uuid.UUID `gorm:"type:uuid;not null;index" json:"family_id"`
 	UploadedBy  uuid.UUID `gorm:"type:uuid;not null"       json:"uploaded_by"`

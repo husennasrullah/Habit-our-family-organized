@@ -12,7 +12,28 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-14 (Pembaruan login dan registrasi PWA)
+> **Last updated:** 2026-11-14 (Pembenahan Dokumen dan storage via env)
+
+### Pembenahan Dokumen dan storage via env — 2026-11-14
+- Pengguna meminta storage dinamis via env sekaligus seluruh temuan review Dokumen dibenahi, kemudian meminta commit/push ke origin setelah selesai.
+- Factory storage.NewClient bersama untuk memories/documents/trips memilih minio/s3/r2/disabled. Endpoint host atau URL HTTP(S), region, session token, addressing style dan auto-create bucket melalui env. Default MinIO lokal/Compose existing dipertahankan, cloud tidak mewarisi endpoint/credentials lokal. Compose production meneruskan seluruh konfigurasi; tanpa dependency baru. API cloud native non-S3 belum didukung adapter.
+- Dokumen: route API dan sidebar dibatasi admin/member; list/query/update/delete tetap terfilter keluarga JWT. Baca/unduh melalui proxy JWT privat/no-store/nosniff, tanpa public URL/object key di list. Validasi PDF/JPEG/PNG/WebP dengan signature/MIME dan ekstensi, 1 byte–10 MB, trim/panjang nama/tag serta enum kategori. Edit metadata dan capabilities enkripsi ditambahkan.
+- Enkripsi opsional AES-256-GCM dengan nonce acak dan object-key AAD memakai DOCUMENT_ENCRYPTION_KEY 64 hex. Kunci salah/ciphertext diubah ditolak; file lama tidak dienkripsi otomatis. Kunci tidak dibuat/disimpan di repo atau diubah pada env nyata. Bucket/prefix dokumen tetap harus private pada provider; API tidak mencabut public policy lama.
+- Hapus menyimpan tombstone/pending sebelum storage dihapus, akses baca berhenti, kegagalan terlihat dan dapat dicoba ulang; finalisasi idempoten. Tidak mengklaim transaksi atomik lintas DB/storage. Upload gagal menyimpan metadata mencoba cleanup; kegagalan cleanup dicatat tanpa credential.
+- Frontend: banner/kartu ringkas, form upload/edit maksimum 360 px dengan kategori/tag/sensitif, drag-drop/file picker, validasi/error/loading/pending, pencarian debounce, preview PDF/gambar dan unduh blob melalui API refresh-token, dialog hapus/retry cleanup, target touch 44 px dan tema terang/gelap.
+- File utama: config/main/storage, handler/service/repository/model Dokumen, migrasi tambahan 013_document_metadata.sql, halaman documents/types/Sidebar/globals, env contoh/Compose, tes backend, script QA, docs/storage.md, RUNNING/deployment, family-hub-plan.md serta bukti docs/qa/documents-modern-*.
+- Verifikasi: go test ./... dan go vet ./... lulus; tes integrasi PostgreSQL schema temporer mencakup lifecycle/plain+encrypted/family isolation/tamper/wrong key/pending cleanup/idempotent retry serta migrasi SQL 013 dua kali. Tes SDK S3 mock HTTP mencakup tiga provider, upload/read/delete/presign, session token dan R2 region auto; config MinIO/cloud dan role API dites. Compose config MinIO/S3/R2 tervalidasi tanpa mencetak secret. 22 tes frontend dan build produksi 19 halaman/lint/typecheck lulus. Browser fixture: 27 pemeriksaan, enam audit axe terarah bersih, tanpa error runtime/overflow pada 375/390/768/1440 px; screenshot direview.
+- Batas: provider cloud/perangkat PWA fisik belum diuji dengan credentials nyata. Tidak memindahkan file, mengubah env/data keluarga asli, menerapkan migrasi ke DB aplikasi lokal atau menambah kontak darurat/catatan. Panduan cutover mempertahankan key/path dan backup ada di docs/storage.md.
+- Pengiriman: commit/push biasa origin/main sesuai permintaan pengguna; generated sw/workbox tidak disertakan. Next steps: pantau CI/CD, verifikasi deployment dengan bucket private, pilih provider melalui env bila ingin pindah, dan aktifkan DOCUMENT_ENCRYPTION_KEY di server jika memerlukan dokumen sensitif.
+
+### Review menu Dokumen — 2026-11-14
+- Pengguna meminta pemeriksaan menu Dokumen. Membaca halaman documents, types, handler/service/repository/model/storage, middleware/routes dan Task 8.1–8.2. Review source tanpa mutasi data, browser/API, build atau tes runtime baru.
+- Tersedia upload satu file, daftar kartu, pencarian judul/tag, filter kategori, buka tautan file dan hapus dengan konfirmasi. Query list/get/delete terfilter keluarga JWT; belum menemukan indikasi query lintas keluarga pada modul ini.
+- UI upload hanya mengirim file/title sehingga semua unggahan UI menjadi other; tidak ada form kategori/tag/judul, edit metadata, drag-drop, preview khusus atau kontrol unduh eksplisit. Tombol hapus hanya 24 px; pesan gagal upload generik dan pencarian mengirim request setiap ketikan.
+- Backend belum memvalidasi isi/MIME/ekstensi/ukuran file per dokumen, enum kategori atau trim/panjang metadata; hanya batas request global 50 MB. Content-Type mempercayai header klien. is_encrypted hanya kolom/default false, tidak ada enkripsi aplikasi atau dekripsi di alur dokumen.
+- Rute dokumen hanya auth tanpa RequireRole: child/view_only yang memiliki JWT keluarga dapat membaca/upload/hapus, berbeda dengan kebijakan role di plan. PublicURL didahulukan bila dikonfigurasi sehingga tautan permanen mungkin digunakan untuk dokumen privat; fallback presigned 15 menit, error signing diabaikan dan tidak ada refresh URL saat klik. Keterjangkauan host storage dari perangkat belum diuji.
+- Delete mengabaikan kegagalan penghapusan object lalu soft-delete metadata, dapat menyisakan file; jika object berhasil dihapus tetapi delete DB gagal, record tetap tampil dengan file hilang. Upload mencoba cleanup jika create DB gagal, tetapi error cleanup juga diabaikan.
+- Tidak menemukan tes khusus modul dokumen; QA bersama mencakup halaman/empty state, bukan bukti upload/download/storage nyata. File diubah hanya agents.md; belum commit/push. Next steps: hak akses dan akses file privat, validasi/ketepatan storage, kemudian form kategori/edit/unduh dan UX ringkas sesuai arahan pengguna.
 
 ### Pembaruan login dan registrasi PWA — 2026-11-14
 - Pengguna meminta tampilan login/registrasi PWA lebih menarik karena mobile hanya menampilkan form putih, lalu meminta push ke origin setelah selesai.
@@ -268,6 +289,14 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Pembenahan Dokumen dan storage via env — 2026-11-14
+- Provider factory/konfigurasi deployment, API Dokumen privat dan enkripsi, CRUD metadata/UI, migrasi 013, tes serta dokumentasi selesai; detail dan batas verifikasi pada STATUS TERKINI. Pengiriman origin/main diminta pengguna.
+
+
+#### Review menu Dokumen — 2026-11-14
+- Hanya agents.md diperbarui dengan temuan source tentang upload/kategori, role, privasi/URL, validasi dan konsistensi hapus; fitur belum diubah.
+
 
 #### Pembaruan login dan registrasi PWA — 2026-11-14
 - Layout/header emerald dan ilustrasi mobile, kartu form, tema gelap, validasi aksesibel dan QA auth diperbarui; detail pada STATUS TERKINI. Pengiriman origin/main diminta pengguna.

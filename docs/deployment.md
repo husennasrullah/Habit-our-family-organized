@@ -245,3 +245,7 @@ sudo ss -tlnp | grep -E '3001|8081'
 ```bash
 docker compose -f docker-compose.prod.yml down -v
 ```
+
+## Storage provider dan dokumen privat
+
+Pemilihan MinIO/S3/R2 lewat env, contoh konfigurasi Docker, enkripsi dokumen dan langkah pemindahan file tersedia di [storage.md](storage.md).

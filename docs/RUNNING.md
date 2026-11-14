@@ -582,3 +582,7 @@ kill -9 <PID>
 ---
 
 *Dokumen ini di-update terakhir mengikuti perkembangan project. Lihat [`family-hub-plan.md`](../family-hub-plan.md) untuk rencana fitur lengkap.*
+
+## Storage provider dan dokumen privat
+
+Pemilihan MinIO/S3/R2 lewat env, contoh konfigurasi Docker, enkripsi dokumen dan langkah pemindahan file tersedia di [storage.md](storage.md).

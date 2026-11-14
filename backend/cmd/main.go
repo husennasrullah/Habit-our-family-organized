@@ -44,9 +44,11 @@ func main() {
 	jwtManager := jwtpkg.NewManager(cfg.JWT.Secret, accessExpiry, refreshExpiry)
 
 	// ─── Storage ──────────────────────────────────────────────────────────────
-	// Inject sebagai interface Storage — ganti provider = ganti NewXxxStorage()
-	storageClient := storage.NewMinIOStorage(&cfg.Storage)
-	_ = storageClient // akan dipakai oleh memory & document service
+	// Shared provider for memories, documents and trips.
+	storageClient, storageErr := storage.NewClient(&cfg.Storage)
+	if storageErr != nil {
+		log.Fatalf("storage: %v", storageErr)
+	}
 
 	// ─── Repositories ─────────────────────────────────────────────────────────
 	memberRepo   := repositories.NewFamilyMemberRepository(database.DB)
@@ -71,7 +73,10 @@ func main() {
 	budgetService   := services.NewBudgetService(expenseRepo, budgetRepo, shoppingRepo)
 	memoryService   := services.NewMemoryService(memoryRepo, storageClient)
 	kidsService     := services.NewKidsService(kidsRepo)
-	docService      := services.NewDocumentService(docRepo, storageClient)
+	docService, docErr := services.NewDocumentServiceWithKey(docRepo, storageClient, cfg.Storage.EncryptionKey)
+	if docErr != nil {
+		log.Fatal(docErr)
+	}
 	mealPlanService := services.NewMealPlanService(mealRepo)
 	goalService     := services.NewFinancialGoalService(goalRepo)
 	tripService     := services.NewTripService(tripRepo, eventRepo, storageClient)
@@ -224,9 +229,12 @@ func main() {
 	kids.Patch("/:id/milestones/:milestone_id/achievement", kidsHandler.SetMilestoneAchievement)
 
 	// Documents routes
-	docs := api.Group("/documents", authMw)
+	docs := api.Group("/documents", authMw, middleware.RequireRole("admin", "member"))
 	docs.Get("",        docHandler.GetDocuments)
 	docs.Post("",       docHandler.UploadDocument)
+	docs.Get("/capabilities", docHandler.Capabilities)
+	docs.Get("/:id/download", docHandler.Download)
+	docs.Put("/:id", docHandler.Update)
 	docs.Delete("/:id", docHandler.DeleteDocument)
 
 	// Financial Goals routes

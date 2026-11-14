@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -62,11 +63,17 @@ type PushConfig struct {
 }
 
 type StorageConfig struct {
-	Endpoint  string
-	AccessKey string
-	SecretKey string
-	Bucket    string
-	UseSSL    bool
+	Provider         string
+	Region           string
+	SessionToken     string
+	AddressingStyle  string
+	AutoCreateBucket bool
+	EncryptionKey    string
+	Endpoint         string
+	AccessKey        string
+	SecretKey        string
+	Bucket           string
+	UseSSL           bool
 	// PublicURL opsional: set jika bucket public atau pakai custom domain (R2/CDN).
 	// Contoh: "https://media.keluarga.app" atau "https://pub-xxx.r2.dev"
 	// Jika kosong, semua file di-serve via presigned URL.
@@ -116,14 +123,7 @@ func Load() *Config {
 			VAPIDSubject:     getEnv("VAPID_SUBJECT", "mailto:admin@keluarga.dev"),
 			NotificationTime: getEnv("NOTIFICATION_TIME", "0 4 * * *"),
 		},
-		Storage: StorageConfig{
-			Endpoint:  getEnv("STORAGE_ENDPOINT", "localhost:9000"),
-			AccessKey: getEnv("STORAGE_ACCESS_KEY", "minioadmin"),
-			SecretKey: getEnv("STORAGE_SECRET_KEY", "minioadmin123"),
-			Bucket:    getEnv("STORAGE_BUCKET", "keluarga"),
-			UseSSL:    getEnv("STORAGE_USE_SSL", "false") == "true",
-			PublicURL: getEnv("STORAGE_PUBLIC_URL", ""),
-		},
+		Storage: loadStorageConfig(),
 	}
 }
 
@@ -169,4 +169,18 @@ func getEnv(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+func loadStorageConfig() StorageConfig {
+	provider := strings.ToLower(strings.TrimSpace(getEnv("STORAGE_PROVIDER", "minio")))
+	endpoint, access, secret := "", "", ""
+	if provider == "minio" {
+		endpoint, access, secret = getEnv("MINIO_ENDPOINT", "localhost:9000"), getEnv("MINIO_ROOT_USER", "minioadmin"), getEnv("MINIO_ROOT_PASSWORD", "minioadmin123")
+	}
+	return StorageConfig{
+		Provider: provider, Endpoint: getEnv("STORAGE_ENDPOINT", endpoint), AccessKey: getEnv("STORAGE_ACCESS_KEY", access), SecretKey: getEnv("STORAGE_SECRET_KEY", secret),
+		Bucket: getEnv("STORAGE_BUCKET", "keluarga"), UseSSL: getEnv("STORAGE_USE_SSL", strconv.FormatBool(provider != "minio")) == "true", PublicURL: getEnv("STORAGE_PUBLIC_URL", ""),
+		Region: getEnv("STORAGE_REGION", ""), SessionToken: getEnv("STORAGE_SESSION_TOKEN", ""), AddressingStyle: getEnv("STORAGE_ADDRESSING_STYLE", "auto"),
+		AutoCreateBucket: getEnv("STORAGE_AUTO_CREATE_BUCKET", strconv.FormatBool(provider == "minio")) == "true", EncryptionKey: getEnv("DOCUMENT_ENCRYPTION_KEY", ""),
+	}
 }

@@ -1,0 +1,212 @@
+{
+  "checks": [
+    "server upload error preserves draft",
+    "upload form with file, category, tags and encryption",
+    "edit metadata and clear/change fields",
+    "private PDF preview opens and closes",
+    "authenticated download triggered",
+    "image blob preview loads",
+    "failed storage cleanup offers retry and blocks read",
+    "delete retry finishes cleanup",
+    "375 light: layout no overflow",
+    "375 light: upload dialog focus and width",
+    "375 dark: layout no overflow",
+    "375 dark: upload dialog focus and width",
+    "390 light: layout no overflow",
+    "390 light: upload dialog focus and width",
+    "390 dark: layout no overflow",
+    "390 dark: upload dialog focus and width",
+    "768 light: layout no overflow",
+    "768 light: upload dialog focus and width",
+    "768 dark: layout no overflow",
+    "768 dark: upload dialog focus and width",
+    "1440 light: layout no overflow",
+    "1440 light: upload dialog focus and width",
+    "1440 dark: layout no overflow",
+    "1440 dark: upload dialog focus and width",
+    "debounced search by tag",
+    "category filter and reset",
+    "view-only UI hides document actions and skips document queries"
+  ],
+  "screenshots": [
+    "documents-modern-390-light.png",
+    "documents-modern-form-light.png",
+    "documents-modern-390-dark.png",
+    "documents-modern-form-dark.png",
+    "documents-modern-1440-light.png",
+    "documents-modern-1440-dark.png"
+  ],
+  "runtimeErrors": [],
+  "requests": [
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents/capabilities"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents/capabilities"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents/11111111-1111-4111-8111-111111111111"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/documents/11111111-1111-4111-8111-111111111111"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents/11111111-1111-4111-8111-111111111111/download"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents/11111111-1111-4111-8111-111111111111/download"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents/11111111-1111-4111-8111-111111111111/download"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents/11111111-1111-4111-8111-111111111111/download"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents/11111111-1111-4111-8111-111111111111/download"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents/11111111-1111-4111-8111-111111111111/download"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents/11111111-1111-4111-8111-111111111111"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/documents/11111111-1111-4111-8111-111111111111"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents/11111111-1111-4111-8111-111111111111"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/documents/11111111-1111-4111-8111-111111111111"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents/capabilities"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents/capabilities"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/v1/documents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/documents"
+    }
+  ],
+  "audits": [
+    {
+      "name": "page 390 light",
+      "violations": []
+    },
+    {
+      "name": "form light",
+      "violations": []
+    },
+    {
+      "name": "page 390 dark",
+      "violations": []
+    },
+    {
+      "name": "form dark",
+      "violations": []
+    },
+    {
+      "name": "page 1440 light",
+      "violations": []
+    },
+    {
+      "name": "page 1440 dark",
+      "violations": []
+    }
+  ]
+}

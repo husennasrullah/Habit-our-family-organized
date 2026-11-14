@@ -945,13 +945,13 @@ Membangun API untuk penyimpanan dokumen penting keluarga dengan enkripsi untuk f
 - Presigned URL untuk akses file aman tersedia
 
 **Todo List:**
-- [ ] Buat model `Document`
-- [ ] Jalankan migrasi tabel
-- [ ] Implementasi upload dokumen ke MinIO/R2
-- [ ] Implementasi enkripsi AES untuk dokumen bertanda sensitif
+- [x] Buat model `Document`
+- [x] Jalankan migrasi tabel
+- [x] Implementasi upload dokumen ke MinIO/R2
+- [x] Implementasi enkripsi AES untuk dokumen bertanda sensitif
 - [ ] Generate presigned URL untuk download
-- [ ] Implementasi CRUD dokumen
-- [ ] Endpoint filter: by type, by tag
+- [x] Implementasi CRUD dokumen
+- [x] Endpoint filter: by type, by tag
 - [ ] Endpoint kontak darurat (CRUD notes)
 
 ---
@@ -969,13 +969,23 @@ Membangun halaman penyimpanan dokumen yang aman dan mudah dicari dengan kategori
 
 **Todo List:**
 - [ ] Buat halaman documents dengan tampilan grid dan list
-- [ ] Implementasi upload dokumen (drag & drop + file picker)
-- [ ] Buat komponen document card (nama, tipe, ukuran, tanggal, badge enkripsi)
-- [ ] Implementasi download dokumen
-- [ ] Buat filter kategori dokumen
-- [ ] Implementasi search dokumen
+- [x] Implementasi upload dokumen (drag & drop + file picker)
+- [x] Buat komponen document card (nama, tipe, ukuran, tanggal, badge enkripsi)
+- [x] Implementasi download dokumen
+- [x] Buat filter kategori dokumen
+- [x] Implementasi search dokumen
 - [ ] Buat halaman/section kontak darurat keluarga
 - [ ] Buat section catatan penting (simple rich text notes)
+
+---
+
+### Pembenahan Dokumen dan storage — 2026-11-14
+- Provider MinIO/S3/R2 dipilih melalui env pada factory bersama; endpoint/region/TLS/addressing/session token dan auto-create bucket dapat dikonfigurasi tanpa dependency baru. Cloud native non-S3 memerlukan adapter tersendiri.
+- API dokumen dibatasi admin/member, file diakses melalui proxy JWT keluarga dengan cache no-store, bukan public/presigned URL. Checkbox presigned URL di atas tidak ditandai karena pendekatan diganti ke proxy privat.
+- Upload PDF/JPEG/PNG/WebP maksimal 10 MB, validasi signature/metadata, kategori/tag, edit metadata, preview/unduh blob, modal 360 px, pencarian debounce, tombol hapus 44 px pada touch dan pending cleanup yang bisa dicoba ulang tersedia.
+- Enkripsi sensitif AES-256-GCM opsional memakai DOCUMENT_ENCRYPTION_KEY; tidak mengubah file lama secara otomatis. Migrasi tambahan 013 menyimpan nama/MIME/pending cleanup. Detail dan cutover provider: docs/storage.md.
+- Verifikasi: tes/vet backend, integrasi PostgreSQL terisolasi dan migrasi 013 idempoten, tes SDK S3 mock/config/role, 22 tes frontend serta build/lint/typecheck lulus. Browser fixture 27 pemeriksaan dan enam audit axe terarah bersih; bukti docs/qa/documents-modern-results.json.
+- Kontak darurat/catatan penting serta mode daftar belum termasuk cakupan ini; task besar tetap terbuka.
 
 ---
 

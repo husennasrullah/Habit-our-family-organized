@@ -138,7 +138,8 @@ export function Sidebar() {
                   .filter(
                     (item) =>
                       item.group === group &&
-                      (item.href !== "/kids" || canManageKids(user?.role)),
+                      (!["/kids", "/documents"].includes(item.href) ||
+                        canManageKids(user?.role)),
                   )
                   .map(({ href, label, icon: Icon }) => {
                     const active = isNavigationActive(pathname, href);

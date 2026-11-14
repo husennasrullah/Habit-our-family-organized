@@ -64,16 +64,15 @@ export interface HealthRecord {
 // ─── Documents ────────────────────────────────────────────────────────────────
 
 export interface Document {
+  file_name: string;
+  content_type: string;
+  storage_delete_pending: boolean;
   id: string;
-  family_id: string;
-  uploaded_by: string;
   title: string;
   type: string;
-  object_key: string;
   file_size: number;
   is_encrypted: boolean;
   tags: string;
-  url: string;
   created_at: string;
   updated_at: string;
 }
