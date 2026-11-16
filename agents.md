@@ -12,7 +12,29 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-16 (Penjelasan validasi tanggal vaksin)
+> **Last updated:** 2026-11-16 (Landing page Habit)
+
+### Landing page Habit — 2026-11-16
+- Pilihan pengguna Next.js + Tailwind diimplementasikan dalam folder landing/ pada monorepo yang sama; aplikasi dan backend tetap memakai proyek masing-masing. Seluruh CTA menuju https://habit.senlabs.web.id. Domain landing publik belum ditentukan; pertanyaan domain telah disampaikan, tidak mengasumsikan domain aplikasi sebagai landing.
+- Halaman Indonesia emerald/cream memakai logo, ilustrasi dan font lokal Habit; hero HTML berdata contoh, tab fitur dengan screenshot fixture, rutinitas keluarga, cara mulai, FAQ, CTA dan footer. Mendukung mobile, keyboard tab/menu, fokus/skip link dan reduced motion. Tidak mengimplementasikan monetisasi yang telah ditunda.
+- File utama: landing/app, components, lib, public, scripts/preview.mjs, konfigurasi/package-lock/README dan .openai/hosting.json; docs/landing-page.md dan bukti docs/qa/landing-*; .github/workflows/landing.yml serta filter paths-ignore pada ci.yml/cd.yml untuk memisahkan build landing. Perubahan dokumentasi monetisasi sebelumnya dipertahankan dan ikut dikirim.
+- Verifikasi: typecheck/build statis lulus termasuk Node 20.19.6; browser 360/390/768/1440/1920 tanpa overflow, gambar gagal, error runtime atau temuan axe yang diperiksa. Lima fitur/gambar, CTA/anchor, menu mobile Escape/klik luar, keyboard Home/End, FAQ dan reduced motion diperiksa. Screenshot desktop/mobile direview; YAML workflow valid. Tidak menyamakan hasil lokal dengan run CI GitHub atau uji aplikasi production.
+- Publikasi Sites owner-private berhasil: https://habit-hadir-bersama.outerrhubarb1.chatgpt.site. Identitas dipersistenkan di landing/.openai/hosting.json, source dipaketkan melalui salinan sementara tanpa mengganti origin monorepo. Tidak menyimpan token atau mengubah DNS/domain Habit.
+- Pengiriman menggunakan commit dan push biasa ke origin/main sesuai otorisasi pengguna; hasil Git dilaporkan sesudah perintah. Next steps: pantau CI, tentukan domain publik landing, deploy ekspor out/ pada hosting pilihan dan lengkapi canonical/sitemap/OG setelah domain benar tersedia.
+
+### Pengarsipan ide monetisasi — 2026-11-16
+- Pengguna meminta ide monetisasi dikesampingkan dan cukup disimpan di Markdown terpisah. Menambahkan docs/monetization-ideas.md berisi model langganan keluarga, hipotesis paket/harga, pembanding resmi bertanggal, pilot, akuisisi, biaya dan ilustrasi omzet.
+- Status ide ditunda, bukan roadmap aktif atau persetujuan implementasi. Harga/kuota/manfaat belum divalidasi; tidak menerapkan billing, paywall atau perubahan fitur/dependency/data. Next steps: lanjutkan monetisasi hanya jika pengguna memberi arahan baru.
+- File diubah: docs/monetization-ideas.md dan agents.md. Pembaruan agents.md dari permintaan sebelumnya dipertahankan; hanya dokumentasi, tidak memerlukan tes aplikasi baru. Belum commit/push dokumen ini.
+
+### Rekap pengiriman dan status keseluruhan — 2026-11-16
+- Pengguna menerima penjelasan tanggal vaksin, meminta pembaruan agents.md dan menanyakan kesiapan seluruh fitur. Pembaruan terbaru ini hanya dokumentasi; tidak mengubah implementasi/data atau menjalankan tes baru.
+- Pengiriman terkonfirmasi: 069161e (keselarasan menu dan integrasi kalender), 89ff07d (perbaikan CI tes dashboard lintas zona), dan 7f94630 (klarifikasi tanggal vaksin beserta regresi) telah berhasil di-push biasa ke origin/main. Branch main sinkron dengan origin/main dan working tree bersih sebelum pembaruan dokumen ini.
+- Hasil verifikasi implementasi terakhir: audit lintas menu 108 pemeriksaan browser dan 31 audit axe bersih; setelah klarifikasi vaksin, 30 tes frontend UTC/WIB (termasuk Node 20), tes validasi backend, build 19 halaman/lint/typecheck, enam pemeriksaan browser vaksin dan satu audit axe lulus. Tidak menyamakan hasil lokal tersebut dengan keberhasilan run CI terbaru di GitHub atau deployment production.
+- Kondisi keseluruhan: fitur inti sudah tersedia dan alur utama telah diuji lokal/fixture; tampilan menu dan tanggal kalender sudah diselaraskan. Tanggal vaksin aktual boleh sebelum/sama/sesudah jadwal, tetap dibatasi sejak lahir sampai hari ini WIB; bukan harus sebelum jadwal. Tidak menyatakan semua edge case atau integrasi eksternal sudah terbukti di production.
+- Tindak lanjut: periksa hasil CI/CD commit terbaru; smoke test login/refresh/logout dan CRUD pada deployment; cek storage provider nyata, Google OAuth, push notification dan PWA perangkat fisik. Jika masalah tanggal vaksin muncul lagi, cocokkan tanggal serta pesan validasi persis dari pengguna.
+- Fitur plan yang belum diklaim selesai tetap mencakup recurring acara manual/pengiriman reminder acara, timeline/tag anggota Kenangan dan fitur tambahan lain di luar scope implementasi terakhir. Dokumen belum mempunyai field tanggal kedaluwarsa sehingga waktu upload tidak dibuat menjadi agenda otomatis.
+- File yang diubah pada permintaan dokumentasi ini hanya agents.md. Next steps mengikuti tindak lanjut production di atas atau arahan pengguna; belum commit/push pembaruan dokumentasi ini.
 
 ### Penjelasan validasi tanggal vaksin — 2026-11-16
 - Pengguna melaporkan tanggal diberikan seolah harus sebelum tanggal jadwal. Review frontend/backend dan atribut native menunjukkan tidak ada pembandingan urutan terhadap jadwal: batas actual given_date adalah hari ini WIB dan tidak sebelum kelahiran. Meminta contoh tanggal/pesan persis untuk membedakan kasus pengguna; contoh tersebut belum tersedia pada pencatatan ini, sehingga tidak mengklaim akar kasus perangkat/production sudah dibuktikan.
@@ -20,7 +42,7 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 - Regresi frontend/backend membuktikan tanggal aktual sebelum/sama/sesudah jadwal diterima, sedangkan sebelum lahir/di masa depan/tanggal tidak valid ditolak. Browser fixture juga menyimpan tanggal aktual 3 Februari terhadap rencana 2 Februari dan memeriksa koreksi pesan native.
 - File: frontend/components/kids/KidForm.tsx, frontend/tests/kids.test.cjs, backend/internal/services/kids_test.go; frontend/scripts/vaccine-dates-qa.cjs, docs/qa/vaccine-date-help-* dan docs/kids-improvements.md serta agents.md.
 - Verifikasi: 30 tes frontend UTC dan WIB (termasuk Node 20) lulus; tes backend TestKidsValidation/TestVaccineActualDateIndependentOfSchedule lulus; build produksi 19 halaman/lint/typecheck lulus. Browser fixture enam pemeriksaan tanpa error runtime dan satu audit axe dialog bersih; screenshot dark 390 px direview. Tidak mengubah data keluarga, schema/dependency atau aturan backend.
-- Pengiriman: commit/push biasa origin/main mengikuti otorisasi pengguna. Next steps: cek CI/deployment dan cocokkan pesan/tanggal pengguna jika kasus yang dialami berbeda dari batas hari ini.
+- Pengiriman: commit 7f94630 berhasil di-push biasa ke origin/main. Next steps: cek CI/deployment dan cocokkan pesan/tanggal pengguna jika kasus yang dialami berbeda dari batas hari ini.
 
 ### Perbaikan CI tes dashboard lintas zona waktu — 2026-11-16
 - Pengguna melaporkan CI npm test gagal dua tes dashboard setelah integrasi kalender. Mereproduksi tepat dua kegagalan dengan TZ=UTC: ekspektasi getHours()=0 masih mengasumsikan zona mesin dan fixture timestamp tanpa offset masih dianggap waktu lokal. Kode aplikasi sudah memakai batas hari WIB; tes lama terlewat diselaraskan pada pengiriman sebelumnya.
@@ -375,6 +397,22 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Landing page Habit — 2026-11-16
+- Pilihan pengguna Next.js + Tailwind diimplementasikan dalam folder landing/ pada monorepo yang sama; aplikasi dan backend tetap memakai proyek masing-masing. Seluruh CTA menuju https://habit.senlabs.web.id. Domain landing publik belum ditentukan; pertanyaan domain telah disampaikan, tidak mengasumsikan domain aplikasi sebagai landing.
+- Halaman Indonesia emerald/cream memakai logo, ilustrasi dan font lokal Habit; hero HTML berdata contoh, tab fitur dengan screenshot fixture, rutinitas keluarga, cara mulai, FAQ, CTA dan footer. Mendukung mobile, keyboard tab/menu, fokus/skip link dan reduced motion. Tidak mengimplementasikan monetisasi yang telah ditunda.
+- File utama: landing/app, components, lib, public, scripts/preview.mjs, konfigurasi/package-lock/README dan .openai/hosting.json; docs/landing-page.md dan bukti docs/qa/landing-*; .github/workflows/landing.yml serta filter paths-ignore pada ci.yml/cd.yml untuk memisahkan build landing. Perubahan dokumentasi monetisasi sebelumnya dipertahankan dan ikut dikirim.
+- Verifikasi: typecheck/build statis lulus termasuk Node 20.19.6; browser 360/390/768/1440/1920 tanpa overflow, gambar gagal, error runtime atau temuan axe yang diperiksa. Lima fitur/gambar, CTA/anchor, menu mobile Escape/klik luar, keyboard Home/End, FAQ dan reduced motion diperiksa. Screenshot desktop/mobile direview; YAML workflow valid. Tidak menyamakan hasil lokal dengan run CI GitHub atau uji aplikasi production.
+- Publikasi Sites owner-private berhasil: https://habit-hadir-bersama.outerrhubarb1.chatgpt.site. Identitas dipersistenkan di landing/.openai/hosting.json, source dipaketkan melalui salinan sementara tanpa mengganti origin monorepo. Tidak menyimpan token atau mengubah DNS/domain Habit.
+- Pengiriman menggunakan commit dan push biasa ke origin/main sesuai otorisasi pengguna; hasil Git dilaporkan sesudah perintah. Next steps: pantau CI, tentukan domain publik landing, deploy ekspor out/ pada hosting pilihan dan lengkapi canonical/sitemap/OG setelah domain benar tersedia.
+
+### Pengarsipan ide monetisasi — 2026-11-16
+- Ide disimpan di docs/monetization-ideas.md atas permintaan pengguna; monetisasi ditunda tanpa perubahan implementasi.
+
+
+#### Rekap pengiriman dan status keseluruhan — 2026-11-16
+- agents.md mencatat tiga commit yang sudah dipush, verifikasi lokal terbaru dan batas kesiapan production. Hanya dokumentasi diperbarui; tidak ada perubahan fitur atau pengujian baru.
+
 
 #### Penjelasan validasi tanggal vaksin — 2026-11-16
 - Form memperjelas batas tanggal aktual hari ini, bukan tanggal jadwal; tes frontend/backend dan browser membuktikan pelaksanaan setelah jadwal diterima. Detail pada STATUS TERKINI dan docs/kids-improvements.md.

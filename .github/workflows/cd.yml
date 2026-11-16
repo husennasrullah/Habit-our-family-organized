@@ -3,6 +3,7 @@ name: CD — Build & Push Images
 on:
   push:
     branches: ["main"]
+    paths-ignore: ["landing/**", "docs/**", "agents.md"]
     tags: ["v*.*.*"]
 
 concurrency:
