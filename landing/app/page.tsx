@@ -12,43 +12,47 @@ const routines: {
 }[] = [
   {
     icon: "sun",
-    time: "PAGI, MULAI DENGAN TENANG",
-    title: "Tahu rencana hari ini.",
-    body: "Agenda sekolah, janji bersama, sampai belanja sore. Lihat yang perlu disiapkan sebelum hari dimulai.",
+    time: "SEBELUM MULAI AKTIVITAS",
+    title: "Cek jadwal hari ini.",
+    body: "Buka Beranda untuk melihat agenda dan tugas yang perlu dikerjakan. Jadwal vaksin anak juga bisa dilihat lewat kalender.",
   },
   {
     icon: "users",
-    time: "SIANG, SALING MERINGANKAN",
-    title: "Ada peran untuk semua.",
-    body: "Bagi tugas rumah dan ikuti progresnya. Hal kecil terasa lebih ringan saat dikerjakan bersama.",
+    time: "SAAT BERBAGI TUGAS RUMAH",
+    title: "Tentukan siapa yang mengerjakan.",
+    body: "Bagikan tugas menyiapkan bekal atau belanja ke anggota keluarga. Beri tenggat dan lihat mana yang sudah selesai.",
   },
   {
     icon: "moon",
-    time: "MALAM, DEKAT KEMBALI",
-    title: "Bawa pulang ceritanya.",
-    body: "Simpan foto dan cerita hari ini. Karena momen keluarga tidak selalu harus menunggu hari istimewa.",
+    time: "SETELAH SEHARIAN BERSAMA",
+    title: "Simpan cerita di balik fotonya.",
+    body: "Tambahkan foto, tanggal, dan cerita ke Kenangan. Momen bermain di rumah pun punya catatan yang bisa dibuka lagi.",
   },
 ];
 const faqs = [
   [
-    "Habit itu aplikasi apa?",
-    "Habit adalah ruang digital untuk mengatur keseharian keluarga: kalender, tugas, keuangan, catatan anak, rencana makan, perjalanan, dokumen, dan kenangan.",
+    "Siapa yang cocok memakai Habit?",
+    "Habit ditujukan untuk keluarga yang ingin berbagi jadwal dan tugas rumah. Orang tua juga bisa mencatat pertumbuhan, vaksin, dan kesehatan anak di profil masing-masing anak.",
   ],
   [
-    "Apakah perlu mengunduh aplikasi?",
-    "Kamu bisa membuka Habit langsung melalui browser di ponsel atau komputer. Pada perangkat dan browser yang mendukung, Habit juga bisa ditambahkan ke layar utama sebagai PWA.",
+    "Bagaimana cara memakainya bersama pasangan?",
+    "Buat akun, lalu buat keluarga di Habit. Bagikan kode undangan agar pasangan bergabung dengan akunnya sendiri. Kalau keluarga sudah dibuat, kamu bisa langsung bergabung memakai kode tersebut.",
   ],
   [
-    "Bagaimana menggunakannya bersama keluarga?",
-    "Daftar atau masuk ke aplikasi Habit, lalu buat keluarga atau bergabung melalui undangan. Anggota keluarga menggunakan akun masing-masing untuk berbagi informasi dalam ruang keluarga yang sama.",
+    "Bisa dibuka di HP dan laptop?",
+    "Bisa. Buka Habit melalui browser di HP atau laptop dengan akun yang sama. Pada perangkat dan browser yang mendukung, kamu bisa menambahkannya ke layar utama.",
   ],
   [
-    "Apakah semua anggota punya akses yang sama?",
-    "Akses mengikuti peran anggota di aplikasi. Beberapa informasi dan tindakan, termasuk catatan anak, dibatasi sesuai peran. Kelola anggota dan perannya melalui pengaturan keluarga.",
+    "Apakah Habit bisa dipakai tanpa internet?",
+    "Koneksi internet diperlukan untuk memuat dan menyimpan data keluarga. Habit menyediakan halaman offline saat halaman aplikasi tidak dapat dimuat; pencatatan data tetap membutuhkan koneksi.",
   ],
   [
-    "Ke mana tombol Buka Habit mengarah?",
-    "Tombol tersebut membuka aplikasi Habit di habit.senlabs.web.id. Kamu bisa masuk ke akun yang sudah ada atau memulai dari halaman pendaftaran.",
+    "Apakah semua anggota bisa melihat catatan anak?",
+    "Akses mengikuti peran anggota dalam keluarga. Catatan anak dan keuangan tersedia untuk admin dan anggota dewasa. Akun anak serta akun hanya-lihat memiliki akses terbatas sesuai menu.",
+  ],
+  [
+    "Apakah jadwal vaksin dibuat otomatis?",
+    "Jadwal vaksin diisi sendiri berdasarkan catatan keluarga atau arahan tenaga kesehatan. Habit memisahkan tanggal rencana dari tanggal vaksin benar-benar diberikan, lalu menampilkannya di kalender.",
   ],
 ];
 function AppLink({
@@ -75,7 +79,7 @@ export default function Home() {
             <div className="hero-copy">
               <span className="pill">
                 <span className="live-dot" />
-                Ruang keluarga digital
+                Aplikasi untuk keseharian keluarga
               </span>
               <h1>
                 Hal kecil teratur.
@@ -87,41 +91,44 @@ export default function Home() {
                 </span>
               </h1>
               <p>
-                Untuk jadwal yang saling bertemu, tugas yang dibagi, dan cerita
-                yang ingin disimpan. Hadir bersama, setiap hari.
+                Bagi tugas rumah dan lihat jadwal keluarga di satu tempat. Catat
+                juga pengeluaran dan tumbuh kembang anak, termasuk berat badan
+                serta tanggal vaksin.
               </p>
               <div className="hero-actions">
                 <AppLink />
                 <a className="text-link" href="#fitur">
-                  Kenalan dulu
+                  Lihat fitur Habit
                   <Icon name="arrow" size={17} />
                 </a>
               </div>
               <div className="hero-footnote">
                 <Icon name="heart" size={15} />
-                <span>Dibuat untuk keseharian. Dijalani bersama.</span>
+                <span>
+                  Buka di browser HP atau laptop. Masuk atau buat akun.
+                </span>
               </div>
             </div>
             <ProductPreview />
           </div>
           <div className="shell hero-bottom">
             <span>
-              Lebih sedikit yang tercecer.
+              Rencana vaksin, menu makan, dan tenggat tugas.
               <br />
-              <strong>Lebih banyak waktu bersama.</strong>
+              <strong>Bisa dilihat lewat kalender keluarga.</strong>
             </span>
             <div>
               <span>
                 <Icon name="calendar" size={17} />
-                Rencana lebih jelas
+                Jadwal keluarga
               </span>
               <span>
                 <Icon name="users" size={17} />
-                Peran lebih terbagi
+                Pembagian tugas
               </span>
               <span>
                 <Icon name="photo" size={17} />
-                Cerita lebih terjaga
+                Catatan anak
               </span>
             </div>
           </div>
@@ -130,16 +137,17 @@ export default function Home() {
           <div className="shell">
             <div className="section-heading split-heading">
               <div>
-                <span className="eyebrow">DEKAT DALAM KESEHARIAN</span>
+                <span className="eyebrow">HABIT DALAM KESEHARIANMU</span>
                 <h2>
-                  Bukan hari yang sempurna.
+                  Ada jadwal anak.
                   <br />
-                  Cukup, lebih bersama.
+                  Ada tugas rumah yang perlu dibagi.
                 </h2>
               </div>
               <p>
-                Kesibukan setiap orang boleh berbeda. Tetap punya satu tempat
-                untuk saling tahu dan saling membantu.
+                Jadwal vaksin perlu dicatat, bekal perlu disiapkan. Gunakan
+                Habit untuk melihat rencana dan membagi tugas dengan anggota
+                keluarga.
               </p>
             </div>
             <div className="routine-grid">
@@ -159,38 +167,42 @@ export default function Home() {
         <section className="section features-section" id="fitur">
           <div className="shell">
             <div className="section-heading centered">
-              <span className="eyebrow">SATU HABIT, BANYAK CARA HADIR</span>
+              <span className="eyebrow">
+                DARI URUSAN RUMAH SAMPAI CATATAN ANAK
+              </span>
               <h2>
-                Semua yang penting.
+                Pilih yang ingin
                 <br />
-                Punya tempat di sini.
+                kamu rapikan dulu.
               </h2>
               <p>
-                Dari urusan hari ini sampai momen yang ingin dikenang.
-                <br className="desktop-break" /> Jelajahi ruang-ruang kecil
-                dalam Habit.
+                Cek bagaimana Habit menghubungkan jadwal keluarga dengan tugas
+                dan catatan anak. Kamu juga bisa menyiapkan anggaran serta
+                menyimpan foto keluarga.
               </p>
             </div>
             <FeatureExplorer />
             <div className="more-features">
-              <span>Dan hal-hal lain yang membuat rumah terasa tertata.</span>
+              <span>
+                Untuk menu besok, rencana liburan, dan berkas keluarga.
+              </span>
               <div>
                 {(
                   [
                     {
                       icon: "meal",
                       title: "Rencana makan",
-                      body: "Menu harian lebih siap.",
+                      body: "Susun sarapan sampai makan malam.",
                     },
                     {
                       icon: "plane",
                       title: "Perjalanan",
-                      body: "Rencana liburan bersama.",
+                      body: "Atur kegiatan dan biaya liburan.",
                     },
                     {
                       icon: "folder",
                       title: "Dokumen",
-                      body: "Berkas keluarga tersimpan.",
+                      body: "Cari berkas berdasarkan kategori.",
                     },
                   ] as { icon: IconName; title: string; body: string }[]
                 ).map((f) => (
@@ -209,31 +221,32 @@ export default function Home() {
         <section className="section steps-section" id="cara-kerja">
           <div className="shell steps-layout">
             <div>
-              <span className="eyebrow">MULAI DARI HAL SEDERHANA</span>
+              <span className="eyebrow">BUAT RUANG KELUARGAMU</span>
               <h2>
-                Ruang bersama,
+                Ajak pasangan.
                 <br />
-                dalam tiga langkah.
+                Tambahkan rencana pertama.
               </h2>
               <p>
-                Tidak perlu langsung merapikan semuanya. Mulai dari satu agenda
-                atau satu tugas hari ini.
+                Mulai dengan satu tugas rumah yang ingin dibagi, atau jadwal
+                anak yang perlu dicatat. Anggota keluarga bisa bergabung melalui
+                kode undangan.
               </p>
-              <AppLink>Mulai bersama Habit</AppLink>
+              <AppLink />
             </div>
             <ol className="steps">
               {[
                 {
-                  title: "Buka Habit, buat akunmu.",
-                  body: "Masuk ke aplikasi melalui browser. Gunakan akunmu untuk memulai.",
+                  title: "Buat akun Habit.",
+                  body: "Daftar dengan email atau akun Google. Jika sudah punya akun, langsung masuk.",
                 },
                 {
-                  title: "Temukan ruang keluargamu.",
-                  body: "Buat keluarga baru atau bergabung melalui undangan keluarga yang sudah ada.",
+                  title: "Buat atau gabung keluarga.",
+                  body: "Buat keluarga baru, lalu bagikan kode undangannya. Gunakan kode yang kamu terima untuk bergabung.",
                 },
                 {
-                  title: "Isi hari, sedikit demi sedikit.",
-                  body: "Ajak anggota keluarga, tambahkan agenda, atau bagikan tugas pertama kalian.",
+                  title: "Tambahkan tugas atau jadwal.",
+                  body: "Pilih siapa yang mengerjakan tugas dan kapan tenggatnya, atau catat agenda pertama di kalender.",
                 },
               ].map((s, i) => (
                 <li key={s.title}>
@@ -260,38 +273,40 @@ export default function Home() {
               />
               <span className="art-note">
                 <Icon name="heart" size={16} />
-                Rumah adalah tentang kita.
+                Jadwal dan tugas dibagi bersama.
               </span>
             </div>
             <div className="together-copy">
-              <span className="eyebrow">DEKAT, DI MANA PUN HARI MEMBAWA</span>
+              <span className="eyebrow">
+                AKUN MASING-MASING, KELUARGA YANG SAMA
+              </span>
               <h2>
-                Selalu ada cara
+                Buka catatan keluarga
                 <br />
-                untuk ikut hadir.
+                dari perangkatmu.
               </h2>
               <p>
-                Di meja kerja, di perjalanan, atau di sofa ruang keluarga. Buka
-                Habit dari ponsel maupun komputer dan kembali ke rencana yang
-                sama.
+                Pasanganmu bisa membuka agenda di HP, sementara kamu mengecek
+                daftar belanja lewat laptop. Kalian memakai akun masing-masing
+                dalam keluarga yang sama.
               </p>
               <div className="value-line">
                 <Icon name="phone" size={21} />
                 <div>
-                  <h3>Ikut ritme harimu.</h3>
+                  <h3>Buka di HP atau laptop.</h3>
                   <p>
-                    Buka lewat browser, atau tambahkan ke layar utama pada
-                    perangkat yang mendukung.
+                    Gunakan browser untuk mengakses Habit. Pada perangkat yang
+                    mendukung, tambahkan ke layar utama agar mudah dibuka lagi.
                   </p>
                 </div>
               </div>
               <div className="value-line">
                 <Icon name="users" size={21} />
                 <div>
-                  <h3>Satu keluarga, ruang bersama.</h3>
+                  <h3>Atur peran anggota keluarga.</h3>
                   <p>
-                    Akun masing-masing, dengan akses informasi sesuai peran
-                    anggota keluarga.
+                    Undang anggota dan tentukan perannya. Catatan anak dan
+                    keuangan tersedia untuk admin serta anggota dewasa.
                   </p>
                 </div>
               </div>
@@ -303,11 +318,11 @@ export default function Home() {
             <div>
               <span className="eyebrow">SEBELUM MULAI</span>
               <h2>
-                Mungkin ini
+                Sebelum mengajak
                 <br />
-                yang kamu pikirkan.
+                keluargamu bergabung.
               </h2>
-              <p>Kenalan sedikit lebih dekat dengan Habit.</p>
+              <p>Tentang akun keluarga, akses, dan cara memakai Habit.</p>
               <span className="faq-flower">
                 <Icon name="leaf" size={66} />
               </span>
@@ -338,11 +353,14 @@ export default function Home() {
                 <br />
                 Keluarga lebih dekat.
               </h2>
-              <p>Mulai dari satu hal hari ini. Sisanya, jalani bersama.</p>
-              <AppLink className="button button-light">
-                Buka Habit sekarang
-              </AppLink>
-              <span className="final-note">habit.senlabs.web.id</span>
+              <p>
+                Buka Habit, ajak pasangan, lalu catat jadwal anak atau bagikan
+                tugas rumah pertama kalian.
+              </p>
+              <AppLink className="button button-light">Buka Habit</AppLink>
+              <span className="final-note">
+                Masuk atau buat akun di habit.senlabs.web.id
+              </span>
             </div>
           </div>
         </section>
@@ -358,9 +376,9 @@ export default function Home() {
             />
           </a>
           <p>
-            Ruang untuk keseharian.
+            Atur tugas rumah dan jadwal keluarga.
             <br />
-            Tempat untuk kebersamaan.
+            Simpan catatan tumbuh kembang anak.
           </p>
           <nav aria-label="Navigasi footer">
             <a href="#fitur">Fitur</a>

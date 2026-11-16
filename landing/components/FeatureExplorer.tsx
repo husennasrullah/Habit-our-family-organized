@@ -11,80 +11,86 @@ const features: {
   description: string;
   points: string[];
   image: string;
+  note: string;
 }[] = [
   {
     id: "calendar",
     label: "Kalender",
     icon: "calendar",
-    eyebrow: "WAKTU UNTUK YANG PENTING",
-    title: "Semua tanggal punya tempat.",
+    eyebrow: "JADWAL KELUARGA",
+    title: "Lihat jadwal vaksin bersama tenggat tugas.",
     description:
-      "Lihat agenda keluarga, tenggat tugas, perjalanan, dan jadwal anak dalam satu kalender. Pilih informasi yang ingin ditampilkan, lalu buka menu asalnya.",
+      "Agenda yang kamu buat, jadwal vaksin anak, dan tenggat tugas tampil di kalender Habit. Pilih tanggal untuk melihat rinciannya, lalu buka catatan asal saat perlu mengubahnya.",
     points: [
-      "Tampilan hari, minggu, dan bulan",
-      "Tanggal terhubung dari berbagai menu",
-      "Filter agenda dan catatan keluarga",
+      "Pilih tampilan hari, minggu, atau bulan",
+      "Lihat juga jadwal makan dan perjalanan",
+      "Saring jenis catatan yang ingin ditampilkan",
     ],
+    note: "Jadwal vaksin yang dicatat di menu Anak ikut muncul di kalender.",
     image: "calendar",
   },
   {
     id: "tasks",
     label: "Tugas",
     icon: "task",
-    eyebrow: "SEDIKIT BANTUAN, BESAR ARTINYA",
-    title: "Berbagi tugas, berbagi lega.",
+    eyebrow: "PEMBAGIAN TUGAS RUMAH",
+    title: "Siapa belanja, siapa menyiapkan bekal?",
     description:
-      "Dari menyiapkan bekal sampai merapikan rumah. Bagikan tanggung jawab, ikuti progresnya, dan apresiasi kontribusi setiap anggota keluarga.",
+      "Tentukan penanggung jawab setiap tugas dan kapan perlu selesai. Pasangan bisa mengecek tugasnya sendiri; kamu bisa melihat mana yang sedang dikerjakan dan sudah selesai.",
     points: [
-      "Penanggung jawab dan tenggat yang jelas",
-      "Status tugas mudah dipantau",
-      "Poin sebagai apresiasi kebiasaan baik",
+      "Bagikan tugas ke anggota keluarga",
+      "Tetapkan tenggat dan prioritas",
+      "Beri poin untuk tugas yang diselesaikan",
     ],
+    note: "Tenggat tugas terhubung ke kalender keluarga.",
     image: "tasks",
   },
   {
     id: "budget",
     label: "Keuangan",
     icon: "wallet",
-    eyebrow: "RENCANA KECIL UNTUK HARI ESOK",
-    title: "Kebutuhan hari ini. Harapan esok hari.",
+    eyebrow: "BELANJA DAN ANGGARAN",
+    title: "Lihat belanja masuk ke anggaran mana.",
     description:
-      "Catat pengeluaran, susun anggaran, siapkan belanja, dan ikuti target tabungan. Bicarakan kebutuhan keluarga dengan catatan yang lebih tertata.",
+      "Tulis daftar belanja bersama. Setelah belanja selesai, catat totalnya sebagai pengeluaran dan cek sisa anggaran bulan itu. Target tabungan punya catatan setoran tersendiri.",
     points: [
-      "Pengeluaran dan anggaran per kategori",
-      "Daftar belanja bersama",
-      "Target tabungan dan riwayat setoran",
+      "Catat pengeluaran per kategori",
+      "Bandingkan pengeluaran dengan anggaran",
+      "Ikuti setoran menuju target tabungan",
     ],
+    note: "Belanja yang diselesaikan bisa langsung dicatat sebagai pengeluaran.",
     image: "budget",
   },
   {
     id: "kids",
     label: "Anak",
     icon: "baby",
-    eyebrow: "MENEMANI SETIAP LANGKAH KECIL",
-    title: "Tumbuhnya mereka, tercatat bersama.",
+    eyebrow: "TUMBUH KEMBANG ANAK",
+    title: "Buka lagi catatan berat badan dan vaksinnya.",
     description:
-      "Simpan catatan pertumbuhan, jadwal dan riwayat vaksin, pencapaian, serta catatan kesehatan si kecil agar lebih mudah ditemukan kembali.",
+      "Simpan hasil pengukuran setelah posyandu di profil anak. Catat rencana vaksin dan tanggal pemberiannya secara terpisah. Riwayat kesehatan serta pencapaian anak juga bisa ditambahkan.",
     points: [
-      "Profil dan catatan pertumbuhan anak",
-      "Jadwal dan tanggal pemberian vaksin",
-      "Milestone dan riwayat kesehatan",
+      "Lihat grafik pertumbuhan berdasarkan tanggal",
+      "Pisahkan jadwal vaksin dari pelaksanaannya",
+      "Catat keluhan, obat, dan pencapaian anak",
     ],
+    note: "Setiap anak punya profil dan riwayatnya sendiri.",
     image: "kids",
   },
   {
     id: "memories",
     label: "Kenangan",
     icon: "photo",
-    eyebrow: "HARI BIASA, CERITA ISTIMEWA",
-    title: "Supaya yang sederhana tidak terlupa.",
+    eyebrow: "FOTO DAN CERITA KELUARGA",
+    title: "Simpan ceritanya bersama foto keluarga.",
     description:
-      "Satu foto, satu cerita, atau satu hari yang terasa istimewa. Simpan momen keluarga, tandai favorit, dan buka kembali saat ingin mengenangnya.",
+      "Unggah foto liburan atau tulis cerita saat anak mencoba sesuatu untuk pertama kali. Tambahkan tanggal, lalu cari kembali lewat judul, cerita, atau bulan kejadiannya.",
     points: [
-      "Foto dan cerita dalam satu kenangan",
-      "Pencarian, filter tanggal, dan favorit",
-      "Galeri untuk dinikmati kembali bersama",
+      "Tambahkan beberapa foto dalam satu kenangan",
+      "Tulis cerita, termasuk saat tidak ada foto",
+      "Tandai favorit untuk dibuka kembali",
     ],
+    note: "Tanggal kenangan juga bisa dilihat lewat filter catatan di kalender.",
     image: "memories",
   },
 ];
@@ -156,7 +162,7 @@ export function FeatureExplorer() {
           </ul>
           <span className="feature-note">
             <Icon name="spark" size={14} />
-            Bagian dari keseharian keluarga, dalam satu Habit.
+            {feature.note}
           </span>
         </div>
         <figure className="feature-screen">

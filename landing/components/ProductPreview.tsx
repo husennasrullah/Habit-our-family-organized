@@ -55,7 +55,7 @@ export function ProductPreview() {
                   <br />
                   <strong>Keluarga Pratama.</strong>
                 </p>
-                <span>Hal kecil hari ini, berarti untuk bersama.</span>
+                <span>Cek agenda dan tugas keluarga hari ini.</span>
               </div>
               <Image
                 src="/illustrations/family-banner-v3.webp"
@@ -139,7 +139,7 @@ export function ProductPreview() {
         </div>
         <div className="preview-caption">
           <span className="live-dot" />
-          Satu tempat, untuk seluruh keluarga.<span>DATA CONTOH</span>
+          Contoh agenda dan pembagian tugas.<span>DATA CONTOH</span>
         </div>
       </div>
       <div className="floating-note">
@@ -147,8 +147,8 @@ export function ProductPreview() {
           <Icon name="check" size={18} />
         </span>
         <div>
-          <strong>Sedikit lebih ringan.</strong>
-          <span>Tugas rumah, dikerjakan bersama.</span>
+          <strong>Bekal sudah disiapkan.</strong>
+          <span>Satu tugas keluarga selesai.</span>
         </div>
         <Icon name="heart" size={15} />
       </div>

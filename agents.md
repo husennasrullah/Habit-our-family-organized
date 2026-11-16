@@ -12,7 +12,14 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-16 (Pemolesan landing page)
+> **Last updated:** 2026-11-16 (Copywriting landing page)
+
+### Copywriting landing page — 2026-11-16
+- Pengguna meminta remake isi landing memakai skill copywriting dan seluruh konteks proyek, lalu menegaskan tagline tidak boleh diubah. Membaca skill/referensi ai-tells, memeriksa konteks marketing standar (tidak ditemukan) dan sumber fitur. Diagnosis B: mempertahankan suara keluarga yang hangat, mengganti abstraksi dengan tindakan/fungsi yang didukung source.
+- Tagline Kebiasaan kecil. Keluarga lebih dekat., judul hero dan brand Hadir Bersama dipertahankan; assertion perbandingan source existing lulus. Menulis ulang subheadline, rutinitas, lima fitur/catatan manfaat, cara mulai, perangkat/peran, enam FAQ, penutup/footer serta deskripsi metadata. CTA utama konsisten Buka Habit; URL aplikasi tetap. Tidak membuat klaim harga/pengguna/testimoni, reminder otomatis/native/offline CRUD atau hasil klinis.
+- Source: landing/app/page.tsx, components/FeatureExplorer.tsx dan ProductPreview.tsx, lib/site.ts; globals.css hanya lebar paragraf pengantar/penutup. Dokumen docs/landing-copywriting.md berisi final copy, anotasi, alternatif, konteks dan dasar/batas klaim; docs/landing-page.md, docs/qa/landing-copy-* dan agents.md diperbarui.
+- Verifikasi: build/typecheck Node 20.19.6, lima viewport 360/390/768/1440/1920 untuk overflow/gambar/runtime/axe, menu/keyboard tab/FAQ, kelima gambar fitur/anchor/CTA/reduced motion diperiksa; screenshot desktop/mobile direview. Tidak menjalankan pengujian backend baru karena tidak mengubah aplikasi utama/backend/dependency/schema atau data. Hasil lokal bukan bukti CI GitHub atau integrasi production.
+- Publikasi ulang melalui Site owner-private yang sama dan commit/push biasa mengikuti otorisasi sebelumnya; hasil layanan/Git dilaporkan setelah perintah. Next steps: review copy pengguna, domain publik landing masih belum ditentukan; Android TWA dan monetisasi tetap di luar scope ini.
 
 ### Pemolesan landing page — 2026-11-16
 - Pengguna meminta landing lebih fresh, mengurangi area putih dan membenahi proporsi. Mengubah landing/app/page.tsx dan globals.css: hero mint/amber, heading tiga baris dan jarak ringkas, preview desktop lurus, rutinitas pastel, area fitur mint berpanel, cara mulai hijau gelap/CTA amber, panel ilustrasi hangat dan FAQ berwarna. Brand dan seluruh CTA ke habit.senlabs.web.id tetap; tidak menambah dependency atau mengubah aplikasi utama/backend/monetisasi.
@@ -410,6 +417,10 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Copywriting landing page — 2026-11-16
+- Konten berfokus manfaat keluarga dan fungsi aktual, tagline existing tetap. Copy final/alternatif/dasar klaim di docs/landing-copywriting.md; source, dokumentasi dan bukti browser diperbarui.
+
 
 #### Pemolesan landing page — 2026-11-16
 - Landing dipadatkan dan diberi variasi latar/panel warna; source, docs dan bukti QA diperbarui. Detail verifikasi dan batas pada STATUS TERKINI.
