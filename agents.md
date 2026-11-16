@@ -12,7 +12,15 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-16 (Landing untuk seluruh keluarga)
+> **Last updated:** 2026-11-16 (Rekap pengiriman landing dan tindak lanjut)
+
+### Rekap pengiriman landing dan tindak lanjut — 2026-11-16
+- Pengguna meminta pembaruan agents.md. Mencatat pengiriman yang telah terkonfirmasi: e8cee12 (warna/proporsi landing), 9c7701f (copywriting manfaat nyata), dan 5b501fd (audiens seluruh keluarga termasuk anak) berhasil di-push biasa ke origin/main. Working tree bersih sebelum pembaruan dokumentasi ini.
+- Versi terbaru owner-private sudah berhasil diterbitkan melalui Sites di https://habit-hadir-bersama.outerrhubarb1.chatgpt.site, deployment appgdep_6afad45fd5208191af15ca66e5516d9c. Ini bukan deployment ke VPS/domain Senlabs. CTA tetap menuju https://habit.senlabs.web.id. Domain publik landing belum ditentukan.
+- Keputusan pengguna yang wajib dipertahankan: tagline persis “Kebiasaan kecil. Keluarga lebih dekat.”; Habit untuk seluruh keluarga termasuk anak dengan akun/peran masing-masing. Anak join default member, lalu admin mengatur peran Anak melalui Pengaturan. Penambahan tab Liburan dibatalkan pengguna sebelum ada perubahan; tab utama tetap Kalender/Tugas/Keuangan/Anak/Kenangan, Liburan disebut pada ringkasan bawah dengan label Perjalanan.
+- Verifikasi implementasi terakhir: typecheck/build Node 20.19.6 dan pemeriksaan browser lima viewport lulus, tanpa overflow/gambar gagal/error runtime/temuan axe yang diperiksa; tag/hero existing tidak berubah. Detail pada docs/landing-page.md, docs/landing-copywriting.md dan docs/qa/landing-family-*. Keberhasilan CI GitHub dan uji aplikasi production tidak diasumsikan.
+- File yang diubah untuk permintaan ini hanya agents.md: memperbarui rekap, tabel pekerjaan tersisa, next steps, referensi dan struktur monorepo agar tidak lagi mengarahkan ke setup repo/push master atau profil Settings yang sudah selesai. Tidak mengubah aplikasi/data atau menjalankan tes aplikasi baru; diff dokumentasi diperiksa.
+- Tindak lanjut: review landing sesuai arahan pengguna, pilih domain publik dan hosting; pantau CI dan smoke test aplikasi production yang masih tertunda. Rencana Android ada di docs/android-twa-plan.md dan belum diimplementasi; monetisasi tetap ditunda di docs/monetization-ideas.md. Tidak otomatis memulai TWA, billing, seed production, atau deployment domain baru.
 
 ### Landing untuk seluruh keluarga — 2026-11-16
 - Pengguna meminta penjelasan bahwa Habit dipakai satu keluarga, termasuk anak, kemudian meminta skill copywriting dan pengecekan ulang. Diagnosis C/edit terarah: label hero, manfaat, contoh tugas, ajakan onboarding/penutup, panel akun, dua FAQ dan deskripsi metadata diperjelas untuk orang tua serta anak. Tidak mengganti tagline, judul hero, desain atau tab fitur; permintaan penambahan tab Liburan sebelumnya telah dibatalkan sebelum ada perubahan source.
@@ -425,6 +433,10 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
 
+#### Rekap pengiriman landing — 2026-11-16
+- agents.md mencatat tiga push/publikasi landing terakhir, batas keputusan tagline/Liburan/audiens keluarga, serta menyelaraskan next steps dan struktur monorepo. Hanya dokumentasi; detail pada STATUS TERKINI.
+
+
 #### Landing untuk seluruh keluarga — 2026-11-16
 - Copy memperjelas orang tua dan anak dapat ikut memakai Habit sesuai peran; tagline dan tab existing tetap. Source, panduan copy dan QA diperbarui, detail pada STATUS TERKINI.
 
@@ -729,17 +741,22 @@ PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -c "
 
 ### ⏳ Yang Belum Dikerjakan
 
-| Task | Prioritas |
+| Task | Status / prioritas |
 |---|---|
-| Unit test backend (auth service, task service) | Sedang |
-| Seed data production DB di VPS | Perlu dikerjakan |
-| Edit profil (nama, avatar) dari halaman Settings | Opsional |
+| Domain publik dan hosting landing | Menunggu pilihan domain; versi owner-private tersedia |
+| Canonical, sitemap dan URL Open Graph landing | Setelah domain publik ditentukan |
+| Pemeriksaan run CI/CD terbaru dan smoke test aplikasi production | Tindak lanjut; hasil lokal tidak membuktikan integrasi provider/perangkat |
+| Android TWA | Baru rencana di docs/android-twa-plan.md; belum implementasi |
+| Monetisasi | Ditunda pengguna; ide tersimpan di docs/monetization-ideas.md |
+| Fitur di luar scope yang masih pending | Recurring/reminder acara manual, timeline/tag anggota Kenangan; cocokkan source/plan sebelum mengerjakan |
 
-### ⚡ Next Steps (langsung dikerjakan saat mulai sesi baru)
-1. Setup GitHub repo + tambahkan secrets (lihat `docs/deployment.md` section 2)
-2. Push ke `master` → CI/CD akan jalan otomatis
-3. Opsional: update halaman Register agar tampilannya seperti halaman Login
-4. Opsional: tulis unit test backend (auth service, task service)
+Catatan tabel lama: profil/nama/avatar Settings dan tes task sudah tersedia. Cakupan tambahan tes auth perlu diaudit bila menjadi task berikutnya; tidak menganggap seluruh cakupan tes lengkap. Seed data production bukan tindak lanjut otomatis.
+
+### ⚡ Next Steps (ikuti arahan terbaru pengguna)
+1. Pertahankan tagline dan audiens seluruh keluarga termasuk anak. Penambahan tab Liburan telah dibatalkan; jangan menghidupkannya kembali tanpa arahan baru.
+2. Untuk landing: review versi privat yang sudah diterbitkan. Setelah domain dipilih, siapkan hosting/DNS/HTTPS dan metadata domain yang benar; kode tetap di landing/ dalam monorepo.
+3. Periksa status CI/CD pada origin/main dan lakukan smoke test production dengan akun uji untuk auth, file/storage, notifikasi dan PWA perangkat fisik bila menjadi scope berikutnya.
+4. Jika pengguna meminta Android, mulai dari fase A pada docs/android-twa-plan.md; saat ini baru rencana. Monetisasi tetap ditunda.
 
 > **⚠️ Catatan Dev Environment:**
 > - Ngrok URL berubah setiap restart tunnel. Update dua tempat jika URL berubah:
@@ -755,6 +772,10 @@ PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -c "
 | Dokumen | Deskripsi |
 |---|---|
 | [`family-hub-plan.md`](family-hub-plan.md) | Plan lengkap: arsitektur, tech stack, database schema, fitur, dan semua task |
+| [`docs/landing-page.md`](docs/landing-page.md) | Implementasi, hosting dan verifikasi landing |
+| [`docs/landing-copywriting.md`](docs/landing-copywriting.md) | Copy final, keputusan brand/audiens dan dasar klaim |
+| [`docs/android-twa-plan.md`](docs/android-twa-plan.md) | Rencana Android TWA, belum implementasi |
+| [`docs/monetization-ideas.md`](docs/monetization-ideas.md) | Arsip ide monetisasi yang ditunda |
 
 Selalu baca `family-hub-plan.md` untuk konteks lengkap sebelum mengerjakan task apapun.
 
@@ -766,6 +787,7 @@ Selalu baca `family-hub-plan.md` untuk konteks lengkap sebelum mengerjakan task 
 project-root/
 ├── frontend/        # Next.js 14 App (PWA)
 ├── backend/         # Golang API Server
+├── landing/         # Next.js + Tailwind, build/hosting statis terpisah
 ├── docs/            # Dokumentasi tambahan (design system, frontend plan, dll)
 ├── family-hub-plan.md
 └── agents.md        # File ini
