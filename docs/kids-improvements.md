@@ -46,3 +46,9 @@ Ukuran vektor diperkecil dari 106×31 menjadi 84×25 px. Jarak tagline dipadatka
 - QA browser memakai fixture API di memori; script `frontend/scripts/kids-qa.cjs`. Hasil final dan screenshot pada `docs/qa/kids-modern-*` dan `kids-modal-growth-mobile.png`. 34 pemeriksaan dan 17 audit axe terarah lulus tanpa error runtime, overflow halaman atau pelanggaran pada 375/390/1024/1440 px serta tema terang/gelap. Pemeriksaan mencakup CRUD, draft antar anak, clear field, actual date, validasi dan kegagalan simpan, empty/error, role, serta ukuran wordmark. Detail pada `kids-modern-results.json`.
 
 Tidak ada perubahan schema atau dependency runtime. Pengguna meminta commit/push biasa ke origin/main setelah verifikasi; pantau CI/CD dan periksa alur di deployment setelah pengiriman.
+
+## Klarifikasi tanggal vaksin — 2026-11-16
+
+Tanggal jadwal adalah rencana dan boleh di masa depan. Tanggal diberikan adalah pelaksanaan aktual: dapat sebelum, sama atau sesudah tanggal jadwal, tetapi tidak sebelum kelahiran dan tidak melewati hari ini WIB. Tidak ada perubahan urutan jadwal/aktual pada validator backend; form kini menampilkan keterangan dan batas hari ini, pesan native yang spesifik, serta menghapus custom validity saat pengguna memperbaiki isian.
+
+Tes regresi frontend/backend mencakup ketiga urutan tanggal dan guard tanggal aktual. QA browser fixture lulus enam pemeriksaan dan satu audit axe, termasuk menyimpan actual 3 Februari setelah scheduled 2 Februari, menolak future/pre-birth dan membersihkan pesan lama setelah koreksi. Bukti `docs/qa/vaccine-date-help-results.json` serta screenshot; skrip `frontend/scripts/vaccine-dates-qa.cjs`. Contoh tanggal/pesan persis dari perangkat pengguna belum diberikan sehingga penyebab kasus production belum diklaim terkonfirmasi.

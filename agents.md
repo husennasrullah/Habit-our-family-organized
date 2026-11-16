@@ -12,7 +12,15 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-16 (Perbaikan CI tes dashboard lintas zona waktu)
+> **Last updated:** 2026-11-16 (Penjelasan validasi tanggal vaksin)
+
+### Penjelasan validasi tanggal vaksin — 2026-11-16
+- Pengguna melaporkan tanggal diberikan seolah harus sebelum tanggal jadwal. Review frontend/backend dan atribut native menunjukkan tidak ada pembandingan urutan terhadap jadwal: batas actual given_date adalah hari ini WIB dan tidak sebelum kelahiran. Meminta contoh tanggal/pesan persis untuk membedakan kasus pengguna; contoh tersebut belum tersedia pada pencatatan ini, sehingga tidak mengklaim akar kasus perangkat/production sudah dibuktikan.
+- KidForm menambahkan penjelasan rencana versus aktual, aria-describedby dan batas tanggal hari ini yang terlihat. Pesan native rangeOverflow diberikan secara eksplisit terhadap hari ini (bukan jadwal), rangeUnderflow terhadap kelahiran, lalu custom validity dibersihkan saat isian berubah. Tidak melonggarkan guard tanggal aktual di masa depan atau menambah pembandingan baru terhadap jadwal.
+- Regresi frontend/backend membuktikan tanggal aktual sebelum/sama/sesudah jadwal diterima, sedangkan sebelum lahir/di masa depan/tanggal tidak valid ditolak. Browser fixture juga menyimpan tanggal aktual 3 Februari terhadap rencana 2 Februari dan memeriksa koreksi pesan native.
+- File: frontend/components/kids/KidForm.tsx, frontend/tests/kids.test.cjs, backend/internal/services/kids_test.go; frontend/scripts/vaccine-dates-qa.cjs, docs/qa/vaccine-date-help-* dan docs/kids-improvements.md serta agents.md.
+- Verifikasi: 30 tes frontend UTC dan WIB (termasuk Node 20) lulus; tes backend TestKidsValidation/TestVaccineActualDateIndependentOfSchedule lulus; build produksi 19 halaman/lint/typecheck lulus. Browser fixture enam pemeriksaan tanpa error runtime dan satu audit axe dialog bersih; screenshot dark 390 px direview. Tidak mengubah data keluarga, schema/dependency atau aturan backend.
+- Pengiriman: commit/push biasa origin/main mengikuti otorisasi pengguna. Next steps: cek CI/deployment dan cocokkan pesan/tanggal pengguna jika kasus yang dialami berbeda dari batas hari ini.
 
 ### Perbaikan CI tes dashboard lintas zona waktu — 2026-11-16
 - Pengguna melaporkan CI npm test gagal dua tes dashboard setelah integrasi kalender. Mereproduksi tepat dua kegagalan dengan TZ=UTC: ekspektasi getHours()=0 masih mengasumsikan zona mesin dan fixture timestamp tanpa offset masih dianggap waktu lokal. Kode aplikasi sudah memakai batas hari WIB; tes lama terlewat diselaraskan pada pengiriman sebelumnya.
@@ -367,6 +375,10 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Penjelasan validasi tanggal vaksin — 2026-11-16
+- Form memperjelas batas tanggal aktual hari ini, bukan tanggal jadwal; tes frontend/backend dan browser membuktikan pelaksanaan setelah jadwal diterima. Detail pada STATUS TERKINI dan docs/kids-improvements.md.
+
 
 #### Perbaikan CI tes dashboard lintas zona waktu — 2026-11-16
 - Memperbaiki fixture/assertion dashboard agar eksplisit WIB dan menambah tes UTC+WIB pada workflow. Kode aplikasi tidak berubah; detail reproduksi/verifikasi pada STATUS TERKINI.

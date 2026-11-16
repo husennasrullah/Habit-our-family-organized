@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "actual date max is today, never the scheduled date; field help linked",
+    "actual dates before, on and after schedule accepted",
+    "future actual date blocked with clear today message",
+    "pre-birth date still blocked",
+    "corrected input clears custom validity",
+    "after-schedule actual date submitted successfully"
+  ],
+  "errors": [],
+  "violations": []
+}

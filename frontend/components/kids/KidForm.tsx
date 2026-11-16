@@ -8,6 +8,7 @@ import { ModalFrame } from "@/components/shared/ModalFrame";
 import {
   dateKey,
   kidsToday,
+  kidsDate,
   profileSchema,
   resourcePayload,
   type KidResource,
@@ -32,6 +33,7 @@ type Field = {
   max?: number;
   options?: [string, string][];
   future?: boolean;
+  help?: string;
 };
 const notes: Field = {
   key: "notes",
@@ -93,6 +95,7 @@ const configs: Record<
       {
         key: "scheduled_date",
         label: "Tanggal jadwal",
+        help: "Tanggal rencana pelaksanaan; bisa berupa tanggal mendatang.",
         kind: "date",
         required: true,
         future: true,
@@ -100,6 +103,7 @@ const configs: Record<
       {
         key: "given_date",
         label: "Tanggal diberikan (kosong jika belum)",
+        help: "Tanggal pelaksanaan sebenarnya, tidak harus sama dengan jadwal. Isi hanya jika sudah diberikan; maksimal hari ini.",
         kind: "date",
       },
       { key: "given_by", label: "Pemberi vaksin / fasilitas", max: 150 },
@@ -303,11 +307,36 @@ export function KidForm({
                           : undefined
                     }
                     step={f.kind === "number" ? "0.01" : undefined}
-                    value={values[f.key]}
-                    onChange={(e) =>
-                      setValues((v) => ({ ...v, [f.key]: e.target.value }))
+                    aria-describedby={f.help ? `kid-${f.key}-help` : undefined}
+                    onInvalid={
+                      f.key === "given_date"
+                        ? (e) => {
+                            const input = e.currentTarget;
+                            if (input.validity.rangeOverflow)
+                              input.setCustomValidity(
+                                `Tanggal diberikan tidak boleh melewati hari ini (${kidsDate(kidsToday())} WIB), karena vaksin belum benar-benar diberikan pada tanggal mendatang.`,
+                              );
+                            else if (input.validity.rangeUnderflow)
+                              input.setCustomValidity(
+                                "Tanggal diberikan tidak boleh sebelum tanggal lahir anak.",
+                              );
+                          }
+                        : undefined
                     }
+                    value={values[f.key]}
+                    onChange={(e) => {
+                      e.currentTarget.setCustomValidity("");
+                      setValues((v) => ({ ...v, [f.key]: e.target.value }));
+                    }}
                   />
+                )}
+                {f.help && (
+                  <p id={`kid-${f.key}-help`} className="kids-help">
+                    {f.help}
+                    {f.key === "given_date"
+                      ? ` Batas: ${kidsDate(kidsToday())} WIB.`
+                      : ""}
+                  </p>
                 )}
               </div>
             ))}

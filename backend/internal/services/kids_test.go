@@ -218,3 +218,21 @@ func TestKidsCRUDIsolationAndConcurrentActions(t *testing.T) {
 		t.Fatal(kids, err)
 	}
 }
+
+func TestVaccineActualDateIndependentOfSchedule(t *testing.T) {
+	for _, given := range []string{"2020-02-01", "2020-02-02", "2020-02-03"} {
+		record := models.VaccineRecord{VaccineName: "Vaksin", ScheduledDate: "2020-02-02", GivenDate: &given}
+		if err := validVaccine(&record, "2020-01-01"); err != nil {
+			t.Fatalf("actual date %s rejected against schedule: %v", given, err)
+		}
+		if record.Status != models.VaccineStatusGiven {
+			t.Fatal("actual record not marked given")
+		}
+	}
+	for _, given := range []string{"2019-12-31", "2999-01-02", "2020-02-30"} {
+		record := models.VaccineRecord{VaccineName: "Vaksin", ScheduledDate: "2020-02-02", GivenDate: &given}
+		if err := validVaccine(&record, "2020-01-01"); err == nil {
+			t.Fatal("invalid actual date accepted", given)
+		}
+	}
+}

@@ -154,3 +154,32 @@ test("WHO verified table values, month coverage, and distinct length/height at 2
     assert.ok(Math.abs(length[2] - height[2] - 0.7) < 0.11);
   }
 });
+
+test("vaccine actual date may precede, match or follow the plan; only actual chronology is bounded", () => {
+  const base = {
+    vaccine_name: "Vaksin",
+    scheduled_date: "2020-02-02",
+    given_by: "Klinik",
+    notes: "",
+  };
+  for (const given of ["2020-02-01", "2020-02-02", "2020-02-03"]) {
+    assert.equal(
+      resourcePayload("vaccines", { ...base, given_date: given }, "2020-01-01")
+        .given_date,
+      given,
+    );
+  }
+  assert.equal(
+    resourcePayload(
+      "vaccines",
+      { ...base, scheduled_date: "2999-01-01", given_date: "" },
+      "2020-01-01",
+    ).given_date,
+    null,
+  );
+  for (const given of ["2019-12-31", "2999-01-02", "2020-02-30"]) {
+    assert.throws(() =>
+      resourcePayload("vaccines", { ...base, given_date: given }, "2020-01-01"),
+    );
+  }
+});
