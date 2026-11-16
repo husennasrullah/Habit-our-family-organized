@@ -106,8 +106,10 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Test dashboard logic
-        run: npm test
+      - name: Test frontend logic (UTC and WIB)
+        run: |
+          TZ=UTC npm test
+          TZ=Asia/Jakarta npm test
 
       - name: Type check
         run: npx tsc --noEmit

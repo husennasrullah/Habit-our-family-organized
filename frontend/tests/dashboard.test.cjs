@@ -18,7 +18,26 @@ const {
   eventsForDay,
   budgetOverview,
 } = mod.exports;
-const now = new Date(2026, 10, 13, 0, 30);
+const now = new Date("2026-11-13T00:30:00+07:00");
+const deviceTimezones = [
+  "UTC",
+  "Asia/Jakarta",
+  "America/Los_Angeles",
+  "Asia/Tokyo",
+  "Pacific/Kiritimati",
+];
+function inDeviceTimezones(check) {
+  const originalTimezone = process.env.TZ;
+  try {
+    for (const timezone of deviceTimezones) {
+      process.env.TZ = timezone;
+      check(timezone);
+    }
+  } finally {
+    if (originalTimezone === undefined) delete process.env.TZ;
+    else process.env.TZ = originalTimezone;
+  }
+}
 const task = (id, due_date, status = "pending") => ({ id, due_date, status });
 
 test("date columns retain their calendar date and invalid dates are rejected", () => {
@@ -26,11 +45,31 @@ test("date columns retain their calendar date and invalid dates are rejected", (
   for (const value of [null, "", "invalid", "2026-02-30", "2026-13-01"])
     assert.equal(dateKey(value), null);
 });
-test("local day boundaries are generated from local midnight", () => {
-  const { start, end } = dayRange(now);
-  assert.equal(localDateKey(start), "2026-11-13");
-  assert.equal(start.getHours(), 0);
-  assert.equal(localDateKey(end), "2026-11-14");
+test("dashboard day boundaries use Jakarta midnight independently of device timezone", () => {
+  inDeviceTimezones((timezone) => {
+    const { start, end, from, to } = dayRange(now);
+    assert.equal(localDateKey(start), "2026-11-13", timezone);
+    assert.equal(from, "2026-11-12T17:00:00.000Z", timezone);
+    assert.equal(to, "2026-11-13T17:00:00.000Z", timezone);
+    assert.equal(start.toISOString(), from, timezone);
+    assert.equal(end.toISOString(), to, timezone);
+    assert.equal(
+      end.getTime() - start.getTime(),
+      24 * 60 * 60 * 1000,
+      timezone,
+    );
+    assert.equal(localDateKey(end), "2026-11-14", timezone);
+    assert.equal(
+      localDateKey(new Date("2026-11-12T16:59:59.999Z")),
+      "2026-11-12",
+      timezone,
+    );
+    assert.equal(
+      localDateKey(new Date("2026-11-12T17:00:00Z")),
+      "2026-11-13",
+      timezone,
+    );
+  });
 });
 test("tasks distinguish yesterday, today, tomorrow, completed and unscheduled", () => {
   const groups = groupTasks(
@@ -57,23 +96,59 @@ test("tasks distinguish yesterday, today, tomorrow, completed and unscheduled", 
     ["unscheduled", "invalid"],
   );
 });
-test("agenda includes ongoing and multi-day events but excludes adjacent days and invalid intervals", () => {
+test("agenda uses WIB boundaries across device timezones, including exclusive midnight ends", () => {
   const event = (id, start_at, end_at) => ({ id, start_at, end_at });
-  const events = eventsForDay(
-    [
-      event("ongoing", "2026-11-12T23:00:00", "2026-11-13T01:00:00"),
-      event("multi", "2026-11-11T00:00:00", "2026-11-15T00:00:00"),
-      event("tomorrow", "2026-11-14T00:00:00", "2026-11-14T02:00:00"),
-      event("ends-at-midnight", "2026-11-12T23:00:00", "2026-11-13T00:00:00"),
-      event("point", "2026-11-13T00:00:00", "2026-11-13T00:00:00"),
-      event("invalid", "bad", "bad"),
-    ],
-    now,
-  );
-  assert.deepEqual(
-    events.map((e) => e.id),
-    ["multi", "ongoing", "point"],
-  );
+  inDeviceTimezones((timezone) => {
+    const events = eventsForDay(
+      [
+        event(
+          "ongoing",
+          "2026-11-12T23:00:00+07:00",
+          "2026-11-13T01:00:00+07:00",
+        ),
+        event(
+          "multi",
+          "2026-11-11T00:00:00+07:00",
+          "2026-11-15T00:00:00+07:00",
+        ),
+        event(
+          "tomorrow",
+          "2026-11-14T00:00:00+07:00",
+          "2026-11-14T02:00:00+07:00",
+        ),
+        event(
+          "ends-at-midnight",
+          "2026-11-12T23:00:00+07:00",
+          "2026-11-13T00:00:00+07:00",
+        ),
+        event(
+          "point",
+          "2026-11-13T00:00:00+07:00",
+          "2026-11-13T00:00:00+07:00",
+        ),
+        event(
+          "reversed",
+          "2026-11-13T02:00:00+07:00",
+          "2026-11-13T01:00:00+07:00",
+        ),
+        event("invalid", "bad", "bad"),
+      ],
+      now,
+    );
+    assert.deepEqual(
+      events.map((e) => e.id),
+      ["multi", "ongoing", "point"],
+      timezone,
+    );
+    assert.deepEqual(
+      eventsForDay(
+        [event("utc", "2026-11-12T17:00:00Z", "2026-11-12T18:00:00Z")],
+        now,
+      ).map((e) => e.id),
+      ["utc"],
+      timezone,
+    );
+  });
 });
 test("zero or missing budget has no fabricated percentage or remaining value", () => {
   for (const budgets of [[], [{ amount: 0, month: 11, year: 2026 }]]) {

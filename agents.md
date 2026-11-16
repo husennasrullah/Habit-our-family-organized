@@ -12,7 +12,13 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-16 (Keselarasan tampilan dan kalender lintas modul)
+> **Last updated:** 2026-11-16 (Perbaikan CI tes dashboard lintas zona waktu)
+
+### Perbaikan CI tes dashboard lintas zona waktu — 2026-11-16
+- Pengguna melaporkan CI npm test gagal dua tes dashboard setelah integrasi kalender. Mereproduksi tepat dua kegagalan dengan TZ=UTC: ekspektasi getHours()=0 masih mengasumsikan zona mesin dan fixture timestamp tanpa offset masih dianggap waktu lokal. Kode aplikasi sudah memakai batas hari WIB; tes lama terlewat diselaraskan pada pengiriman sebelumnya.
+- frontend/tests/dashboard.test.cjs memakai instant now/agenda dengan offset WIB eksplisit, menguji batas UTC yang benar, pergantian hari, durasi hari, end eksklusif, point event, interval terbalik dan representasi UTC ekuivalen. Dua kasus dijalankan pada UTC/Jakarta/Los Angeles/Tokyo/Kiritimati dan memulihkan TZ setelah pengujian.
+- .github/workflows/ci.yml menjalankan seluruh tes frontend pada TZ=UTC dan TZ=Asia/Jakarta; tidak mengganti zona global runner untuk menutupi kegagalan dan tidak menggandakan build. YAML workflow ter-parse valid. Tidak ada perubahan source aplikasi, dependency runtime, schema atau data.
+- Verifikasi: 29/29 tes lulus dengan UTC dan 29/29 dengan WIB pada Node 24 lokal maupun Node 20.19.6 yang sesuai versi mayor CI. Perubahan hanya tes/workflow/dokumentasi sehingga tidak mengulang build/browser/backend tanpa perubahan source. Pengiriman dilakukan dengan commit/push biasa origin/main sesuai permintaan pengguna. Next steps setelah pengiriman: periksa run CI baru; keberhasilan runner GitHub belum diklaim.
 
 ### Keselarasan tampilan dan kalender lintas modul — 2026-11-16
 - Pengguna meminta audit akhir semua menu, keseragaman tampilan dan semua data bertanggal terhubung kalender. Melanjutkan otorisasi pengerjaan/push sebelumnya. Memakai pola lokal proyek dan skill Sites untuk panduan UI/preview lokal; tidak membuat/publish Site hosting baru.
@@ -361,6 +367,10 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Perbaikan CI tes dashboard lintas zona waktu — 2026-11-16
+- Memperbaiki fixture/assertion dashboard agar eksplisit WIB dan menambah tes UTC+WIB pada workflow. Kode aplikasi tidak berubah; detail reproduksi/verifikasi pada STATUS TERKINI.
+
 
 #### Keselarasan tampilan dan kalender lintas modul — 2026-11-16
 - Feed kalender terpadu, tanggal/WIB/deep link dan UI lintas menu selesai; tes dan bukti QA tercatat pada STATUS TERKINI serta docs/calendar-integration-and-ui-audit.md. Tidak ada migrasi baru atau mutasi data keluarga asli.
