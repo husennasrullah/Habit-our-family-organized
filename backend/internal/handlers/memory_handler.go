@@ -35,15 +35,26 @@ func (h *MemoryHandler) GetMemories(c *fiber.Ctx) error {
 	}
 
 	req := services.MemoryListRequest{}
-	if y, err := strconv.Atoi(c.Query("year")); err == nil && y > 0 {
+	if raw := c.Query("year"); raw != "" {
+		y, err := strconv.Atoi(raw)
+		if err != nil || y < 1 || y > 9999 {
+			return c.Status(400).JSON(fiber.Map{"message": "tahun tidak valid"})
+		}
 		req.Year = y
 	}
-	if m, err := strconv.Atoi(c.Query("month")); err == nil && m > 0 {
+	if raw := c.Query("month"); raw != "" {
+		m, err := strconv.Atoi(raw)
+		if err != nil || m < 1 || m > 12 {
+			return c.Status(400).JSON(fiber.Map{"message": "bulan tidak valid"})
+		}
 		req.Month = m
 	}
-	if fav := c.Query("is_favorite"); fav == "true" {
-		t := true
-		req.IsFavorite = &t
+	if raw := c.Query("is_favorite"); raw != "" {
+		if raw != "true" && raw != "false" {
+			return c.Status(400).JSON(fiber.Map{"message": "filter favorit tidak valid"})
+		}
+		v := raw == "true"
+		req.IsFavorite = &v
 	}
 
 	list, err := h.memoryService.GetList(familyID, req)
@@ -183,9 +194,16 @@ func (h *MemoryHandler) UploadPhotos(c *fiber.Ctx) error {
 // @Param photo_id path string true "Photo ID"
 // @Router /memories/{id}/photos/{photo_id}/serve [get]
 func (h *MemoryHandler) ServePhoto(c *fiber.Ctx) error {
+	memoryID, parentErr := uuid.Parse(c.Params("id"))
+	if parentErr != nil {
+		return c.SendStatus(400)
+	}
 	photoID, err := uuid.Parse(c.Params("photo_id"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "photo ID tidak valid"})
+	}
+	if !h.memoryService.PhotoBelongsTo(photoID, memoryID, getFamilyID(c)) {
+		return c.SendStatus(404)
 	}
 	r, contentType, size, err := h.memoryService.GetPhotoStream(photoID, getFamilyID(c))
 	if err != nil {
@@ -198,8 +216,9 @@ func (h *MemoryHandler) ServePhoto(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "gagal membaca foto"})
 	}
 
+	c.Set("X-Content-Type-Options", "nosniff")
 	c.Set("Content-Type", contentType)
-	c.Set("Cache-Control", "private, max-age=3600")
+	c.Set("Cache-Control", "private, no-store")
 	c.Set("Content-Length", fmt.Sprintf("%d", size))
 	return c.Send(data)
 }
@@ -213,9 +232,16 @@ func (h *MemoryHandler) ServePhoto(c *fiber.Ctx) error {
 // @Success 200 {object} map[string]string
 // @Router /memories/{id}/photos/{photo_id} [delete]
 func (h *MemoryHandler) DeletePhoto(c *fiber.Ctx) error {
+	memoryID, parentErr := uuid.Parse(c.Params("id"))
+	if parentErr != nil {
+		return c.SendStatus(400)
+	}
 	photoID, err := uuid.Parse(c.Params("photo_id"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "photo ID tidak valid"})
+	}
+	if !h.memoryService.PhotoBelongsForDelete(photoID, memoryID, getFamilyID(c)) {
+		return c.SendStatus(404)
 	}
 	if err := h.memoryService.DeletePhoto(photoID, getFamilyID(c)); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})

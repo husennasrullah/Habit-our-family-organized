@@ -187,12 +187,12 @@ func main() {
 	// Memory / Journal routes
 	memories := api.Group("/memories", authMw)
 	memories.Get("", memoryHandler.GetMemories)
-	memories.Post("", memoryHandler.CreateMemory)
+	memories.Post("", middleware.RequireRole("admin", "member"), memoryHandler.CreateMemory)
 	memories.Get("/:id", memoryHandler.GetMemory)
-	memories.Put("/:id", memoryHandler.UpdateMemory)
-	memories.Delete("/:id", memoryHandler.DeleteMemory)
-	memories.Post("/:id/photos", memoryHandler.UploadPhotos)
-	memories.Delete("/:id/photos/:photo_id", memoryHandler.DeletePhoto)
+	memories.Put("/:id", middleware.RequireRole("admin", "member"), memoryHandler.UpdateMemory)
+	memories.Delete("/:id", middleware.RequireRole("admin", "member"), memoryHandler.DeleteMemory)
+	memories.Post("/:id/photos", middleware.RequireRole("admin", "member"), memoryHandler.UploadPhotos)
+	memories.Delete("/:id/photos/:photo_id", middleware.RequireRole("admin", "member"), memoryHandler.DeletePhoto)
 	memories.Get("/:id/photos/:photo_id/serve", memoryHandler.ServePhoto)
 
 	// Kids Tracker routes

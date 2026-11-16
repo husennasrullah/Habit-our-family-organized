@@ -1,132 +1,141 @@
 "use client";
-
-import { format, parseISO } from "date-fns";
-import { id as dateLocale } from "date-fns/locale";
 import { Heart, ImageIcon, Pencil, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { MemoryPhotoView } from "./MemoryPhotoView";
 import type { Memory } from "@/types";
-import { usePhotoUrl } from "@/hooks/usePhotoUrl";
-
-interface MemoryCardProps {
+interface Props {
   memory: Memory;
+  canEdit: boolean;
+  busy: boolean;
+  onOpen: (m: Memory) => void;
   onEdit: (m: Memory) => void;
   onDelete: (m: Memory) => void;
-  onOpen: (m: Memory) => void;
   onToggleFavorite: (m: Memory) => void;
 }
-
-function CoverPhoto({ url, alt }: { url: string; alt: string }) {
-  const src = usePhotoUrl(url);
-  if (!src)
-    return (
-      <div className="flex h-full items-center justify-center">
-        <ImageIcon className="h-12 w-12 text-neutral-300" />
-      </div>
-    );
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-    />
-  );
-}
-
 export function MemoryCard({
-  memory,
+  memory: m,
+  canEdit,
+  busy,
+  onOpen,
   onEdit,
   onDelete,
-  onOpen,
   onToggleFavorite,
-}: MemoryCardProps) {
-  const coverPhoto = memory.photos?.[0];
-
+}: Props) {
+  const photos = m.photos.filter(
+    (p) => !p.storage_delete_pending && !p.upload_pending,
+  );
+  const cover = photos[0];
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card cursor-pointer hover:shadow-md transition-shadow">
-      {/* Cover photo */}
-      <div className="relative h-48 bg-muted overflow-hidden">
-        <button
-          onClick={() => onOpen(memory)}
-          aria-label={`Buka kenangan ${memory.title}`}
-          className="absolute inset-0 z-10 h-full w-full rounded-t-2xl"
-        />
-        {coverPhoto ? (
-          <CoverPhoto url={coverPhoto.url} alt={memory.title} />
+    <article className="group min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+        {cover && !m.storage_delete_pending ? (
+          <MemoryPhotoView
+            url={cover.url}
+            alt={m.title}
+            className="h-full w-full object-cover"
+          />
         ) : (
-          <div className="flex h-full items-center justify-center">
-            <ImageIcon className="h-12 w-12 text-neutral-300" />
+          <div className="flex h-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-primary-50 to-amber-50 text-primary-700 dark:from-primary-950 dark:to-neutral-900 dark:text-primary-200">
+            <ImageIcon size={32} strokeWidth={1.3} />
+            <span className="text-xs">
+              {m.storage_delete_pending
+                ? "Menunggu penghapusan"
+                : "Cerita yang berharga"}
+            </span>
           </div>
         )}
-
-        {/* Overlay actions */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-100 transition-opacity" />
-
-        {/* Favorite + photo count */}
-        <div className="absolute top-2 right-2 z-20 flex items-center gap-1.5">
-          {memory.photos.length > 1 && (
-            <span className="rounded-full bg-black/50 px-2 py-0.5 text-xs text-white">
-              {memory.photos.length} foto
-            </span>
-          )}
+        <button
+          onClick={() => onOpen(m)}
+          disabled={m.storage_delete_pending || busy}
+          aria-label={`Baca kenangan ${m.title}`}
+          className="absolute inset-0 focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-primary-500"
+        />
+        {!!photos.length && (
+          <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-black/60 px-2.5 py-1 text-[11px] text-white">
+            {photos.length} foto
+          </span>
+        )}
+        {canEdit && !m.storage_delete_pending && (
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleFavorite(memory);
-            }}
-            className="rounded-full bg-black/50 p-1.5 transition-colors hover:bg-black/70"
-            aria-label="Toggle favorit"
+            disabled={busy}
+            onClick={() => onToggleFavorite(m)}
+            aria-label={
+              m.is_favorite
+                ? `Hapus ${m.title} dari favorit`
+                : `Favoritkan ${m.title}`
+            }
+            aria-pressed={m.is_favorite}
+            className="absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full bg-card/95 shadow-sm"
           >
             <Heart
-              className={cn(
-                "h-4 w-4",
-                memory.is_favorite
+              size={18}
+              className={
+                m.is_favorite
                   ? "fill-rose-500 text-rose-500"
-                  : "text-white",
-              )}
+                  : "text-muted-foreground"
+              }
             />
           </button>
-        </div>
-
-        {/* Bottom actions */}
-        <div className="absolute bottom-2 right-2 z-20 flex gap-1 opacity-100 transition-opacity">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(memory);
-            }}
-            aria-label={`Edit ${memory.title}`}
-            className="rounded-full bg-card p-1.5 text-foreground hover:bg-card transition-colors"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(memory);
-            }}
-            aria-label={`Hapus ${memory.title}`}
-            className="rounded-full bg-card p-1.5 text-error-600 hover:bg-card transition-colors"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Info */}
-      <div className="p-3">
-        <p className="break-words text-sm font-semibold text-foreground">
-          {memory.title}
-        </p>
-        <p className="mt-0.5 text-xs text-muted-foreground capitalize">
-          {format(parseISO(memory.date), "d MMMM yyyy", { locale: dateLocale })}
-        </p>
-        {memory.content && (
-          <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-            {memory.content}
-          </p>
         )}
       </div>
-    </div>
+      <div className="p-4">
+        <p className="text-[11px] font-medium text-muted-foreground">
+          {new Intl.DateTimeFormat("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+            timeZone: "Asia/Jakarta",
+          }).format(new Date(m.date))}
+        </p>
+        <button
+          disabled={busy || m.storage_delete_pending}
+          onClick={() => onOpen(m)}
+          className="mt-1 text-left"
+        >
+          <h2 className="break-words text-base font-semibold leading-snug">
+            {m.title}
+          </h2>
+        </button>
+        <p className="mt-2 line-clamp-2 min-h-8 whitespace-pre-wrap break-words text-xs leading-relaxed text-muted-foreground">
+          {m.storage_delete_pending
+            ? "Akses kenangan ditutup. Coba hapus lagi untuk menyelesaikan penghapusan file."
+            : m.content || "Satu momen, banyak cerita."}
+        </p>
+        <div className="mt-3 flex items-center justify-between border-t border-border pt-2">
+          <span className="text-[11px] text-muted-foreground">
+            {m.is_favorite ? "♥ Momen favorit" : "Tersimpan bersama"}
+          </span>
+          {canEdit && (
+            <div className="flex">
+              {!m.storage_delete_pending && (
+                <button
+                  disabled={busy}
+                  onClick={() => onEdit(m)}
+                  aria-label={`Edit ${m.title}`}
+                  className="flex h-11 w-11 items-center justify-center rounded-lg hover:bg-muted"
+                >
+                  <Pencil size={15} />
+                </button>
+              )}
+              <button
+                disabled={busy}
+                onClick={() => onDelete(m)}
+                aria-label={
+                  m.storage_delete_pending
+                    ? `Coba hapus ${m.title} lagi`
+                    : `Hapus ${m.title}`
+                }
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg px-2 text-xs text-red-700 hover:bg-muted dark:text-red-300"
+              >
+                {m.storage_delete_pending ? (
+                  "Coba hapus lagi"
+                ) : (
+                  <Trash2 size={15} />
+                )}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
   );
 }

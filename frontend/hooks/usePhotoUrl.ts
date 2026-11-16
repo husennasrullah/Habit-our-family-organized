@@ -1,65 +1,51 @@
 "use client";
-
-import { useState, useEffect } from "react";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api/v1";
-
-function resolvePhotoUrl(url: string): string {
-  if (!url) return "";
-  if (url.startsWith("/")) return `${API_BASE.replace(/\/api\/v1$/, "")}${url}`;
-  return url;
-}
-
-// Ambil token fresh dari localStorage setiap kali dibutuhkan
-function getFreshToken(): string {
-  if (typeof window === "undefined") return "";
-  return localStorage.getItem("access_token") ?? "";
-}
-
-// Cache blob URL supaya tidak re-fetch setiap render
-const blobCache = new Map<string, string>();
-
-export function usePhotoUrl(rawUrl: string): string {
-  const [blobUrl, setBlobUrl] = useState<string>(() => blobCache.get(rawUrl) ?? "");
-
+import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
+import { useAuthStore } from "@/stores/authStore";
+/** Authenticated, cancellable photo reads; object URLs live only as long as the view. */
+export function usePhotoResource(rawUrl: string) {
+  const identity = useAuthStore(
+    (s) => `${s.user?.id ?? ""}:${s.user?.family_id ?? ""}:${s.authVersion}`,
+  );
+  const [attempt, setAttempt] = useState(0);
+  const [state, setState] = useState({ key: "", url: "", error: false });
+  const key = `${identity}:${rawUrl}:${attempt}`;
   useEffect(() => {
     if (!rawUrl) return;
-
-    const resolved = resolvePhotoUrl(rawUrl);
-
-    // Kalau public URL (bukan /serve proxy) — langsung pakai
-    if (!rawUrl.includes("/serve")) {
-      setBlobUrl(resolved);
+    const controller = new AbortController();
+    let objectUrl = "";
+    let active = true;
+    setState({ key, url: "", error: false });
+    if (
+      !rawUrl.startsWith("/api/v1/memories/") &&
+      !rawUrl.startsWith("/memories/")
+    ) {
+      setState({ key, url: "", error: true });
       return;
     }
-
-    // Kalau sudah ada di cache, pakai langsung
-    if (blobCache.has(rawUrl)) {
-      setBlobUrl(blobCache.get(rawUrl)!);
-      return;
-    }
-
-    // Ambil token fresh dari localStorage (bukan dari React state yang bisa stale)
-    const token = getFreshToken();
-
-    fetch(resolved, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`${res.status}`);
-        return res.blob();
-      })
-      .then((blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        blobCache.set(rawUrl, objectUrl);
-        setBlobUrl(objectUrl);
+    const path = rawUrl.startsWith("/api/v1/") ? rawUrl.slice(7) : rawUrl;
+    api
+      .get<Blob>(path, { responseType: "blob", signal: controller.signal })
+      .then(({ data }) => {
+        if (!active) return;
+        objectUrl = URL.createObjectURL(data);
+        setState({ key, url: objectUrl, error: false });
       })
       .catch(() => {
-        setBlobUrl("");
+        if (active) setState({ key, url: "", error: true });
       });
-
-    return () => {};
-  }, [rawUrl]);
-
-  return blobUrl;
+    return () => {
+      active = false;
+      controller.abort();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [rawUrl, key]);
+  return {
+    url: state.key === key ? state.url : "",
+    error: state.key === key && state.error,
+    retry: () => setAttempt((n) => n + 1),
+  };
+}
+export function usePhotoUrl(rawUrl: string): string {
+  return usePhotoResource(rawUrl).url;
 }

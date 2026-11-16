@@ -12,7 +12,39 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-14 (Hotfix storage nonfatal dan pengiriman gabungan)
+> **Last updated:** 2026-11-16 (Pembenahan Kenangan dan pengiriman)
+
+### Pembenahan Kenangan dan pengiriman — 2026-11-16
+- Pengguna menyetujui pembenahan serta pemolesan tampilan, menegaskan akses penuh dan meminta push setelah selesai. Implementasi dan verifikasi selesai; paket final dikirim dengan commit/push biasa ke origin/main sesuai instruksi, tanpa force. Hasil perintah Git dilaporkan kepada pengguna setelah pengiriman.
+- Backend: validasi judul/cerita/tanggal/filter dan foto JPG/PNG/WebP berdasarkan ekstensi+signature/MIME, 8 MB/foto, 40 MB/batch dan 20 foto/album. Proxy bearer privat/no-store/nosniff, object key disembunyikan, nested parent+family dicek. Mutasi admin/member, role lain tetap membaca keluarga sendiri.
+- Mutasi mengunci induk dan update field eksplisit. Batch upload memakai record upload pending terpisah dari delete pending, aktif setelah storage berhasil; kegagalan batch mencoba cleanup semua file baru, record gagal cleanup tetap bisa dihapus ulang. Tombstone disimpan sebelum hapus storage; baca file pending diblokir, retry/tombstone keluarga sama aman. Migrasi tambahan 015_memory_cleanup.sql serta model AutoMigrate; tidak mengklaim atomik lintas DB/storage.
+- UI: galeri emerald/cream, kartu foto/cerita, ringkasan album, pencarian dan filter tahun aktual/bulan/favorit, detail cerita penuh termasuk tanpa foto, lightbox, form 360 px dengan preview/drag-drop/tanggal WIB/reset/validasi/pending/error. Seluruh foto tersedia di edit; hasil hapus diambil ulang. Upload gagal mempertahankan jurnal ID dan pilihan file. Foto memakai API refresh bersama, request dibatalkan dan blob URL dibersihkan saat view/identitas berubah; kegagalan dapat dicoba ulang.
+- File utama: services/repositories/handlers/model memory, rute main, migrasi 015 dan tes; halaman memories, komponen memory/photo/lightbox, hooks useMemories/usePhotoUrl, lib/memories, types, tes/script QA; family-hub-plan.md, docs/memories-improvements.md dan bukti docs/qa/memories-modern-*.
+- Verifikasi: go test ./... dengan PostgreSQL sementara/schema terisolasi lulus, termasuk metadata/family/parent, foto privat/redaksi object key, update bersamaan, enam upload bersamaan/urutan, rollback batch/cleanup gagal/retry, pending dan hapus ulang/no resurrection; SQL 015 dua kali lulus. Go vet dijalankan pada batch ini. Sembilan file tes frontend dan build produksi 19 halaman berikut lint/typecheck lulus. Browser fixture 22 pemeriksaan, lima audit axe bersih, tanpa error runtime/overflow pada 375/390/768/1440 dan terang/gelap; screenshot final direview. Kontras tombol hapus dan label dark ditemukan audit lalu diperbaiki.
+- Batas: tidak menambah dependency runtime, mengubah env/data keluarga asli atau menerapkan migrasi ke DB aplikasi lokal. Provider cloud dan PWA fisik belum diuji; bucket harus tetap private, public policy/URL lama tidak dicabut otomatis. File lama non-JPG/PNG/WebP atau >8 MB tidak dikonversi otomatis. Kehilangan respons jaringan setelah upload berhasil tidak memiliki jaminan idempotensi batch; periksa foto sebelum mengulang. Timeline/tag anggota/lazy fetch tetap di luar pembenahan ini.
+- Next steps setelah pengiriman: pantau CI/CD dan verifikasi Kenangan/storage privat di deployment. Generated sw/workbox tidak disertakan.
+
+### Review menu Kenangan — 2026-11-16
+- Memeriksa halaman memories, MemoryModal/MemoryCard/PhotoLightbox, hooks useMemories/usePhotoUrl, service/repository/handler/model/migrasi/rute backend dan Task 6.1–6.2. Review source; tanpa browser/API, mutasi data atau tes runtime baru.
+- Tersedia CRUD jurnal, upload multi-foto, favorit, filter lima tahun terakhir dan lightbox. Belum tersedia detail cerita penuh (cerita kartu terpotong dan klik hanya membuka foto; entri tanpa foto tidak terbuka), timeline, filter bulan di UI, tag anggota atau pencarian.
+- Foto edit: modal memakai img src langsung tanpa resolver host/bearer, berbeda dari galeri yang memakai usePhotoUrl. URL proxy privat dapat gagal tampil. Edit menerima snapshot list yang hanya berisi cover, sehingga foto lain tidak terkelola; jumlah foto kartu juga memakai panjang array cover. Hapus foto tidak menyegarkan selectedMemory sehingga thumbnail snapshot dapat tetap tampil; tidak ada pending/error/konfirmasi khusus.
+- usePhotoUrl memakai fetch tanpa refresh API bersama, cache blob global tanpa pembersihan logout/revoke dan tanpa pembatalan request. Token kedaluwarsa dapat membuat foto gagal; lightbox menampilkan spinner terus pada kegagalan. Pergantian URL dapat menampilkan hasil request lama. Modal tidak reset saat dibuka ulang pada memory sama/null, tanggal awal UTC, object URL preview tidak dibersihkan saat reset/unmount.
+- Upload backend mempercayai ekstensi/Content-Type tanpa validasi signature/MIME/ukuran/jumlah per foto; hanya batas request global 50 MB. Serve meneruskan Content-Type storage tanpa nosniff dan mengizinkan cache private max-age=3600. PublicURL didahulukan bila dikonfigurasi; privasi bucket nyata belum diperiksa. Object key ikut response.
+- Penyimpanan foto berurutan dapat berhasil sebagian lalu return error tanpa rincian; UI menutup modal sebelum upload selesai dan retry seluruh batch berisiko duplikasi. Delete/DeletePhoto mengabaikan storage error sebelum soft-delete metadata; kegagalan DB setelah file dihapus menghasilkan record rusak. Upload/delete/update tidak disatukan lock; Save snapshot seluruh memory berisiko menimpa edit/favorit bersamaan dan menghidupkan record terhapus. Order foto dihitung dari panjang list tanpa lock dan error query diabaikan.
+- Validasi create hanya judul != kosong, update tanpa validasi trim/panjang/tanggal; filter bulan/tahun tidak memvalidasi rentang. Serve/DeletePhoto mengabaikan memory ID path tetapi tetap memeriksa keluarga induk foto. Route hanya auth tanpa kebijakan role tambahan; bukan bukti kebocoran lintas keluarga. Tes khusus Kenangan tidak ditemukan pada direktori tes yang diperiksa.
+- File diubah hanya agents.md; belum commit/push. Next steps: akses/validasi file dan konsistensi storage/DB dahulu, lalu detail/edit seluruh foto, state form/pending/error dan UX ringkas sesuai arahan pengguna.
+
+### Pembacaan panduan agent — 2026-11-16
+- Membaca seluruh agents.md sesuai permintaan pengguna, termasuk aturan kerja dan status terbaru. File yang diubah hanya agents.md untuk mencatat pembacaan; tidak mengubah kode atau menjalankan tes.
+- Status implementasi tetap mengacu pada pengiriman 07d1170. Next steps: menunggu arahan task pengguna; tindak lanjut CI/CD dan verifikasi production belum dilakukan pada sesi ini. Tidak commit/push.
+
+### Status pengiriman Pengaturan dan hotfix storage — 2026-11-15
+- Seluruh pembenahan Pengaturan/sesi, migrasi 014, hotfix storage nonfatal, healthcheck PostgreSQL, CD, tes, dokumentasi dan bukti QA telah di-commit sebagai `07d1170` (Improve account settings and keep API running during storage outages) dan berhasil di-push biasa ke `origin/main`, dari `f7926de` ke `07d1170`.
+- Working tree bersih setelah pengiriman. Worktree/branch hotfix sementara telah dibersihkan; tidak ada perubahan Pengaturan yang tertinggal di luar commit gabungan. Generated sw/workbox dan env nyata tidak disertakan.
+- Verifikasi yang telah selesai: tes/vet backend dan integrasi PostgreSQL terisolasi; 23 tes frontend, build/lint/typecheck; 32 pemeriksaan browser dan enam audit axe; tes storage unavailable/recovery/redaksi log; validasi Compose dan shell CD. Pembaruan catatan ini tidak mengubah kode dan tidak memerlukan pengujian ulang.
+- Status production belum diverifikasi langsung setelah deployment. Next steps: periksa hasil CI/CD, pastikan habit_backend tidak crash saat storage unavailable, baca kategori error storage untuk menemukan penyebab MinIO, dan pastikan probe Postgres memakai database yang benar. Jangan menyimpulkan storage sudah pulih hanya karena API hidup.
+- Transisi sesi: pengguna lama perlu login ulang satu kali dan mengaktifkan notifikasi kembali. Penerapan healthcheck dapat merecreate container Postgres sebentar, dengan volume data tetap dipertahankan.
+- File yang diubah pada permintaan terbaru hanya agents.md untuk mencatat hasil pengiriman dan meluruskan status historis belum commit/push. Catatan terbaru ini belum di-commit/push.
 
 ### Hotfix storage nonfatal dan pengiriman gabungan — 2026-11-14
 - Pengguna melaporkan habit_backend crash loop sesudah migrasi saat cek bucket, serta log Postgres database bernama user tidak ada. Meminta storage tidak fatal: fitur file saja dinonaktifkan saat belum siap/tidak tersedia, dan secara eksplisit meminta hotfix digabung dengan seluruh Pengaturan lalu push origin.
@@ -21,7 +53,7 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 - Healthcheck Postgres menyebut POSTGRES_USER dan POSTGRES_DB secara eksplisit dengan escaping Compose, bukan fallback database=user. CD menerapkan config postgres via up -d --no-deps sebelum update aplikasi; container dapat direcreate jika konfigurasi berubah, volume tetap dipertahankan. Tidak membuat DB bernama user atau mengubah credential/data/volume.
 - File hotfix: backend/pkg/storage/minio.go+storage_test.go, backend/cmd/main.go, docker-compose.prod.yml, .github/workflows/cd.yml, docs/storage.md dan panduan. Digabung dengan seluruh file Pengaturan/sesi/migrasi 014/tes/QA yang telah selesai di bawah; worktree darurat dari origin dibuat tetapi tidak dipakai untuk pengiriman setelah pengguna meminta penggabungan.
 - Verifikasi hotfix: go test ./... dan go vet lulus; SDK mock membuktikan startup tidak abort saat bucket 403, upload unavailable, recovery setelah provider pulih, fallback config invalid, dan redaksi log. Compose healthcheck serta YAML/shell CD tervalidasi. Verifikasi Pengaturan tetap 23 tes frontend/build/lint/typecheck, integrasi PostgreSQL dan browser 32 pemeriksaan/enam audit axe lulus; tidak mengulang frontend tanpa perubahan source baru.
-- Pengiriman: commit/push gabungan biasa ke origin/main sesuai instruksi pengguna. Next steps: pantau CI/CD, cek backend tetap running dan log storage spesifik di production; login ulang satu kali/aktifkan ulang push untuk transisi sesi. Akses server production tidak dilakukan pada sesi ini.
+- Pengiriman: commit `07d1170` berhasil di-push biasa ke origin/main sesuai instruksi pengguna. Next steps: pantau CI/CD, cek backend tetap running dan log storage spesifik di production; login ulang satu kali/aktifkan ulang push untuk transisi sesi. Akses server production tidak dilakukan pada sesi ini.
 
 ### Pembenahan Pengaturan dan sesi — 2026-11-14
 - Pengguna menyetujui seluruh temuan Pengaturan dibenahi. Profil/foto/nama keluarga/anggota/role/kode undangan/notifikasi/password/logout kini punya alur UI lengkap, form 360 px, loading/error/pending, tema terang/gelap dan target touch. Profil diambil ulang dari API; query keluarga/anggota terikat keluarga; clipboard gagal ditangani dan error anggota tidak menjadi empty state.
@@ -319,12 +351,26 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
 
+#### Pembenahan Kenangan dan pengiriman — 2026-11-16
+- Kenangan diperbaiki pada alur file/DB, privasi/role/validasi dan UI galeri/detail/form; migrasi 015, tes serta QA selesai. Detail verifikasi/batas pada STATUS TERKINI dan docs/memories-improvements.md. Pengguna meminta commit/push biasa origin/main setelah selesai.
+
+
+#### Review menu Kenangan — 2026-11-16
+- agents.md mencatat temuan akses foto, kelengkapan detail/edit, validasi upload, konsistensi storage/DB dan state UI. Source fitur belum diubah; detail pada STATUS TERKINI.
+
+#### Pembacaan panduan agent — 2026-11-16
+- agents.md diperbarui untuk mencatat pembacaan seluruh panduan; tidak ada perubahan implementasi. Status dan tindak lanjut pada catatan terbaru di atas.
+
+#### Pencatatan pengiriman — 2026-11-15
+- agents.md mencatat keberhasilan push `07d1170`, membersihkan status Pengaturan yang masih tertulis belum terkirim, serta menegaskan tindak lanjut CI/CD/production dan transisi sesi. Tidak ada perubahan kode atau tes baru.
+
+
 #### Hotfix storage nonfatal dan pengiriman gabungan — 2026-11-14
 - Fitur storage gagal secara terisolasi, retry/recovery dan log aman; healthcheck Postgres/CD diperbaiki. Digabung dengan Pengaturan untuk push origin/main sesuai permintaan. Detail pada STATUS TERKINI.
 
 
 #### Pembenahan Pengaturan dan sesi — 2026-11-14
-- UI Pengaturan lengkap, otorisasi/last-admin, undangan/foto, sesi DB/revocation dan auth client, migrasi 014, tes serta dokumentasi selesai. Detail verifikasi dan batas transisi pada STATUS TERKINI; belum commit/push task ini.
+- UI Pengaturan lengkap, otorisasi/last-admin, undangan/foto, sesi DB/revocation dan auth client, migrasi 014, tes serta dokumentasi selesai. Detail verifikasi dan batas transisi pada STATUS TERKINI; sudah terkirim bersama hotfix storage pada commit `07d1170` ke origin/main.
 
 
 #### Review menu Pengaturan — 2026-11-14

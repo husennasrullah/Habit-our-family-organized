@@ -1,0 +1,56 @@
+{
+  "checks": [
+    "gallery 375, full count and old year",
+    "gallery 390, full count and old year",
+    "gallery 768, full count and old year",
+    "gallery 1440, full count and old year",
+    "text-only detail",
+    "full story and all photos in lightbox",
+    "edit all authenticated photos",
+    "delete photo refreshes editor",
+    "new form resets after cancel",
+    "blank form validation",
+    "save failure retains draft",
+    "upload retry does not duplicate journal",
+    "search and empty filter reset",
+    "dynamic year and month filters",
+    "delete confirmation",
+    "storage delete failure and retry",
+    "photo read failure and retry",
+    "photo 401 uses shared refresh",
+    "dark gallery",
+    "mobile dark compact form",
+    "list error",
+    "empty album"
+  ],
+  "screenshots": [
+    "memories-modern-390-light.png",
+    "memories-modern-1440-light.png",
+    "memories-modern-edit-1440.png",
+    "memories-modern-1440-dark.png",
+    "memories-modern-form-390-dark.png"
+  ],
+  "runtimeErrors": [],
+  "audits": [
+    {
+      "name": "gallery light 390",
+      "violations": []
+    },
+    {
+      "name": "gallery light 1440",
+      "violations": []
+    },
+    {
+      "name": "edit light",
+      "violations": []
+    },
+    {
+      "name": "gallery dark",
+      "violations": []
+    },
+    {
+      "name": "form dark",
+      "violations": []
+    }
+  ]
+}

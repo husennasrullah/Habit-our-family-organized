@@ -220,9 +220,10 @@ export interface FinancialGoalEntry {
 // ─── Memories ────────────────────────────────────────────────────────────────
 
 export interface MemoryPhoto {
+  upload_pending?: boolean;
   id: string;
   memory_id: string;
-  object_key: string;
+  storage_delete_pending?: boolean;
   caption: string;
   order: number;
   url: string; // presigned / public URL — diisi oleh backend
@@ -238,6 +239,7 @@ export interface Memory {
   content: string;
   date: string;
   is_favorite: boolean;
+  storage_delete_pending?: boolean;
   photos: MemoryPhoto[];
   created_at: string;
   updated_at: string;

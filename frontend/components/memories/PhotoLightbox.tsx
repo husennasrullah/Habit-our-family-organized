@@ -5,25 +5,7 @@ import { ModalFrame } from "@/components/shared/ModalFrame";
 import { useEffect, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Memory } from "@/types";
-import { usePhotoUrl } from "@/hooks/usePhotoUrl";
-
-function LightboxImage({ url, alt }: { url: string; alt: string }) {
-  const src = usePhotoUrl(url);
-  if (!src)
-    return (
-      <div className="flex h-64 w-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white border-t-transparent" />
-      </div>
-    );
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-      className="max-h-[85vh] max-w-full rounded-lg object-contain"
-    />
-  );
-}
+import { MemoryPhotoView } from "./MemoryPhotoView";
 
 interface PhotoLightboxProps {
   memory: Memory;
@@ -65,6 +47,7 @@ export function PhotoLightbox({
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90"
       onClick={onClose}
       onClose={onClose}
+      aria-label={`Foto kenangan ${memory.title}`}
     >
       {/* Close */}
       <button
@@ -94,7 +77,8 @@ export function PhotoLightbox({
         className="relative max-h-screen max-w-screen-lg px-16"
         onClick={(e) => e.stopPropagation()}
       >
-        <LightboxImage
+        <MemoryPhotoView
+          className="max-h-[75dvh] min-h-40 min-w-32 max-w-full rounded-lg object-contain"
           url={current.url}
           alt={current.caption || memory.title}
         />

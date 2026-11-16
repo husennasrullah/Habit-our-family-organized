@@ -830,14 +830,14 @@ Membangun API untuk jurnal dan galeri foto keluarga dengan penyimpanan file ke o
 - Endpoint filter memory berdasarkan tahun/bulan dan favorit tersedia
 
 **Todo List:**
-- [ ] Buat model: `Memory`, `MemoryPhoto`
-- [ ] Jalankan migrasi tabel
-- [ ] Implementasi CRUD handler untuk memories
-- [ ] Implementasi upload foto ke MinIO/R2 (multiple file per memory)
-- [ ] Generate presigned URL untuk akses foto
+- [x] Buat model: `Memory`, `MemoryPhoto`
+- [x] Jalankan migrasi tabel (tersedia di SQL/AutoMigrate; migrasi 015 diverifikasi pada DB QA)
+- [x] Implementasi CRUD handler untuk memories
+- [x] Implementasi upload foto ke MinIO/R2 (multiple file per memory)
+- [x] Akses foto privat melalui proxy bearer/no-store (menggantikan presigned URL)
 - [ ] Endpoint filter: by date range, by favorite, by tag member
-- [ ] Endpoint toggle favorite memory
-- [ ] Endpoint delete foto individual dari memory
+- [x] Endpoint toggle favorite memory
+- [x] Endpoint delete foto individual dari memory
 
 ---
 
@@ -854,16 +854,19 @@ Membangun halaman jurnal keluarga dengan tampilan galeri foto yang indah dan tim
 - Tampilan responsif di mobile
 
 **Todo List:**
-- [ ] Buat halaman memories dengan tampilan grid dan timeline
-- [ ] Buat modal/halaman form tambah memori (judul, tanggal, konten, foto)
-- [ ] Implementasi multi-file upload dengan preview
-- [ ] Buat komponen galeri foto dengan lightbox
-- [ ] Implementasi toggle favorite
-- [ ] Buat filter berdasarkan tahun dan bulan
-- [ ] Buat tampilan detail memori (full page)
+- [x] Buat halaman memories dengan tampilan grid
+- [ ] Tambahkan alternatif timeline
+- [x] Buat modal/halaman form tambah memori (judul, tanggal, konten, foto)
+- [x] Implementasi multi-file upload dengan preview
+- [x] Buat komponen galeri foto dengan lightbox
+- [x] Implementasi toggle favorite
+- [x] Buat filter berdasarkan tahun dan bulan
+- [x] Buat tampilan detail memori (dialog cerita penuh dan seluruh foto)
 - [ ] Optimasi lazy loading gambar
 
 ---
+
+Catatan pembenahan 2026-11-16: validasi file/metadata, locking, cleanup/retry storage, migrasi tambahan 015, pembacaan privat dan UI Kenangan diperbarui. Pencarian/filter/favorit/detail tersedia; timeline, tag anggota dan lazy fetch foto tetap pengembangan berikutnya. Verifikasi dan batas: `docs/memories-improvements.md`.
 
 ### FASE 7 — Kids Tracker
 
