@@ -12,7 +12,14 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-16 (Landing page Habit)
+> **Last updated:** 2026-11-16 (Rencana Android TWA)
+
+### Rencana Android TWA — 2026-11-16
+- Pengguna meminta rencana proyek TWA. Menambahkan docs/android-twa-plan.md: monorepo android/ yang diusulkan, Bubblewrap/TWA membuka habit.senlabs.web.id/dashboard, penggunaan ulang Next.js standalone dan backend Go, signing/DAL, fase APK beta sampai AAB/Play, CI independen, matriks QA, estimasi, dependensi dan rollback.
+- Review source manifest/ikon/offline/Web Push/OAuth/sesi; belum menguji production atau perangkat Android. Tidak memasang dependency, membuat proyek Android/keystore, mengubah aplikasi/DAL/DNS/backend/schema atau merilis Play pada task perencanaan.
+- Rencana membedakan APK awal 1–2 hari, beta+pipeline sekitar 3–7 hari kerja dan waktu closed testing/review eksternal; estimasi bukan janji rilis. Package id.web.senlabs.habit masih usulan. Play App Signing fingerprint dibedakan dari upload/sideload/test keys. Penghapusan akun/data bersama dan jalur web dicatat sebagai kebutuhan kesiapan Play; keluar keluarga bukan hapus akun.
+- Referensi resmi Android/Play diperiksa 16 November 2026, ditautkan di dokumen; kebijakan SDK/akun perlu diverifikasi ulang saat pengajuan. Semua checklist implementasi pending, monetisasi tetap ditunda. Perubahan hanya docs/android-twa-plan.md dan agents.md; verifikasi Markdown/link sumber/diff, tidak menjalankan build/tes aplikasi untuk perubahan dokumentasi.
+- Pengiriman commit/push biasa sesuai otorisasi yang masih berlaku; hasil Git dilaporkan setelah perintah. Next steps implementasi: audit PWA production/toolchain/perangkat dan finalisasi identitas, lalu APK TWA terverifikasi; belum menjalankan fase tersebut.
 
 ### Landing page Habit — 2026-11-16
 - Pilihan pengguna Next.js + Tailwind diimplementasikan dalam folder landing/ pada monorepo yang sama; aplikasi dan backend tetap memakai proyek masing-masing. Seluruh CTA menuju https://habit.senlabs.web.id. Domain landing publik belum ditentukan; pertanyaan domain telah disampaikan, tidak mengasumsikan domain aplikasi sebagai landing.
@@ -397,6 +404,10 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Rencana Android TWA — 2026-11-16
+- docs/android-twa-plan.md menyimpan arsitektur, tahapan, signing/DAL, QA, kesiapan Play dan estimasi; belum ada implementasi Android. Detail pada STATUS TERKINI.
+
 
 #### Landing page Habit — 2026-11-16
 - Pilihan pengguna Next.js + Tailwind diimplementasikan dalam folder landing/ pada monorepo yang sama; aplikasi dan backend tetap memakai proyek masing-masing. Seluruh CTA menuju https://habit.senlabs.web.id. Domain landing publik belum ditentukan; pertanyaan domain telah disampaikan, tidak mengasumsikan domain aplikasi sebagai landing.
