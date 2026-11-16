@@ -78,13 +78,12 @@ export default function Home() {
                 Ruang keluarga digital
               </span>
               <h1>
-                Hal kecil
-                <br />
-                lebih teratur.
+                Hal kecil teratur.
                 <br />
                 <span>
                   Keluarga
-                  <br className="desktop-break" /> lebih dekat.
+                  <br />
+                  lebih dekat.
                 </span>
               </h1>
               <p>

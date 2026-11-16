@@ -12,7 +12,13 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-16 (Rencana Android TWA)
+> **Last updated:** 2026-11-16 (Pemolesan landing page)
+
+### Pemolesan landing page — 2026-11-16
+- Pengguna meminta landing lebih fresh, mengurangi area putih dan membenahi proporsi. Mengubah landing/app/page.tsx dan globals.css: hero mint/amber, heading tiga baris dan jarak ringkas, preview desktop lurus, rutinitas pastel, area fitur mint berpanel, cara mulai hijau gelap/CTA amber, panel ilustrasi hangat dan FAQ berwarna. Brand dan seluruh CTA ke habit.senlabs.web.id tetap; tidak menambah dependency atau mengubah aplikasi utama/backend/monetisasi.
+- Typecheck dan build produksi Node 20.19.6 lulus. Browser 360/390/768/1440/1920 tanpa overflow/gambar gagal/error runtime/temuan axe yang diperiksa setelah koreksi kontras label pada latar baru. Kelima gambar fitur, menu Escape/klik luar, tab keyboard, FAQ, anchor/CTA dan reduced motion lulus. Screenshot desktop/mobile direview; tinggi fixture 1440 berkurang 5209→4657 px, 390 berkurang 6060→5850 px.
+- File dokumentasi/bukti: docs/landing-page.md, docs/qa/landing-polish-{1440,390}.png, landing-polish-checks.json dan agents.md. Memakai skill Sites, mempertahankan identitas/audience owner-private Site yang sama, source publikasi terpisah sementara agar origin GitHub monorepo tidak berubah. Hasil deployment dan commit/push biasa dilaporkan setelah perintah.
+- Next steps: review visual pengguna pada URL privat yang sama, tentukan domain publik landing. TWA tetap rencana; tidak mulai implementasi Android pada scope ini. Verifikasi browser adalah lokal, bukan bukti run CI GitHub atau uji aplikasi production.
 
 ### Rencana Android TWA — 2026-11-16
 - Pengguna meminta rencana proyek TWA. Menambahkan docs/android-twa-plan.md: monorepo android/ yang diusulkan, Bubblewrap/TWA membuka habit.senlabs.web.id/dashboard, penggunaan ulang Next.js standalone dan backend Go, signing/DAL, fase APK beta sampai AAB/Play, CI independen, matriks QA, estimasi, dependensi dan rollback.
@@ -404,6 +410,10 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Pemolesan landing page — 2026-11-16
+- Landing dipadatkan dan diberi variasi latar/panel warna; source, docs dan bukti QA diperbarui. Detail verifikasi dan batas pada STATUS TERKINI.
+
 
 #### Rencana Android TWA — 2026-11-16
 - docs/android-twa-plan.md menyimpan arsitektur, tahapan, signing/DAL, QA, kesiapan Play dan estimasi; belum ada implementasi Android. Detail pada STATUS TERKINI.
