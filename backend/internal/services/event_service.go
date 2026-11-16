@@ -38,8 +38,8 @@ type UpdateEventRequest struct {
 }
 
 type GetEventsRequest struct {
-	From   string `query:"from"`    // ISO datetime
-	To     string `query:"to"`      // ISO datetime
+	From string `query:"from"` // ISO datetime
+	To   string `query:"to"`   // ISO datetime
 }
 
 // ─── Service ─────────────────────────────────────────────────────────────────
@@ -84,6 +84,9 @@ func (s *EventService) Create(req CreateEventRequest, familyID, createdBy uuid.U
 		ReminderMinutes: req.ReminderMinutes,
 	}
 
+	if err := validateEventValues(event); err != nil {
+		return nil, err
+	}
 	if err := s.eventRepo.Create(event); err != nil {
 		return nil, err
 	}
@@ -104,6 +107,11 @@ func (s *EventService) GetEvents(req GetEventsRequest, familyID uuid.UUID) ([]mo
 }
 
 func (s *EventService) Update(id uuid.UUID, req UpdateEventRequest, familyID uuid.UUID) (*models.Event, error) {
+	if ids, e := s.eventRepo.TripEventIDs(familyID); e != nil {
+		return nil, e
+	} else if ids[id] {
+		return nil, errors.New("ubah agenda liburan melalui menu Liburan")
+	}
 	event, err := s.eventRepo.GetByID(id, familyID)
 	if err != nil {
 		return nil, errors.New("event tidak ditemukan")
@@ -140,6 +148,9 @@ func (s *EventService) Update(id uuid.UUID, req UpdateEventRequest, familyID uui
 		event.ReminderMinutes = *req.ReminderMinutes
 	}
 
+	if err := validateEventValues(event); err != nil {
+		return nil, err
+	}
 	if err := s.eventRepo.Update(event); err != nil {
 		return nil, err
 	}
@@ -147,6 +158,11 @@ func (s *EventService) Update(id uuid.UUID, req UpdateEventRequest, familyID uui
 }
 
 func (s *EventService) Delete(id, familyID uuid.UUID) error {
+	if ids, e := s.eventRepo.TripEventIDs(familyID); e != nil {
+		return e
+	} else if ids[id] {
+		return errors.New("hapus agenda liburan melalui menu Liburan")
+	}
 	// Pastikan event milik family ini
 	_, err := s.eventRepo.GetByID(id, familyID)
 	if err != nil {

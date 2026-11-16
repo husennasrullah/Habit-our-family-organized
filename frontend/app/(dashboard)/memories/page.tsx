@@ -1,5 +1,6 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useCalendarContext } from "@/hooks/useCalendarContext";
 import { Heart, Images, Plus, Search, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
@@ -38,6 +39,7 @@ function message(e: unknown, fallback: string) {
   return err?.response?.data?.message ?? fallback;
 }
 export default function MemoriesPage() {
+  const context = useCalendarContext();
   const user = useAuthStore((s) => s.user);
   const canEdit = user?.role === "admin" || user?.role === "member";
   const { data: memories = [], isLoading, isError, refetch } = useMemories();
@@ -207,6 +209,25 @@ export default function MemoriesPage() {
       setBusy(false);
     }
   };
+  useEffect(() => {
+    if (!context.record) return;
+    let live = true;
+    setBusy(true);
+    void api
+      .get<{ data: Memory }>(`/memories/${encodeURIComponent(context.record)}`)
+      .then(({ data }) => {
+        if (live) setDetail(data.data);
+      })
+      .catch(() => {
+        if (live) toast.error("Kenangan tidak lagi tersedia");
+      })
+      .finally(() => {
+        if (live) setBusy(false);
+      });
+    return () => {
+      live = false;
+    };
+  }, [context.record]);
   return (
     <div className="space-y-4">
       <PageHeader

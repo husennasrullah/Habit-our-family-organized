@@ -7,7 +7,7 @@ import {
   format,
   isSameDay,
   isSameMonth,
-  parseISO,
+  parseISO as originalParseISO,
   addMonths,
   subMonths,
   addWeeks,
@@ -20,6 +20,41 @@ import {
 } from "date-fns";
 import { id } from "date-fns/locale";
 import type { CalendarEvent } from "@/types";
+
+// Project WIB wall time into a local Date used by the calendar grid, independently of device timezone.
+export function parseISO(value: string): Date {
+  const actual = originalParseISO(value);
+  if (
+    value.length <= 10 ||
+    Number.isNaN(actual.getTime()) ||
+    !/(Z|[+-]\d{2}:?\d{2})$/i.test(value)
+  )
+    return actual;
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(actual);
+  const get = (type: string) =>
+    Number(parts.find((p) => p.type === type)?.value ?? 0);
+  const projected = new Date(0);
+  projected.setFullYear(get("year"), get("month") - 1, get("day"));
+  projected.setHours(
+    get("hour"),
+    get("minute"),
+    get("second"),
+    actual.getUTCMilliseconds(),
+  );
+  return projected;
+}
+export function calendarNow() {
+  return parseISO(new Date().toISOString());
+}
 
 export type CalendarView = "month" | "week" | "day";
 
@@ -137,8 +172,12 @@ export function getApiDateRange(
   }
 
   return {
-    from: start.toISOString(),
-    to: end.toISOString(),
+    from: new Date(
+      format(start, "yyyy-MM-dd'T'HH:mm:ss.SSS") + "+07:00",
+    ).toISOString(),
+    to: new Date(
+      format(end, "yyyy-MM-dd'T'HH:mm:ss.SSS") + "+07:00",
+    ).toISOString(),
   };
 }
 
@@ -188,7 +227,7 @@ export function eventToTopPercent(event: CalendarEvent): number {
   return (getHours(start) / 24) * 100;
 }
 
-export { format, isSameDay, isSameMonth, parseISO };
+export { format, isSameDay, isSameMonth };
 export { id as dateLocale };
 
 // Clip events to the visible day and place simultaneous events beside one another.
@@ -199,14 +238,20 @@ export function layoutDayEvents(events: CalendarEvent[], day: Date) {
     .filter((event) => !event.is_all_day)
     .map((event) => ({
       event,
-      startMinute: Math.max(0, (Date.parse(event.start_at) - dayStart) / 60000),
-      endMinute: Math.min(1440, (Date.parse(event.end_at) - dayStart) / 60000),
+      startMinute: Math.max(
+        0,
+        (parseISO(event.start_at).getTime() - dayStart) / 60000,
+      ),
+      endMinute: Math.min(
+        1440,
+        (parseISO(event.end_at).getTime() - dayStart) / 60000,
+      ),
       lane: 0,
       lanes: 1,
     }))
     .filter(
       (row) =>
-        Date.parse(row.event.start_at) < nextDay &&
+        parseISO(row.event.start_at).getTime() < nextDay &&
         row.endMinute > row.startMinute,
     )
     .sort((a, b) => a.startMinute - b.startMinute || b.endMinute - a.endMinute);

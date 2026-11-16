@@ -156,7 +156,7 @@ export default function TripsPage() {
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition capitalize whitespace-nowrap ${
               activeTab === tab
-                ? "bg-neutral-900 text-white dark:bg-muted dark:text-foreground shadow-sm"
+                ? "bg-primary-600 text-white dark:bg-primary-600 dark:text-white shadow-sm"
                 : "text-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-neutral-100 hover:bg-muted dark:hover:bg-neutral-800/50"
             }`}
           >
@@ -250,12 +250,16 @@ export default function TripsPage() {
                     <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground dark:text-muted-foreground">
                       <Calendar className="w-3.5 h-3.5" />
                       <span>
-                        {new Date(trip.start_date).toLocaleDateString("id-ID", {
+                        {new Date(
+                          trip.start_date.slice(0, 10) + "T12:00:00",
+                        ).toLocaleDateString("id-ID", {
                           day: "numeric",
                           month: "short",
                         })}{" "}
                         -{" "}
-                        {new Date(trip.end_date).toLocaleDateString("id-ID", {
+                        {new Date(
+                          trip.end_date.slice(0, 10) + "T12:00:00",
+                        ).toLocaleDateString("id-ID", {
                           day: "numeric",
                           month: "short",
                           year: "numeric",
@@ -359,7 +363,7 @@ export default function TripsPage() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowModal(false)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-lg p-4 shadow-2xl space-y-4 my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-[360px] p-4 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold flex items-center gap-2">
                 <Plane className="w-5 h-5 text-primary-600" /> Rencanakan

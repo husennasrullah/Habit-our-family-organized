@@ -1,6 +1,6 @@
 "use client";
 
-import { format, isSameDay, isSameMonth, isToday } from "date-fns";
+import { format, isSameDay, isSameMonth } from "date-fns";
 import { id } from "date-fns/locale";
 import { ArrowUpRight, CalendarDays, Clock3, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,8 @@ import {
   EVENT_TYPE_LABELS,
 } from "@/lib/calendarUtils";
 import { EventBadge } from "./EventBadge";
+import { sourceLabel } from "@/lib/calendarSources";
+import { parseISO, calendarNow } from "@/lib/calendarUtils";
 import type { CalendarEvent } from "@/types";
 
 const WEEKDAYS = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
@@ -50,7 +52,7 @@ export function MonthView({
             <span className="calendar-status-dot" />
             Rencana kecil, waktu bersama.
           </span>
-          <span>{monthEvents.length} acara bulan ini</span>
+          <span>{monthEvents.length} agenda bulan ini</span>
         </div>
         <div className="grid grid-cols-7 border-b border-border/60">
           {WEEKDAYS.map((label, index) => (
@@ -69,7 +71,7 @@ export function MonthView({
           {days.map((day, index) => {
             const dayEvents = getEventsForDay(events, day);
             const selected = isSameDay(day, currentDate),
-              today = isToday(day),
+              today = isSameDay(day, calendarNow()),
               inMonth = isSameMonth(day, currentDate);
             return (
               <div
@@ -147,7 +149,9 @@ export function MonthView({
         <div className="flex items-start justify-between gap-2">
           <div>
             <p className="text-xs font-medium text-muted-foreground">
-              {isToday(currentDate) ? "AGENDA HARI INI" : "AGENDA PILIHAN"}
+              {isSameDay(currentDate, calendarNow())
+                ? "AGENDA HARI INI"
+                : "AGENDA PILIHAN"}
             </p>
             <h3 className="mt-2 text-lg font-bold tracking-tight">
               {format(currentDate, "EEEE", { locale: id })}
@@ -183,7 +187,7 @@ export function MonthView({
                       <Clock3 size={12} />
                       {event.is_all_day
                         ? "Sepanjang hari"
-                        : `${format(new Date(event.start_at), "HH:mm")} – ${format(new Date(event.end_at), "HH:mm")}`}
+                        : `${format(parseISO(event.start_at), "HH:mm")} – ${format(parseISO(event.end_at), "HH:mm")}`}
                     </span>
                     <span
                       className={cn(
@@ -192,7 +196,9 @@ export function MonthView({
                         color.text,
                       )}
                     >
-                      {EVENT_TYPE_LABELS[event.type] ?? "Umum"}
+                      {event.read_only
+                        ? sourceLabel(event)
+                        : (EVENT_TYPE_LABELS[event.type] ?? "Umum")}
                     </span>
                   </span>
                 </button>

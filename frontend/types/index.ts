@@ -151,6 +151,11 @@ export type EventType =
   "general" | "school" | "medical" | "birthday" | "vacation";
 
 export interface CalendarEvent {
+  source?: string;
+  source_id?: string;
+  source_url?: string;
+  source_status?: string;
+  read_only?: boolean;
   id: string;
   family_id: string;
   created_by: string;

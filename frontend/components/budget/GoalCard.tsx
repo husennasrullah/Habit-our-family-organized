@@ -1,5 +1,6 @@
 "use client";
 
+import { CalendarDateLink } from "@/components/shared/CalendarDateLink";
 import { format, parseISO } from "date-fns";
 import { id as dateLocale } from "date-fns/locale";
 import { CheckCircle2, Pencil, Trash2, PlusCircle } from "lucide-react";
@@ -29,10 +30,11 @@ export function GoalCard({
 
   return (
     <div
+      data-calendar-record={goal.id}
       className={cn(
         "group relative rounded-2xl border bg-card p-4 transition-shadow hover:shadow-md",
         goal.is_achieved
-          ? "border-emerald-200 bg-emerald-50/40"
+          ? "border-emerald-200 bg-emerald-50/40 dark:border-emerald-800 dark:bg-emerald-950/30"
           : "border-border",
       )}
     >
@@ -46,7 +48,9 @@ export function GoalCard({
             <p
               className={cn(
                 "text-sm font-semibold truncate",
-                goal.is_achieved ? "text-emerald-700" : "text-foreground",
+                goal.is_achieved
+                  ? "text-emerald-700 dark:text-emerald-200"
+                  : "text-foreground",
               )}
             >
               {goal.title}
@@ -54,10 +58,12 @@ export function GoalCard({
           </div>
           {goal.deadline && (
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Deadline:{" "}
-              {format(parseISO(goal.deadline), "d MMM yyyy", {
-                locale: dateLocale,
-              })}
+              <CalendarDateLink date={goal.deadline} source="goal">
+                Tenggat:{" "}
+                {format(parseISO(goal.deadline.slice(0, 10)), "d MMM yyyy", {
+                  locale: dateLocale,
+                })}
+              </CalendarDateLink>
             </p>
           )}
         </div>
@@ -99,7 +105,9 @@ export function GoalCard({
         <p
           className={cn(
             "mt-1 text-right text-xs font-medium",
-            goal.is_achieved ? "text-emerald-600" : "text-muted-foreground",
+            goal.is_achieved
+              ? "text-emerald-600 dark:text-emerald-300"
+              : "text-muted-foreground",
           )}
         >
           {goal.is_achieved ? "Tercapai ✓" : `${Math.round(pct)}%`}

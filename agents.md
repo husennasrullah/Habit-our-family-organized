@@ -12,7 +12,18 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-16 (Pembenahan Kenangan dan pengiriman)
+> **Last updated:** 2026-11-16 (Keselarasan tampilan dan kalender lintas modul)
+
+### Keselarasan tampilan dan kalender lintas modul — 2026-11-16
+- Pengguna meminta audit akhir semua menu, keseragaman tampilan dan semua data bertanggal terhubung kalender. Melanjutkan otorisasi pengerjaan/push sebelumnya. Memakai pola lokal proyek dan skill Sites untuk panduan UI/preview lokal; tidak membuat/publish Site hosting baru.
+- Kalender/beranda memakai feed read-only opsional dari API /events include_sources=true: tugas, makan, trip/itinerary, vaksin terencana+aktual, ulang tahun anggota/anak, tenggat tabungan; filter historis pengeluaran/periode anggaran/biaya perjalanan/Kenangan/pertumbuhan/kesehatan/milestone. Default agenda; semua kategori tanggal tersedia melalui filter. Waktu upload/update sistem tidak dijadikan agenda atau tenggat Dokumen yang tidak ada di model.
+- Query family JWT, join induk dan role aktual membatasi data anak/keuangan; ulang tahun linked member/kid dan event_id Liburan dideduplikasi. Sumber ditandai read-only, mempunyai URL kembali; menu memilih tanggal/tab/anak dan menyorot record. Perubahan/hapus mengikuti data sumber tanpa salinan event/migrasi/backfill. Invalidasi setelah mutation, refetch saat kembali dan polling aktif 60 detik; tidak mengklaim broadcast baru semua modul.
+- Waktu WIB konsisten pada kalender lintas zona perangkat, tanggal bisnis dan minggu tugas. Native event memvalidasi kronologi/tanggal/metadata, normalisasi UTC dan query perbandingan timestamp; all-day memakai batas hari WIB. Edit/hapus event tersimpan terkait Liburan ditolak melalui API acara manual agar tidak menyimpang dari sumber.
+- UI semua menu: judul 20 px termasuk Beranda, aksi header/tombol kalender bersama, form Kalender/Liburan 360 px, label/input gelap dan ukuran desktop/mobile konsisten, tab Liburan emerald, status kategori sumber jelas, kartu tabungan tercapai gelap terbaca. Panel cerita/preview/riwayat tetap mengikuti kebutuhan konten.
+- File utama: repository/service calendar_feed dan validasi event beserta handler/model/repo event; halaman dashboard/calendar/tasks/meals/budget/kids/memories/trips/detail, PageHeader/CalendarDateLink dan komponen kalender/tugas/goal/memory/itinerary, hook kalender/events, lib calendarForm/calendarSources/calendarUtils/dashboard/tasks/kids, providers/styles/types, tes serta script/bukti QA. Dokumentasi docs/calendar-integration-and-ui-audit.md dan plan diperbarui.
+- Verifikasi saat pencatatan: go test ./... dengan PostgreSQL sementara/schema terisolasi dan go vet lulus, termasuk semua sumber/isolasi/role/deduplikasi/update-hapus/offset/tanggal vaksin aktual/terencana. 29 tes frontend lulus. Browser fixture 108 pemeriksaan render/navigasi (matriks 88 dan alur sumber/form/error), 31 audit axe terarah bersih tanpa error runtime/overflow; viewport 375/390/768/1440, terang/gelap dan jam WIB pada zona UTC/Los Angeles/Tokyo. Build produksi final 19 halaman berikut lint/typecheck lulus; alur browser diulang pada build produksi lokal dan tetap lulus.
+- Batas: tidak menambah dependency runtime/schema, mengubah env/data keluarga asli atau menerapkan migrasi ke DB aplikasi/production. Tooling browser di /tmp. Production/provider/PWA fisik belum diuji, recurring manual/pengiriman reminder tidak diklaim selesai. File generated sw/workbox serta config/cache dev sementara tidak disertakan.
+- Pengiriman: paket final di-commit/push biasa ke origin/main sesuai otorisasi; hasil perintah Git dilaporkan setelah selesai. Next steps setelah pengiriman: pantau CI/CD dan smoke test kalender pada deployment.
 
 ### Pembenahan Kenangan dan pengiriman — 2026-11-16
 - Pengguna menyetujui pembenahan serta pemolesan tampilan, menegaskan akses penuh dan meminta push setelah selesai. Implementasi dan verifikasi selesai; paket final dikirim dengan commit/push biasa ke origin/main sesuai instruksi, tanpa force. Hasil perintah Git dilaporkan kepada pengguna setelah pengiriman.
@@ -350,6 +361,10 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Keselarasan tampilan dan kalender lintas modul — 2026-11-16
+- Feed kalender terpadu, tanggal/WIB/deep link dan UI lintas menu selesai; tes dan bukti QA tercatat pada STATUS TERKINI serta docs/calendar-integration-and-ui-audit.md. Tidak ada migrasi baru atau mutasi data keluarga asli.
+
 
 #### Pembenahan Kenangan dan pengiriman — 2026-11-16
 - Kenangan diperbaiki pada alur file/DB, privasi/role/validasi dan UI galeri/detail/form; migrasi 015, tes serta QA selesai. Detail verifikasi/batas pada STATUS TERKINI dan docs/memories-improvements.md. Pengguna meminta commit/push biasa origin/main setelah selesai.

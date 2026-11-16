@@ -63,3 +63,88 @@ test("simultaneous events use separate lanes and adjacent events reuse a lane", 
   assert.equal(rows[0].lane, rows[2].lane);
   assert.equal(rows[0].lanes, 2);
 });
+
+test("calendar uses WIB for timed and all-day entries across device timezones", () => {
+  const before = process.env.TZ;
+  try {
+    for (const zone of ["UTC", "America/Los_Angeles", "Asia/Tokyo"]) {
+      process.env.TZ = zone;
+      const visibleDay = new Date(2026, 10, 16, 0, 0, 0);
+      const rows = mod.exports.layoutDayEvents(
+        [event("a", "2026-11-16T09:00:00+07:00", "2026-11-16T10:00:00+07:00")],
+        visibleDay,
+      );
+      assert.equal(rows[0].startMinute, 540, zone);
+      assert.equal(
+        mod.exports.getEventsForDay(
+          [event("all", "2026-11-15T17:00:00Z", "2026-11-16T16:59:59Z", true)],
+          visibleDay,
+        ).length,
+        1,
+        zone,
+      );
+      assert.equal(
+        mod.exports.getApiDateRange(visibleDay, "day").from,
+        "2026-11-15T17:00:00.000Z",
+        zone,
+      );
+    }
+  } finally {
+    process.env.TZ = before;
+  }
+});
+const formFilename = path.resolve(__dirname, "../lib/calendarForm.ts");
+const formMod = new Module(formFilename, module);
+formMod.paths = Module._nodeModulePaths(path.dirname(formFilename));
+formMod._compile(
+  ts.transpileModule(fs.readFileSync(formFilename, "utf8"), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS },
+  }).outputText,
+  formFilename,
+);
+const { eventSchema, eventDateToISO, eventLocalValue } = formMod.exports;
+test("calendar form preserves all-day dates, validates real dates and rejects reversed times", () => {
+  const value = {
+    title: "  Piknik  ",
+    description: "",
+    start_at: "2026-11-16",
+    end_at: "2026-11-16",
+    is_all_day: true,
+    type: "general",
+    color: "sky",
+    is_recurring: false,
+    reminder_minutes: 0,
+  };
+  assert.equal(eventSchema.parse(value).title, "Piknik");
+  assert.equal(
+    eventDateToISO(value.start_at, true),
+    "2026-11-15T17:00:00.000Z",
+  );
+  assert.equal(
+    eventDateToISO(value.end_at, true, true),
+    "2026-11-16T16:59:59.000Z",
+  );
+  assert.equal(eventLocalValue("2026-11-15T17:00:00Z", true), "2026-11-16");
+  assert.equal(eventLocalValue("2026-11-16T02:00:00Z"), "2026-11-16T09:00");
+  for (const patch of [
+    { start_at: "2026-02-30" },
+    { start_at: "0000-01-01" },
+    { end_at: "2026-11-15" },
+    { title: " " },
+    {
+      is_all_day: false,
+      start_at: "2026-11-16T10:00",
+      end_at: "2026-11-16T09:00",
+    },
+    {
+      is_all_day: false,
+      start_at: "2026-11-16T24:60",
+      end_at: "2026-11-17T09:00",
+    },
+  ])
+    assert.equal(
+      eventSchema.safeParse({ ...value, ...patch }).success,
+      false,
+      JSON.stringify(patch),
+    );
+});

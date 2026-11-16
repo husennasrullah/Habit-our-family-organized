@@ -1,10 +1,12 @@
 "use client";
 
+import { CalendarDateLink } from "@/components/shared/CalendarDateLink";
+import { useCalendarContext } from "@/hooks/useCalendarContext";
 import { QueryError } from "@/components/shared/QueryError";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { ModalFrame } from "@/components/shared/ModalFrame";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { ItineraryBoard } from "@/components/trips/ItineraryBoard";
@@ -84,6 +86,16 @@ export default function TripDetailPage({
   const [activeTab, setActiveTab] = useState<
     "itinerary" | "packing" | "expenses" | "documents" | "overview"
   >("itinerary");
+  const context = useCalendarContext();
+  useEffect(() => {
+    if (
+      context.tab &&
+      ["itinerary", "packing", "expenses", "documents", "overview"].includes(
+        context.tab,
+      )
+    )
+      setActiveTab(context.tab as typeof activeTab);
+  }, [context.tab]);
   const saveError = (error: unknown) =>
     toast.error(
       isAxiosError(error) && typeof error.response?.data?.message === "string"
@@ -419,8 +431,13 @@ export default function TripDetailPage({
       </div>
 
       <PageHeader
+        action={
+          <CalendarDateLink date={trip.start_date} source="trip,itinerary">
+            Lihat jadwal di kalender
+          </CalendarDateLink>
+        }
         title={trip.title}
-        description={`${trip.destination} · ${new Date(trip.start_date).toLocaleDateString("id-ID")} – ${new Date(trip.end_date).toLocaleDateString("id-ID")}`}
+        description={`${trip.destination} · ${new Date(trip.start_date.slice(0, 10) + "T12:00:00").toLocaleDateString("id-ID")} – ${new Date(trip.end_date.slice(0, 10) + "T12:00:00").toLocaleDateString("id-ID")}`}
       />
 
       <TripBudgetSummary trip={trip} />
@@ -823,7 +840,7 @@ export default function TripDetailPage({
           className="trip-dialog fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowEditTripModal(false)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-lg p-4 shadow-2xl space-y-4 my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-[360px] p-4 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold flex items-center gap-2">
                 <Pencil className="w-5 h-5 text-primary-600" /> Edit Rencana
@@ -1071,7 +1088,7 @@ export default function TripDetailPage({
             setAddBudgetRows([]);
           }}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 sm:p-4 shadow-2xl space-y-4 my-4 sm:my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-[360px] p-4 sm:p-4 shadow-2xl space-y-4 my-4 sm:my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold">Tambah Jadwal Aktivitas</h3>
               <button
@@ -1354,7 +1371,7 @@ export default function TripDetailPage({
           className="trip-dialog fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setEditingItinerary(null)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 sm:p-4 shadow-2xl space-y-4 my-4 sm:my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-[360px] p-4 sm:p-4 shadow-2xl space-y-4 my-4 sm:my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold">Edit Jadwal Aktivitas</h3>
               <button
@@ -1625,7 +1642,7 @@ export default function TripDetailPage({
           className="trip-dialog fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowPackingModal(false)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 shadow-2xl space-y-4">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-[360px] p-4 shadow-2xl space-y-4">
             <h3 className="text-lg font-bold">Tambah Barang Bawaan</h3>
             <form onSubmit={handlePackingSubmit} className="space-y-4">
               <div>
@@ -1730,7 +1747,7 @@ export default function TripDetailPage({
           className="trip-dialog fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowDocModal(false)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 shadow-2xl space-y-4 my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-[360px] p-4 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold flex items-center gap-2">
                 <UploadCloud className="w-5 h-5 text-primary-600" /> Upload
@@ -1855,7 +1872,7 @@ export default function TripDetailPage({
           className="trip-dialog fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
           onClose={() => setShowMemberModal(false)}
         >
-          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-md p-4 shadow-2xl space-y-4 my-8">
+          <div className="bg-card dark:bg-card border border-border dark:border-border rounded-2xl w-full max-w-[360px] p-4 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between border-b border-border dark:border-border pb-3">
               <h3 className="text-lg font-bold flex items-center gap-2">
                 <Users className="w-5 h-5 text-indigo-600" /> Kelola Anggota

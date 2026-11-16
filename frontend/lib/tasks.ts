@@ -23,10 +23,10 @@ export function filterTasks(
   now = new Date(),
 ) {
   const today = localDateKey(now),
-    end = new Date(now);
-  const weekday = (now.getDay() + 6) % 7;
-  end.setDate(end.getDate() + 6 - weekday);
-  const weekEnd = localDateKey(end);
+    end = new Date(`${today}T12:00:00Z`);
+  const weekday = (end.getUTCDay() + 6) % 7;
+  end.setUTCDate(end.getUTCDate() + 6 - weekday);
+  const weekEnd = end.toISOString().slice(0, 10);
   const query = filters.search.trim().toLocaleLowerCase("id-ID");
   return tasks.filter((task) => {
     if (

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"errors"
+	"keluarga-app/backend/internal/models"
 	"keluarga-app/backend/internal/services"
 
 	"github.com/gofiber/fiber/v2"
@@ -22,6 +24,7 @@ func NewEventHandler(eventService *services.EventService) *EventHandler {
 // @Produce json
 // @Param from query string false "Dari tanggal (ISO 8601)"
 // @Param to   query string false "Sampai tanggal (ISO 8601)"
+// @Param include_sources query bool false "Gabungkan agenda dan catatan bertanggal dari modul keluarga"
 // @Success 200 {object} map[string]interface{}
 // @Router /events [get]
 func (h *EventHandler) GetEvents(c *fiber.Ctx) error {
@@ -37,8 +40,18 @@ func (h *EventHandler) GetEvents(c *fiber.Ctx) error {
 		To:   c.Query("to"),
 	}
 
-	events, err := h.eventService.GetEvents(req, familyID)
+	var events []models.Event
+	var err error
+	if c.Query("include_sources") == "true" {
+		role, _ := c.Locals("role").(string)
+		events, err = h.eventService.CalendarFeed(req, familyID, role)
+	} else {
+		events, err = h.eventService.GetEvents(req, familyID)
+	}
 	if err != nil {
+		if errors.Is(err, services.ErrCalendarRange) {
+			return c.Status(400).JSON(fiber.Map{"message": err.Error()})
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "gagal mengambil data event",
 		})

@@ -1,4 +1,5 @@
 "use client";
+import { CalendarDateLink } from "@/components/shared/CalendarDateLink";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import {
@@ -40,6 +41,7 @@ export function TaskCard({
   const member = members.find((item) => item.id === task.assigned_to);
   return (
     <article
+      data-calendar-record={task.id}
       className={`task-card ${overdue ? "is-overdue" : ""} ${done ? "is-done" : ""}`}
     >
       <div className="flex items-start gap-2">
@@ -80,6 +82,11 @@ export function TaskCard({
             ? `${due === today ? "Hari ini" : format(new Date(`${due}T12:00:00`), "d MMM", { locale: id })}${overdue ? " · Terlambat" : ""}`
             : "Tanpa tenggat"}
         </span>
+        {due && (
+          <CalendarDateLink date={due} source="task">
+            Kalender
+          </CalendarDateLink>
+        )}
         {task.points > 0 && (
           <span className="task-points">
             <Star size={11} />

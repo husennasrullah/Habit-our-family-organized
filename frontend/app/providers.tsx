@@ -49,6 +49,22 @@ function AuthSync() {
   return null;
 }
 
+function CalendarSync() {
+  const qc = useQueryClient();
+  useEffect(
+    () =>
+      qc.getMutationCache().subscribe((event) => {
+        if (
+          event.type === "updated" &&
+          (event.action.type === "success" || event.action.type === "error")
+        )
+          void qc.invalidateQueries({ queryKey: ["events"] });
+      }),
+    [qc],
+  );
+  return null;
+}
+
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
     () =>
@@ -65,6 +81,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthSync />
+      <CalendarSync />
       {children}
       {process.env.NODE_ENV === "development" &&
         process.env.NEXT_PUBLIC_QUERY_DEVTOOLS === "true" && (

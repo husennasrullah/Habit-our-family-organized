@@ -79,3 +79,39 @@ test("search, member and due filters combine and handle database date strings", 
   assert.deepEqual(filter("", "", "week"), ["a", "e"]);
   assert.deepEqual(filter("", "b", "today"), []);
 });
+test("week filters use the Jakarta weekday across device timezones", () => {
+  const before = process.env.TZ;
+  const instant = new Date("2026-11-15T18:30:00Z");
+  const entries = [
+    {
+      id: "sunday",
+      title: "Minggu",
+      status: "pending",
+      due_date: "2026-11-22",
+      assigned_to: null,
+    },
+    {
+      id: "next",
+      title: "Senin berikut",
+      status: "pending",
+      due_date: "2026-11-23",
+      assigned_to: null,
+    },
+  ];
+  try {
+    for (const zone of ["UTC", "America/Los_Angeles", "Pacific/Pago_Pago"]) {
+      process.env.TZ = zone;
+      assert.deepEqual(
+        filterTasks(
+          entries,
+          { search: "", member: "", due: "week" },
+          instant,
+        ).map((t) => t.id),
+        ["sunday"],
+        zone,
+      );
+    }
+  } finally {
+    process.env.TZ = before;
+  }
+});

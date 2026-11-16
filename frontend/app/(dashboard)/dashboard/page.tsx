@@ -25,6 +25,7 @@ import {
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/authStore";
 import { useTasks, useCompleteTask } from "@/hooks/useTasks";
+import { calendarHref } from "@/lib/calendarSources";
 import { useEvents } from "@/hooks/useEvents";
 import { useBudgets, useBudgetSummary } from "@/hooks/useBudget";
 import { useMealPlans } from "@/hooks/useMealPlans";
@@ -198,8 +199,9 @@ export default function DashboardPage() {
   const range = dayRange(now);
   const tasks = useTasks();
   const events = useEvents(range.from, range.to);
-  const month = now.getMonth() + 1;
-  const year = now.getFullYear();
+  const businessDate = localDateKey(now);
+  const month = Number(businessDate.slice(5, 7));
+  const year = Number(businessDate.slice(0, 4));
   const summary = useBudgetSummary(month, year);
   const budgets = useBudgets(month, year);
   const memories = useMemories();
@@ -279,7 +281,13 @@ export default function DashboardPage() {
         <div className="dashboard-hero-copy">
           <p className="dashboard-date">
             <CalendarDays size={15} />
-            {format(now, "EEEE, d MMMM yyyy", { locale: id })}
+            {new Intl.DateTimeFormat("id-ID", {
+              timeZone: "Asia/Jakarta",
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }).format(now)}
           </p>
           <h1 id="dashboard-greeting">
             Halo, <span>{user?.name?.split(" ")[0] ?? "Keluarga"}.</span>
@@ -363,7 +371,14 @@ export default function DashboardPage() {
                           : format(new Date(event.start_at), "HH:mm")}
                     </span>
                     <div className="min-w-0">
-                      <Link href="/calendar" className="dashboard-item-title">
+                      <Link
+                        href={calendarHref(
+                          localDateKey(now),
+                          event.source || "event",
+                          event.id,
+                        )}
+                        className="dashboard-item-title"
+                      >
                         {event.title}
                       </Link>
                       <p className="dashboard-item-note">
@@ -512,7 +527,7 @@ export default function DashboardPage() {
       </section>
 
       <Section
-        title={`Keuangan · ${format(now, "MMMM yyyy", { locale: id })}`}
+        title={`Keuangan · ${new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", month: "long", year: "numeric" }).format(now)}`}
         href="/budget"
         icon={
           <Wallet

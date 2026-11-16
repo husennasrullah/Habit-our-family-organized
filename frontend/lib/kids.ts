@@ -22,7 +22,7 @@ export function kidAge(value: string) {
   const birth = parseISO(dateKey(value));
   if (Number.isNaN(birth.getTime()) || dateKey(value) > kidsToday())
     return "Usia belum tersedia";
-  const months = differenceInMonths(new Date(), birth);
+  const months = differenceInMonths(parseISO(kidsToday()), birth);
   return months < 12
     ? `${months} bulan`
     : `${Math.floor(months / 12)} tahun${months % 12 ? ` ${months % 12} bulan` : ""}`;

@@ -12,12 +12,12 @@ export function dateKey(value: string | null | undefined): string | null {
 }
 
 export function localDateKey(date: Date): string {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  return date.toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
 }
 
 export function dayRange(now: Date) {
-  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const start = new Date(`${localDateKey(now)}T00:00:00+07:00`);
+  const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
   return { start, end, from: start.toISOString(), to: end.toISOString() };
 }
 

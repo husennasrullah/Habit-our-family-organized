@@ -681,6 +681,8 @@ Membangun API untuk manajemen event kalender keluarga dengan dukungan recurring 
 
 ---
 
+Catatan integrasi 2026-11-16: kalender membaca sumber tugas/makan/liburan-itinerary/vaksin/ulang tahun/tabungan dan kategori historis dari modul dengan query keluarga/role, deduplikasi Liburan dan tautan kembali read-only. Rentang/waktu/all-day WIB dan tampilan lintas menu diperbaiki. Tidak memerlukan schema/backfill baru; recurring manual dan pengiriman reminder belum ditandai selesai. Detail dan QA: `docs/calendar-integration-and-ui-audit.md`.
+
 #### [x] Task 3.2 — Frontend: Halaman Calendar
 
 **Pembaruan 2026-11-13:** Tampilan dimodernkan dengan toolbar ringkas, panel agenda tanggal terpilih, kalender mobile bertitik dan grid hari/minggu bersama. Acara seharian dipisahkan; acara lintas hari dipotong per tanggal dan acara bersamaan ditata berdampingan. Verifikasi: 15 tes frontend, build/lint/typecheck dan QA browser fixture 11 pemeriksaan + sembilan audit axe terarah lulus. Bukti: `docs/qa/calendar-modern-results.json`.

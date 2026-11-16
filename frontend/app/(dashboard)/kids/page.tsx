@@ -1,6 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useCalendarContext } from "@/hooks/useCalendarContext";
+import { CalendarDateLink } from "@/components/shared/CalendarDateLink";
 import { AxiosError } from "axios";
 import {
   Baby,
@@ -77,6 +79,7 @@ const errorMessage = (error: unknown) =>
       : "Gagal menyimpan perubahan";
 
 export default function KidsPage() {
+  const context = useCalendarContext();
   const role = useAuthStore((s) => s.user?.role);
   const allowed = canManageKids(role);
   const query = useKids();
@@ -85,6 +88,14 @@ export default function KidsPage() {
   const kid = kids.find((k) => k.id === selectedId) ?? kids[0];
   const kidId = kid?.id ?? "";
   const [active, setActive] = useState<KidResource>("growth");
+  useEffect(() => {
+    if (context.kid) setSelectedId(context.kid);
+    if (
+      context.tab &&
+      ["growth", "vaccines", "milestones", "health"].includes(context.tab)
+    )
+      setActive(context.tab as KidResource);
+  }, [context.kid, context.tab]);
   const [form, setForm] = useState<KidFormTarget | null>(null);
   const [deleting, setDeleting] = useState<DeleteTarget | null>(null);
   const [deleteError, setDeleteError] = useState("");
@@ -411,10 +422,19 @@ export default function KidsPage() {
                                   ),
                                 )
                                 .map((g) => (
-                                  <div key={g.id} className="kids-growth-entry">
+                                  <div
+                                    key={g.id}
+                                    data-calendar-record={g.id}
+                                    className="kids-growth-entry"
+                                  >
                                     <div className="kids-growth-row" role="row">
                                       <span role="cell">
-                                        {kidsDate(g.date)}
+                                        <CalendarDateLink
+                                          date={g.date}
+                                          source="growth"
+                                        >
+                                          {kidsDate(g.date)}
+                                        </CalendarDateLink>
                                       </span>
                                       <span role="cell">
                                         {g.height_cm ?? "—"}
@@ -463,7 +483,11 @@ export default function KidsPage() {
                           </div>
                         ) : (
                           vaccines.data.map((v) => (
-                            <article key={v.id} className="kids-record-row">
+                            <article
+                              key={v.id}
+                              data-calendar-record={v.id}
+                              className="kids-record-row"
+                            >
                               <div className="kids-record-main">
                                 <div className="kids-record-title">
                                   <h3>{v.vaccine_name}</h3>
@@ -477,10 +501,24 @@ export default function KidsPage() {
                                         : "Terjadwal"}
                                   </span>
                                 </div>
-                                <p>Jadwal {kidsDate(v.scheduled_date)}</p>
+                                <p>
+                                  Jadwal{" "}
+                                  <CalendarDateLink
+                                    date={v.scheduled_date}
+                                    source="vaccine"
+                                  >
+                                    {kidsDate(v.scheduled_date)}
+                                  </CalendarDateLink>
+                                </p>
                                 {v.given_date && (
                                   <p>
-                                    Diberikan {kidsDate(v.given_date)}
+                                    Diberikan{" "}
+                                    <CalendarDateLink
+                                      date={v.given_date}
+                                      source="vaccine"
+                                    >
+                                      {kidsDate(v.given_date)}
+                                    </CalendarDateLink>
                                     {v.given_by ? ` · ${v.given_by}` : ""}
                                   </p>
                                 )}
@@ -525,7 +563,11 @@ export default function KidsPage() {
                           </div>
                         ) : (
                           milestones.data.map((m) => (
-                            <article key={m.id} className="kids-record-row">
+                            <article
+                              key={m.id}
+                              data-calendar-record={m.id}
+                              className="kids-record-row"
+                            >
                               <button
                                 type="button"
                                 className={`kids-milestone-check ${m.is_achieved ? "is-achieved" : ""}`}
@@ -575,7 +617,11 @@ export default function KidsPage() {
                           </div>
                         ) : (
                           health.data.map((h) => (
-                            <article key={h.id} className="kids-record-row">
+                            <article
+                              key={h.id}
+                              data-calendar-record={h.id}
+                              className="kids-record-row"
+                            >
                               <div className="kids-record-main">
                                 <div className="kids-record-title">
                                   <h3>{h.description}</h3>
@@ -584,7 +630,12 @@ export default function KidsPage() {
                                   </span>
                                 </div>
                                 <p>
-                                  {kidsDate(h.date)}
+                                  <CalendarDateLink
+                                    date={h.date}
+                                    source="health"
+                                  >
+                                    {kidsDate(h.date)}
+                                  </CalendarDateLink>
                                   {h.doctor ? ` · dr. ${h.doctor}` : ""}
                                 </p>
                                 {h.medication && (

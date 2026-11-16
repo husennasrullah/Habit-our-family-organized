@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format, getMonth, getYear } from "date-fns";
 import { id as locale } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, Wallet } from "lucide-react";
 import { isAxiosError } from "axios";
 import { toast } from "sonner";
+import { calendarNow } from "@/lib/calendarUtils";
+import { useCalendarContext } from "@/hooks/useCalendarContext";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { QueryError } from "@/components/shared/QueryError";
 import { ContentState } from "@/components/shared/ContentState";
@@ -64,8 +66,14 @@ function reportError(error: unknown, fallback: string) {
 }
 
 export default function BudgetPage() {
+  const context = useCalendarContext();
   const [tab, setTab] = useState<Tab>("expenses");
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(calendarNow);
+  useEffect(() => {
+    if (context.date) setDate(new Date(context.date + "T12:00:00"));
+    if (context.tab && TABS.some((t) => t.value === context.tab))
+      setTab(context.tab as Tab);
+  }, [context.date, context.tab]);
   const month = getMonth(date) + 1,
     year = getYear(date);
   const period = format(date, "MMMM yyyy", { locale });
@@ -216,6 +224,7 @@ export default function BudgetPage() {
     <div className="w-full min-w-0 space-y-4">
       <PageHeader
         title="Keuangan"
+        calendarDate={format(date, "yyyy-MM-01")}
         description="Atur pengeluaran, jaga anggaran, dan wujudkan tabungan keluarga."
         action={headerAction}
       />
@@ -396,6 +405,7 @@ export default function BudgetPage() {
                 {expenses.data.map((expense) => (
                   <button
                     key={expense.id}
+                    data-calendar-record={expense.id}
                     onClick={() => setExpenseDialog({ expense })}
                     className="flex w-full items-center justify-between gap-3 rounded-xl border border-border bg-card p-4 text-left hover:bg-muted"
                   >

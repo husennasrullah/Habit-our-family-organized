@@ -122,6 +122,7 @@ export function ItineraryBoard({
                 {daily.map((item) => (
                   <li
                     key={item.id}
+                    data-calendar-record={item.id}
                     className="trip-itinerary-card overflow-hidden rounded-2xl border border-border bg-card sm:grid sm:grid-cols-[100px_minmax(0,1fr)]"
                   >
                     <div className="flex items-center gap-2 border-b border-border bg-muted/60 px-3 py-2 sm:flex-col sm:items-start sm:justify-start sm:border-b-0 sm:border-r sm:p-4">

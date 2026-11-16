@@ -17,17 +17,22 @@ const (
 
 // Event adalah entri kalender keluarga
 type Event struct {
+	Source       string `gorm:"-" json:"source,omitempty"`
+	SourceID     string `gorm:"-" json:"source_id,omitempty"`
+	SourceURL    string `gorm:"-" json:"source_url,omitempty"`
+	SourceStatus string `gorm:"-" json:"source_status,omitempty"`
+	ReadOnly     bool   `gorm:"-" json:"read_only,omitempty"`
 	BaseModel
-	FamilyID        uuid.UUID  `gorm:"type:uuid;not null;index"   json:"family_id"`
-	CreatedBy       uuid.UUID  `gorm:"type:uuid;not null"         json:"created_by"`
-	Title           string     `gorm:"not null"                   json:"title"`
-	Description     string     `gorm:"default:''"                 json:"description"`
-	StartAt         string     `gorm:"not null"                   json:"start_at"`
-	EndAt           string     `gorm:"not null"                   json:"end_at"`
-	IsAllDay        bool       `gorm:"default:false"              json:"is_all_day"`
-	Type            EventType  `gorm:"not null;default:'general'" json:"type"`
-	Color           string     `gorm:"not null;default:'sky'"     json:"color"`
-	IsRecurring     bool       `gorm:"default:false"              json:"is_recurring"`
-	RecurrenceRule  string     `gorm:"default:''"                 json:"recurrence_rule"`
-	ReminderMinutes int        `gorm:"default:0"                  json:"reminder_minutes"`
+	FamilyID        uuid.UUID `gorm:"type:uuid;not null;index"   json:"family_id"`
+	CreatedBy       uuid.UUID `gorm:"type:uuid;not null"         json:"created_by"`
+	Title           string    `gorm:"not null"                   json:"title"`
+	Description     string    `gorm:"default:''"                 json:"description"`
+	StartAt         string    `gorm:"not null"                   json:"start_at"`
+	EndAt           string    `gorm:"not null"                   json:"end_at"`
+	IsAllDay        bool      `gorm:"default:false"              json:"is_all_day"`
+	Type            EventType `gorm:"not null;default:'general'" json:"type"`
+	Color           string    `gorm:"not null;default:'sky'"     json:"color"`
+	IsRecurring     bool      `gorm:"default:false"              json:"is_recurring"`
+	RecurrenceRule  string    `gorm:"default:''"                 json:"recurrence_rule"`
+	ReminderMinutes int       `gorm:"default:0"                  json:"reminder_minutes"`
 }

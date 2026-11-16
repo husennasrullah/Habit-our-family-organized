@@ -1,4 +1,5 @@
 "use client";
+import { CalendarDateLink } from "@/components/shared/CalendarDateLink";
 import { Heart, ImageIcon, Pencil, Trash2 } from "lucide-react";
 import { MemoryPhotoView } from "./MemoryPhotoView";
 import type { Memory } from "@/types";
@@ -25,7 +26,10 @@ export function MemoryCard({
   );
   const cover = photos[0];
   return (
-    <article className="group min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
+    <article
+      data-calendar-record={m.id}
+      className="group min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
+    >
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         {cover && !m.storage_delete_pending ? (
           <MemoryPhotoView
@@ -79,12 +83,14 @@ export function MemoryCard({
       </div>
       <div className="p-4">
         <p className="text-[11px] font-medium text-muted-foreground">
-          {new Intl.DateTimeFormat("id-ID", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-            timeZone: "Asia/Jakarta",
-          }).format(new Date(m.date))}
+          <CalendarDateLink date={m.date} source="memory">
+            {new Intl.DateTimeFormat("id-ID", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+              timeZone: "Asia/Jakarta",
+            }).format(new Date(m.date))}
+          </CalendarDateLink>
         </p>
         <button
           disabled={busy || m.storage_delete_pending}

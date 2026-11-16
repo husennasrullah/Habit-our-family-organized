@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Plus,
   Search,
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { isAxiosError } from "axios";
 import { toast } from "sonner";
+import { useCalendarContext } from "@/hooks/useCalendarContext";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { QueryError } from "@/components/shared/QueryError";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -40,6 +41,7 @@ function errorMessage(error: unknown) {
     : "Perubahan belum tersimpan. Coba lagi.";
 }
 export default function TasksPage() {
+  const context = useCalendarContext();
   const [dialog, setDialog] = useState<{
     task?: Task;
     status: TaskStatus;
@@ -58,6 +60,10 @@ export default function TasksPage() {
     remove = useDeleteTask();
   const members = membersQuery.data ?? [],
     tasks = tasksQuery.data ?? [];
+  useEffect(() => {
+    const target = tasksQuery.data?.find((task) => task.id === context.record);
+    if (target) setMobileStatus(target.status);
+  }, [context.record, tasksQuery.data]);
   const unavailable = membersQuery.isPending || membersQuery.isError;
   const filtered = filterTasks(tasks, { search, member, due });
   const overview = taskOverview(tasks);

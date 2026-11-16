@@ -32,8 +32,8 @@ func (r *EventRepository) GetByID(id, familyID uuid.UUID) (*models.Event, error)
 func (r *EventRepository) GetByDateRange(familyID uuid.UUID, from, to string) ([]models.Event, error) {
 	var events []models.Event
 	err := r.db.
-		Where("family_id = ? AND start_at <= ? AND end_at >= ?", familyID, to, from).
-		Order("start_at ASC").
+		Where("family_id = ? AND start_at::timestamptz <= ?::timestamptz AND end_at::timestamptz >= ?::timestamptz", familyID, to, from).
+		Order("start_at::timestamptz ASC").
 		Find(&events).Error
 	return events, err
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "@/stores/authStore";
+import { isAgenda } from "@/lib/calendarSources";
 import { api } from "@/lib/api";
 import type { ApiResponse, CalendarEvent } from "@/types";
 
@@ -30,16 +32,23 @@ export type UpdateEventPayload = Partial<CreateEventPayload>;
 
 // ─── Hooks ───────────────────────────────────────────────────────────────────
 
-export function useEvents(from: string, to: string) {
+export function useEvents(from: string, to: string, allSources = false) {
+  const familyId = useAuthStore((s) => s.user?.family_id);
+  const role = useAuthStore((s) => s.user?.role);
   return useQuery({
-    queryKey: eventKeys.range(from, to),
+    queryKey: [...eventKeys.range(from, to), familyId, role],
     queryFn: async () => {
       const { data } = await api.get<ApiResponse<CalendarEvent[]>>(
-        `/events?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+        `/events?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&include_sources=true`,
       );
       return data.data ?? [];
     },
-    staleTime: 30_000,
+    select: allSources
+      ? undefined
+      : (events: CalendarEvent[]) => events.filter(isAgenda),
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchInterval: 60_000,
   });
 }
 
@@ -49,7 +58,7 @@ export function useCreateEvent() {
     mutationFn: async (payload: CreateEventPayload) => {
       const { data } = await api.post<ApiResponse<CalendarEvent>>(
         "/events",
-        payload
+        payload,
       );
       return data.data;
     },
@@ -68,7 +77,7 @@ export function useUpdateEvent() {
     }: UpdateEventPayload & { id: string }) => {
       const { data } = await api.put<ApiResponse<CalendarEvent>>(
         `/events/${id}`,
-        payload
+        payload,
       );
       return data.data;
     },

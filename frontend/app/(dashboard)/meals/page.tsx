@@ -1,9 +1,20 @@
 "use client";
 
-import { isRecipeURL, mealFormSchema, type MealFormValues } from "@/lib/mealPlans";
-import { supportsPush, currentPushSubscription, subscribeToPush, unsubscribeFromPush } from "@/lib/pushNotification";
+import {
+  isRecipeURL,
+  mealFormSchema,
+  type MealFormValues,
+} from "@/lib/mealPlans";
+import {
+  supportsPush,
+  currentPushSubscription,
+  subscribeToPush,
+  unsubscribeFromPush,
+} from "@/lib/pushNotification";
 import { AxiosError } from "axios";
 import { QueryError } from "@/components/shared/QueryError";
+import { calendarNow } from "@/lib/calendarUtils";
+import { useCalendarContext } from "@/hooks/useCalendarContext";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { ModalFrame } from "@/components/shared/ModalFrame";
 
@@ -87,6 +98,7 @@ function MealSlotCard({
     <button
       onClick={() => onDetail(meal)}
       className="group w-full text-left rounded-lg border border-border dark:border-primary-900 bg-primary-50 dark:bg-primary-950 p-2.5 hover:bg-primary-100 dark:hover:bg-primary-900 hover:border-primary-200 transition-colors"
+      data-calendar-record={meal.id}
       aria-label={`Buka menu ${meal.name}`}
     >
       <p className="text-xs font-semibold text-foreground dark:text-foreground leading-snug line-clamp-2">
@@ -184,15 +196,21 @@ function MealDetailModal({
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                 Link Resep
               </p>
-              {isRecipeURL(meal.recipe_url) ? <a
-                href={meal.recipe_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm text-primary-600 hover:underline"
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-                {meal.recipe_url}
-              </a> : <p className="text-xs text-muted-foreground">Tautan resep tidak valid. Edit menu untuk memperbaruinya.</p>}
+              {isRecipeURL(meal.recipe_url) ? (
+                <a
+                  href={meal.recipe_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-primary-600 hover:underline"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  {meal.recipe_url}
+                </a>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Tautan resep tidak valid. Edit menu untuk memperbaruinya.
+                </p>
+              )}
             </div>
           )}
 
@@ -227,7 +245,13 @@ function MealDetailModal({
   );
 }
 
-function AddSlotButton({ onClick, label }: { onClick: () => void; label: string }) {
+function AddSlotButton({
+  onClick,
+  label,
+}: {
+  onClick: () => void;
+  label: string;
+}) {
   return (
     <button
       onClick={onClick}
@@ -281,12 +305,16 @@ function MealFormModal({
 
   const mealLabel = MEAL_TYPES.find((m) => m.value === formType)?.label ?? "";
   const formDay = new Date(formDate + "T00:00:00");
-  const dateLabel = Number.isNaN(formDay.getTime()) ? "Pilih tanggal" : format(formDay, "EEEE, d MMMM yyyy", { locale: dateLocale });
+  const dateLabel = Number.isNaN(formDay.getTime())
+    ? "Pilih tanggal"
+    : format(formDay, "EEEE, d MMMM yyyy", { locale: dateLocale });
 
   return (
     <ModalFrame
       className="meal-dialog fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40"
-      onClose={() => { if (!isSaving) onClose(); }}
+      onClose={() => {
+        if (!isSaving) onClose();
+      }}
     >
       <div className="bg-card dark:bg-card rounded-2xl shadow-xl w-full max-w-[360px]">
         <div className="px-4 py-4 border-b border-border dark:border-border">
@@ -295,20 +323,58 @@ function MealFormModal({
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">{dateLabel}</p>
         </div>
-        <form id="meal-form" onSubmit={(event) => {
-          event.preventDefault();
-          if (isSaving) return;
-          const parsed = mealFormSchema.safeParse({ name, notes, recipe_url: recipeURL, date: formDate, meal_type: formType });
-          if (!parsed.success) { setFormError(parsed.error.issues[0].message); return; }
-          setFormError(""); onSave(parsed.data);
-        }} className="p-4 space-y-3">
+        <form
+          id="meal-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (isSaving) return;
+            const parsed = mealFormSchema.safeParse({
+              name,
+              notes,
+              recipe_url: recipeURL,
+              date: formDate,
+              meal_type: formType,
+            });
+            if (!parsed.success) {
+              setFormError(parsed.error.issues[0].message);
+              return;
+            }
+            setFormError("");
+            onSave(parsed.data);
+          }}
+          className="p-4 space-y-3"
+        >
           <div className="grid grid-cols-2 gap-3">
-            <div><label htmlFor="meal-date" className="text-xs font-medium">Tanggal</label>
-            <input id="meal-date" type="date" required value={formDate} onChange={(e) => setFormDate(e.target.value)} className="mt-1 w-full min-w-0 rounded-lg border border-border bg-card px-2 py-2 text-sm" /></div>
-            <div><label htmlFor="meal-type" className="text-xs font-medium">Waktu makan</label>
-            <select id="meal-type" value={formType} onChange={(e) => setFormType(e.target.value as MealType)} className="mt-1 w-full rounded-lg border border-border bg-card px-2 py-2 text-sm">
-              {MEAL_TYPES.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}
-            </select></div>
+            <div>
+              <label htmlFor="meal-date" className="text-xs font-medium">
+                Tanggal
+              </label>
+              <input
+                id="meal-date"
+                type="date"
+                required
+                value={formDate}
+                onChange={(e) => setFormDate(e.target.value)}
+                className="mt-1 w-full min-w-0 rounded-lg border border-border bg-card px-2 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label htmlFor="meal-type" className="text-xs font-medium">
+                Waktu makan
+              </label>
+              <select
+                id="meal-type"
+                value={formType}
+                onChange={(e) => setFormType(e.target.value as MealType)}
+                className="mt-1 w-full rounded-lg border border-border bg-card px-2 py-2 text-sm"
+              >
+                {MEAL_TYPES.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <div>
             <label
@@ -361,7 +427,11 @@ function MealFormModal({
               id="field-page-dashboardmeals-2"
             />
           </div>
-          {formError && <p role="alert" className="text-xs text-red-600">{formError}</p>}
+          {formError && (
+            <p role="alert" className="text-xs text-red-600">
+              {formError}
+            </p>
+          )}
         </form>
         <div className="px-4 pb-5 flex gap-2 justify-end">
           <button
@@ -388,12 +458,19 @@ function MealFormModal({
 // ─── Halaman Utama ────────────────────────────────────────────────────────────
 
 export default function MealsPage() {
-  const today = new Date();
+  const context = useCalendarContext();
+  const today = calendarNow();
   const [activeDay, setActiveDay] = useState((today.getDay() + 6) % 7);
   const [weekStart, setWeekStart] = useState<Date>(
     () => startOfWeek(today, { weekStartsOn: 1 }), // Mulai Senin
   );
 
+  useEffect(() => {
+    if (!context.date) return;
+    const date = new Date(context.date + "T12:00:00");
+    setWeekStart(startOfWeek(date, { weekStartsOn: 1 }));
+    setActiveDay((date.getDay() + 6) % 7);
+  }, [context.date]);
   const [modalOpen, setModalOpen] = useState(false);
   const [detailMeal, setDetailMeal] = useState<MealPlan | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
@@ -447,7 +524,11 @@ export default function MealsPage() {
       }
       setModalOpen(false);
     } catch (error) {
-      toast.error(error instanceof AxiosError ? error.response?.data?.message ?? "Gagal menyimpan menu" : "Gagal menyimpan menu");
+      toast.error(
+        error instanceof AxiosError
+          ? (error.response?.data?.message ?? "Gagal menyimpan menu")
+          : "Gagal menyimpan menu",
+      );
     }
   };
 
@@ -470,6 +551,7 @@ export default function MealsPage() {
       {/* ── Header ───────────────────────────────────────────── */}
       <PageHeader
         title="Jadwal Makan"
+        calendarDate={toDateStr(weekDays[activeDay])}
         description="Dari rencana sederhana, jadi hidangan untuk bersama."
         action={
           <>
@@ -489,9 +571,10 @@ export default function MealsPage() {
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
-            onClick={() =>
-              { setWeekStart(startOfWeek(today, { weekStartsOn: 1 })); setActiveDay((today.getDay() + 6) % 7); }
-            }
+            onClick={() => {
+              setWeekStart(startOfWeek(today, { weekStartsOn: 1 }));
+              setActiveDay((today.getDay() + 6) % 7);
+            }}
             className="px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
           >
             {isThisWeek
@@ -700,7 +783,10 @@ export default function MealsPage() {
       {/* ── Form Modal ────────────────────────────────────────── */}
       <MealFormModal
         isOpen={modalOpen}
-        onClose={() => { if (!createMeal.isPending && !updateMeal.isPending) setModalOpen(false); }}
+        onClose={() => {
+          if (!createMeal.isPending && !updateMeal.isPending)
+            setModalOpen(false);
+        }}
         onSave={handleSave}
         mealType={selectedMealType}
         date={selectedDate}
@@ -713,41 +799,99 @@ export default function MealsPage() {
 
 // ─── Notifikasi ──────────────────────────────────────────────────────────────
 function NotificationBanner() {
-  const [status, setStatus] = useState<"checking" | "idle" | "granted" | "denied" | "loading" | "unsupported">("checking");
+  const [status, setStatus] = useState<
+    "checking" | "idle" | "granted" | "denied" | "loading" | "unsupported"
+  >("checking");
   const [error, setError] = useState("");
   const check = useCallback(async () => {
-    if (!supportsPush()) { setStatus("unsupported"); return; }
-    if (Notification.permission === "denied") { setStatus("denied"); return; }
-    try { setStatus(await currentPushSubscription() ? "granted" : "idle"); setError(""); }
-    catch { setStatus("idle"); setError("Status notifikasi belum dapat diperiksa."); }
+    if (!supportsPush()) {
+      setStatus("unsupported");
+      return;
+    }
+    if (Notification.permission === "denied") {
+      setStatus("denied");
+      return;
+    }
+    try {
+      setStatus((await currentPushSubscription()) ? "granted" : "idle");
+      setError("");
+    } catch {
+      setStatus("idle");
+      setError("Status notifikasi belum dapat diperiksa.");
+    }
   }, []);
-  useEffect(() => { void check(); }, [check]);
+  useEffect(() => {
+    void check();
+  }, [check]);
   const toggle = async () => {
     const previous = status;
-    setStatus("loading"); setError("");
+    setStatus("loading");
+    setError("");
     try {
       if (previous === "granted") {
-        await unsubscribeFromPush(); setStatus("idle"); toast.success("Notifikasi dinonaktifkan");
+        await unsubscribeFromPush();
+        setStatus("idle");
+        toast.success("Notifikasi dinonaktifkan");
       } else {
         const perm = await Notification.requestPermission();
-        if (perm !== "granted") { setStatus(perm === "denied" ? "denied" : "idle"); return; }
-        await subscribeToPush(); setStatus("granted"); toast.success("Notifikasi menu harian aktif");
+        if (perm !== "granted") {
+          setStatus(perm === "denied" ? "denied" : "idle");
+          return;
+        }
+        await subscribeToPush();
+        setStatus("granted");
+        toast.success("Notifikasi menu harian aktif");
       }
     } catch (err) {
-      const active = await currentPushSubscription().catch(() => previous === "granted");
+      const active = await currentPushSubscription().catch(
+        () => previous === "granted",
+      );
       setStatus(active ? "granted" : "idle");
-      const message = err instanceof AxiosError ? err.response?.data?.message ?? "Gagal memperbarui notifikasi. Coba lagi." : err instanceof Error ? err.message : "Gagal memperbarui notifikasi";
-      setError(message); toast.error(message);
+      const message =
+        err instanceof AxiosError
+          ? (err.response?.data?.message ??
+            "Gagal memperbarui notifikasi. Coba lagi.")
+          : err instanceof Error
+            ? err.message
+            : "Gagal memperbarui notifikasi";
+      setError(message);
+      toast.error(message);
     }
   };
-  if (status === "unsupported") return <p className="text-xs text-muted-foreground">Notifikasi tidak tersedia di browser ini.</p>;
-  return <div className="max-w-sm space-y-1">
-    <button onClick={status === "denied" ? () => void check() : () => void toggle()} disabled={status === "loading" || status === "checking"}
-      className="flex min-h-9 items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold disabled:opacity-50">
-      <Bell className="h-4 w-4" />
-      {status === "checking" ? "Memeriksa notifikasi..." : status === "loading" ? "Memproses..." : status === "granted" ? "Nonaktifkan Notifikasi" : status === "denied" ? "Periksa Ulang Izin" : "Aktifkan Notifikasi"}
-    </button>
-    {status === "denied" && <p className="text-xs text-muted-foreground">Izinkan notifikasi melalui pengaturan browser, lalu periksa ulang.</p>}
-    {error && <p role="alert" className="text-xs text-red-600 dark:text-red-400">{error}</p>}
-  </div>;
+  if (status === "unsupported")
+    return (
+      <p className="text-xs text-muted-foreground">
+        Notifikasi tidak tersedia di browser ini.
+      </p>
+    );
+  return (
+    <div className="max-w-sm space-y-1">
+      <button
+        onClick={status === "denied" ? () => void check() : () => void toggle()}
+        disabled={status === "loading" || status === "checking"}
+        className="flex min-h-9 items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold disabled:opacity-50"
+      >
+        <Bell className="h-4 w-4" />
+        {status === "checking"
+          ? "Memeriksa notifikasi..."
+          : status === "loading"
+            ? "Memproses..."
+            : status === "granted"
+              ? "Nonaktifkan Notifikasi"
+              : status === "denied"
+                ? "Periksa Ulang Izin"
+                : "Aktifkan Notifikasi"}
+      </button>
+      {status === "denied" && (
+        <p className="text-xs text-muted-foreground">
+          Izinkan notifikasi melalui pengaturan browser, lalu periksa ulang.
+        </p>
+      )}
+      {error && (
+        <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+          {error}
+        </p>
+      )}
+    </div>
+  );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { format, isToday } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { id } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import {
@@ -10,6 +10,7 @@ import {
   layoutDayEvents,
 } from "@/lib/calendarUtils";
 import { EventBadge } from "./EventBadge";
+import { calendarNow, parseISO } from "@/lib/calendarUtils";
 import type { CalendarEvent } from "@/types";
 
 interface TimeGridProps {
@@ -50,15 +51,14 @@ export function TimeGrid({
         <div className={cn("calendar-time-inner", isWeek && "is-week")}>
           <div className="calendar-time-head" style={columns}>
             <div className="calendar-time-zone">
-              GMT{new Date().getTimezoneOffset() <= 0 ? "+" : "−"}
-              {Math.abs(new Date().getTimezoneOffset() / 60)}
+              WIB
             </div>
             {days.map((day) => (
               <div
                 key={day.toISOString()}
                 className={cn(
                   "calendar-time-day",
-                  isToday(day) && "is-today-column",
+                  isSameDay(day, calendarNow()) && "is-today-column",
                 )}
               >
                 <span className="text-xs text-muted-foreground">
@@ -67,7 +67,7 @@ export function TimeGrid({
                 <span
                   className={cn(
                     "calendar-time-date",
-                    isToday(day) && "is-today",
+                    isSameDay(day, calendarNow()) && "is-today",
                   )}
                 >
                   {format(day, "d")}
@@ -105,7 +105,7 @@ export function TimeGrid({
                   key={day.toISOString()}
                   className={cn(
                     "calendar-time-column",
-                    isToday(day) && "is-today-column",
+                    isSameDay(day, calendarNow()) && "is-today-column",
                   )}
                 >
                   {HOURS.map((hour) => (
@@ -144,8 +144,8 @@ export function TimeGrid({
                             {event.title}
                           </span>
                           <span className="mt-1 block text-[10px] opacity-80">
-                            {format(new Date(event.start_at), "HH:mm")} –{" "}
-                            {format(new Date(event.end_at), "HH:mm")}
+                            {format(parseISO(event.start_at), "HH:mm")} –{" "}
+                            {format(parseISO(event.end_at), "HH:mm")}
                           </span>
                         </button>
                       );
