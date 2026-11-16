@@ -7,7 +7,7 @@
 **B: suara hangat keluarga sudah ada**, memakai kata “bersama”, “keluarga” dan contoh kegiatan rumah. Perbaikan diarahkan pada kalimat abstrak serta repetisi; bahasa tetap akrab dan tidak memakai klaim hasil yang belum dibuktikan.
 
 - Halaman: landing pengenalan produk. Satu aksi utama: membuka aplikasi di https://habit.senlabs.web.id untuk masuk atau membuat akun.
-- Pembaca utama: orang tua/pasangan yang berbagi tugas rumah, kebutuhan keluarga dan pencatatan tumbuh kembang anak. Ini asumsi positioning dari fungsi produk; belum hasil wawancara pelanggan.
+- Pembaca utama: seluruh anggota keluarga, termasuk orang tua dan anak, sesuai arahan pengguna. Orang tua mengelola kebutuhan dan catatan anak; anak ikut melihat serta menyelesaikan tugas. Tidak menganggapnya hasil wawancara pelanggan.
 - Masalah yang dipakai: pembagian tugas yang perlu jelas, jadwal anak yang perlu dicatat, pengeluaran rumah dan riwayat anak yang perlu ditemukan kembali.
 - Pembeda yang didukung source: kombinasi kalender lintas menu dengan catatan anak; tanggal rencana/aktual vaksin dibedakan; belanja terhubung ke pengeluaran; profil/riwayat terpisah per anak.
 - Keberatan: perlu unduh atau tidak, bagaimana mengajak pasangan, internet, hak akses, vaksin diisi manual atau otomatis.
@@ -20,9 +20,9 @@
 
 ### Hero
 
-- Label: Aplikasi untuk keseharian keluarga
+- Label: Untuk orang tua dan anak
 - Judul existing: Hal kecil teratur. Keluarga lebih dekat.
-- Subheadline: Bagi tugas rumah dan lihat jadwal keluarga di satu tempat. Catat juga pengeluaran dan tumbuh kembang anak, termasuk berat badan serta tanggal vaksin.
+- Subheadline: Orang tua dan anak bisa berbagi tugas rumah dan melihat jadwal keluarga di Habit. Orang tua juga bisa mencatat pengeluaran serta tumbuh kembang anak, termasuk berat badan dan tanggal vaksin.
 - CTA utama: **Buka Habit**
 - CTA anchor: **Lihat fitur Habit**
 - Microcopy: Buka di browser HP atau laptop. Masuk atau buat akun.
@@ -36,7 +36,7 @@ Judul: **Ada jadwal anak. Ada tugas rumah yang perlu dibagi.**
 Jadwal vaksin perlu dicatat, bekal perlu disiapkan. Gunakan Habit untuk melihat rencana dan membagi tugas dengan anggota keluarga.
 
 1. **Cek jadwal hari ini.** Buka Beranda untuk melihat agenda dan tugas yang perlu dikerjakan. Jadwal vaksin anak juga bisa dilihat lewat kalender.
-2. **Tentukan siapa yang mengerjakan.** Bagikan tugas menyiapkan bekal atau belanja ke anggota keluarga. Beri tenggat dan lihat mana yang sudah selesai.
+2. **Tentukan siapa yang mengerjakan.** Orang tua menyiapkan bekal, anak merapikan mainan. Bagikan tugas ke anggota keluarga, beri tenggat, lalu lihat mana yang sudah selesai.
 3. **Simpan cerita di balik fotonya.** Tambahkan foto, tanggal, dan cerita ke Kenangan. Momen bermain di rumah pun punya catatan yang bisa dibuka lagi.
 
 ### Fitur
@@ -59,7 +59,7 @@ Catatan manfaat: Jadwal vaksin yang dicatat di menu Anak ikut muncul di kalender
 
 **Tugas: Siapa belanja, siapa menyiapkan bekal?**
 
-Tentukan penanggung jawab setiap tugas dan kapan perlu selesai. Pasangan bisa mengecek tugasnya sendiri; kamu bisa melihat mana yang sedang dikerjakan dan sudah selesai.
+Bagikan tugas sesuai peran keluarga, dari belanja kebutuhan rumah sampai anak merapikan mainan. Setiap anggota bisa mengecek tugasnya dan menandainya selesai.
 
 - Bagikan tugas ke anggota keluarga
 - Tetapkan tenggat dan prioritas
@@ -101,9 +101,9 @@ Pelengkap: **Rencana makan** — Susun sarapan sampai makan malam. **Perjalanan*
 
 ### Cara mulai
 
-Judul: **Ajak pasangan. Tambahkan rencana pertama.**
+Judul: **Ajak anggota keluarga. Tambahkan rencana pertama.**
 
-Mulai dengan satu tugas rumah yang ingin dibagi, atau jadwal anak yang perlu dicatat. Anggota keluarga bisa bergabung melalui kode undangan.
+Bagikan kode undangan agar anggota keluarga bergabung dengan akun masing-masing. Setelah anak bergabung, admin dapat mengatur peran Anak melalui Pengaturan.
 
 1. **Buat akun Habit.** Daftar dengan email atau akun Google. Jika sudah punya akun, langsung masuk.
 2. **Buat atau gabung keluarga.** Buat keluarga baru, lalu bagikan kode undangannya. Gunakan kode yang kamu terima untuk bergabung.
@@ -115,19 +115,19 @@ CTA: **Buka Habit**
 
 Label: Akun masing-masing, keluarga yang sama
 
-Judul: **Buka catatan keluarga dari perangkatmu.**
+Judul: **Orang tua dan anak ikut berbagi tugas.**
 
-Pasanganmu bisa membuka agenda di HP, sementara kamu mengecek daftar belanja lewat laptop. Kalian memakai akun masing-masing dalam keluarga yang sama.
+Orang tua mencatat belanja, anak mengecek tugas merapikan mainan, lalu menandainya selesai. Setiap anggota memakai akun sendiri dengan akses sesuai perannya.
 
 - **Buka di HP atau laptop.** Gunakan browser untuk mengakses Habit. Pada perangkat yang mendukung, tambahkan ke layar utama agar mudah dibuka lagi.
-- **Atur peran anggota keluarga.** Undang anggota dan tentukan perannya. Catatan anak dan keuangan tersedia untuk admin serta anggota dewasa.
+- **Atur peran anggota keluarga.** Admin dapat mengatur peran Anak melalui Pengaturan. Catatan tumbuh kembang dan keuangan tersedia untuk admin serta anggota dewasa.
 
 ### FAQ
 
 Judul: **Sebelum mengajak keluargamu bergabung.**
 
-- **Siapa yang cocok memakai Habit?** Habit ditujukan untuk keluarga yang ingin berbagi jadwal dan tugas rumah. Orang tua juga bisa mencatat pertumbuhan, vaksin, dan kesehatan anak di profil masing-masing anak.
-- **Bagaimana cara memakainya bersama pasangan?** Buat akun, lalu buat keluarga di Habit. Bagikan kode undangan agar pasangan bergabung dengan akunnya sendiri. Kalau keluarga sudah dibuat, kamu bisa langsung bergabung memakai kode tersebut.
+- **Siapa yang cocok memakai Habit?** Habit bisa dipakai orang tua dan anak dalam satu keluarga. Anak bisa melihat tugasnya dan menandainya selesai. Orang tua dapat mengelola pengeluaran serta catatan tumbuh kembang anak sesuai peran akunnya.
+- **Bagaimana mengajak anggota keluarga, termasuk anak?** Buat keluarga di Habit, lalu bagikan kode undangannya. Setiap anggota bergabung dengan akun masing-masing. Setelah anak bergabung, admin mengatur perannya menjadi Anak melalui Pengaturan.
 - **Bisa dibuka di HP dan laptop?** Bisa. Buka Habit melalui browser di HP atau laptop dengan akun yang sama. Pada perangkat dan browser yang mendukung, kamu bisa menambahkannya ke layar utama.
 - **Apakah Habit bisa dipakai tanpa internet?** Koneksi internet diperlukan untuk memuat dan menyimpan data keluarga. Habit menyediakan halaman offline saat halaman aplikasi tidak dapat dimuat; pencatatan data tetap membutuhkan koneksi.
 - **Apakah semua anggota bisa melihat catatan anak?** Akses mengikuti peran anggota dalam keluarga. Catatan anak dan keuangan tersedia untuk admin dan anggota dewasa. Akun anak serta akun hanya-lihat memiliki akses terbatas sesuai menu.
@@ -137,7 +137,7 @@ Judul: **Sebelum mengajak keluargamu bergabung.**
 
 Tagline existing: **Kebiasaan kecil. Keluarga lebih dekat.**
 
-Buka Habit, ajak pasangan, lalu catat jadwal anak atau bagikan tugas rumah pertama kalian.
+Buka Habit, ajak anggota keluarga, lalu bagikan tugas rumah pertama untuk dikerjakan bersama.
 
 CTA: **Buka Habit**
 
@@ -149,7 +149,7 @@ Footer: Atur tugas rumah dan jadwal keluarga. Simpan catatan tumbuh kembang anak
 
 Judul SEO tetap: **Habit — Kebiasaan kecil, keluarga lebih dekat** (mengikuti metadata existing).
 
-Deskripsi: **Bagi tugas rumah, lihat kalender keluarga, dan catat tumbuh kembang anak. Habit menyatukan jadwal vaksin, pengeluaran, serta foto dan cerita keluarga.**
+Deskripsi: **Habit untuk orang tua dan anak: berbagi tugas rumah dan jadwal keluarga dengan akun masing-masing. Orang tua juga bisa mencatat pengeluaran dan tumbuh kembang anak.**
 
 ## Kandidat, pilihan dan anotasi
 
@@ -171,8 +171,8 @@ Setiap unit dipecah sebelum perakitan, dua kandidat dipertimbangkan, pilihan dip
 | Keuangan | Lihat belanja masuk ke anggaran mana. | Pantau pengeluaran bulanan. | Mendukung alur belanja → pengeluaran → kategori anggaran |
 | Anak | Buka lagi catatan berat badan dan vaksinnya. | Simpan riwayat tumbuh kembang anak. | Mengganti abstraksi dengan dua jenis catatan yang dapat ditemukan kembali |
 | Kenangan | Simpan ceritanya bersama foto keluarga. | Kumpulkan foto dan tanggalnya. | Foto dan cerita menjelaskan manfaat pencatatan |
-| Cara mulai | Ajak pasangan. Tambahkan rencana pertama. | Buat keluarga dalam tiga langkah. | Menjelaskan tindakan awal; tidak menjanjikan durasi onboarding |
-| Perangkat | Buka catatan keluarga dari perangkatmu. | Satu keluarga di HP dan laptop. | Memakai akun masing-masing; tidak menjanjikan sinkronisasi seketika |
+| Cara mulai | Ajak anggota keluarga. Tambahkan rencana pertama. | Buat keluarga dalam tiga langkah. | Menjelaskan tindakan awal; tidak menjanjikan durasi onboarding |
+| Perangkat | Orang tua dan anak ikut berbagi tugas. | Satu keluarga di HP dan laptop. | Memakai akun masing-masing; tidak menjanjikan sinkronisasi seketika |
 | FAQ | Sebelum mengajak keluargamu bergabung. | Tentang memakai Habit bersama keluarga. | Menjawab hambatan sebelum aksi utama |
 | Final CTA | Tagline existing + tindakan jadwal/tugas | Tagline existing + ajakan membuka akun | Tagline tetap; kalimat pendukung berakhir pada pekerjaan pertama yang konkret |
 
@@ -204,3 +204,18 @@ Klaim yang tidak dipakai beserta bukti untuk membuka penggunaannya:
 - Gratis/lifetime/harga: monetisasi ditunda. Tidak menyisipkan offer; butuh keputusan paket serta ketentuan resmi pengguna sebelum dipublikasikan.
 
 Self-check: kalimat abstrak dan pola kontras dipangkas, pertanyaan dibatasi pada pertanyaan pembaca/FAQ, kalimat panjang dibaca ulang, penutup diarahkan ke tindakan nyata. Baris brand yang dikunci tetap dipertahankan walaupun tidak diperlakukan sebagai klaim fitur eksklusif. Tidak ada klaim eksklusivitas terhadap kompetitor tanpa bukti perbandingan.
+
+## Revisi terarah: seluruh keluarga, termasuk anak
+
+Diagnosis **C** untuk tindak lanjut pengguna: perjelas audiens keluarga tanpa mengganti tagline atau memperluas fitur. Label hero, subheadline, contoh tugas, ajakan onboarding, panel akun/peran, penutup, metadata dan dua FAQ disesuaikan. Dasar tambahan: `backend/internal/services/family_service.go` mendukung role child dan admin mengubah role; anggota yang baru join default member. Route tugas memakai auth keluarga dan menyediakan complete untuk anggota; tidak menulis klaim anak mengelola keuangan/catatan kesehatan atau mengunggah Kenangan.
+
+| Baris yang diubah | Alasan |
+| --- | --- |
+| Untuk orang tua dan anak | Audiens langsung terlihat pada hero |
+| Orang tua dan anak bisa berbagi tugas rumah dan melihat jadwal keluarga di Habit | Menjelaskan partisipasi anak lewat dua tindakan yang didukung |
+| Orang tua menyiapkan bekal, anak merapikan mainan | Contoh tugas membedakan kebutuhan setiap anggota |
+| Ajak anggota keluarga. Tambahkan rencana pertama. | Ajakan mencakup anggota selain pasangan |
+| Setelah anak bergabung, admin mengatur perannya menjadi Anak melalui Pengaturan | Menjelaskan proses sebenarnya; peran Anak tidak otomatis saat join |
+| Orang tua dan anak ikut berbagi tugas | Panel akun menjelaskan aktivitas anak, bukan hanya orang tua |
+
+Tagline dan judul hero tetap sama. Struktur tab, termasuk posisi ringkasan Liburan, dipertahankan sesuai pembatalan pengguna sebelumnya. Bukti revisi lokal: docs/qa/landing-family-*.

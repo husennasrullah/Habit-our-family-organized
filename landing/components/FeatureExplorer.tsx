@@ -36,7 +36,7 @@ const features: {
     eyebrow: "PEMBAGIAN TUGAS RUMAH",
     title: "Siapa belanja, siapa menyiapkan bekal?",
     description:
-      "Tentukan penanggung jawab setiap tugas dan kapan perlu selesai. Pasangan bisa mengecek tugasnya sendiri; kamu bisa melihat mana yang sedang dikerjakan dan sudah selesai.",
+      "Bagikan tugas sesuai peran keluarga, dari belanja kebutuhan rumah sampai anak merapikan mainan. Setiap anggota bisa mengecek tugasnya dan menandainya selesai.",
     points: [
       "Bagikan tugas ke anggota keluarga",
       "Tetapkan tenggat dan prioritas",

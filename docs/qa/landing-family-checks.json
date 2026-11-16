@@ -1,0 +1,46 @@
+[
+  {
+    "width": 360,
+    "overflow": false,
+    "links": true,
+    "broken": [],
+    "axe": []
+  },
+  {
+    "width": 390,
+    "overflow": false,
+    "links": true,
+    "broken": [],
+    "axe": []
+  },
+  {
+    "width": 768,
+    "overflow": false,
+    "links": true,
+    "broken": [],
+    "axe": []
+  },
+  {
+    "width": 1440,
+    "overflow": false,
+    "links": true,
+    "broken": [],
+    "axe": []
+  },
+  {
+    "width": 1920,
+    "overflow": false,
+    "links": true,
+    "broken": [],
+    "axe": []
+  },
+  {
+    "interactions": {
+      "menuOpen": true,
+      "menuClosed": true,
+      "tabs": true,
+      "faq": true
+    },
+    "errors": []
+  }
+]

@@ -20,7 +20,7 @@ const routines: {
     icon: "users",
     time: "SAAT BERBAGI TUGAS RUMAH",
     title: "Tentukan siapa yang mengerjakan.",
-    body: "Bagikan tugas menyiapkan bekal atau belanja ke anggota keluarga. Beri tenggat dan lihat mana yang sudah selesai.",
+    body: "Orang tua menyiapkan bekal, anak merapikan mainan. Bagikan tugas ke anggota keluarga, beri tenggat, lalu lihat mana yang sudah selesai.",
   },
   {
     icon: "moon",
@@ -32,11 +32,11 @@ const routines: {
 const faqs = [
   [
     "Siapa yang cocok memakai Habit?",
-    "Habit ditujukan untuk keluarga yang ingin berbagi jadwal dan tugas rumah. Orang tua juga bisa mencatat pertumbuhan, vaksin, dan kesehatan anak di profil masing-masing anak.",
+    "Habit bisa dipakai orang tua dan anak dalam satu keluarga. Anak bisa melihat tugasnya dan menandainya selesai. Orang tua dapat mengelola pengeluaran serta catatan tumbuh kembang anak sesuai peran akunnya.",
   ],
   [
-    "Bagaimana cara memakainya bersama pasangan?",
-    "Buat akun, lalu buat keluarga di Habit. Bagikan kode undangan agar pasangan bergabung dengan akunnya sendiri. Kalau keluarga sudah dibuat, kamu bisa langsung bergabung memakai kode tersebut.",
+    "Bagaimana mengajak anggota keluarga, termasuk anak?",
+    "Buat keluarga di Habit, lalu bagikan kode undangannya. Setiap anggota bergabung dengan akun masing-masing. Setelah anak bergabung, admin mengatur perannya menjadi Anak melalui Pengaturan.",
   ],
   [
     "Bisa dibuka di HP dan laptop?",
@@ -79,7 +79,7 @@ export default function Home() {
             <div className="hero-copy">
               <span className="pill">
                 <span className="live-dot" />
-                Aplikasi untuk keseharian keluarga
+                Untuk orang tua dan anak
               </span>
               <h1>
                 Hal kecil teratur.
@@ -91,9 +91,10 @@ export default function Home() {
                 </span>
               </h1>
               <p>
-                Bagi tugas rumah dan lihat jadwal keluarga di satu tempat. Catat
-                juga pengeluaran dan tumbuh kembang anak, termasuk berat badan
-                serta tanggal vaksin.
+                Orang tua dan anak bisa berbagi tugas rumah dan melihat jadwal
+                keluarga di Habit. Orang tua juga bisa mencatat pengeluaran
+                serta tumbuh kembang anak, termasuk berat badan dan tanggal
+                vaksin.
               </p>
               <div className="hero-actions">
                 <AppLink />
@@ -223,14 +224,14 @@ export default function Home() {
             <div>
               <span className="eyebrow">BUAT RUANG KELUARGAMU</span>
               <h2>
-                Ajak pasangan.
+                Ajak anggota keluarga.
                 <br />
                 Tambahkan rencana pertama.
               </h2>
               <p>
-                Mulai dengan satu tugas rumah yang ingin dibagi, atau jadwal
-                anak yang perlu dicatat. Anggota keluarga bisa bergabung melalui
-                kode undangan.
+                Bagikan kode undangan agar anggota keluarga bergabung dengan
+                akun masing-masing. Setelah anak bergabung, admin dapat mengatur
+                peran Anak melalui Pengaturan.
               </p>
               <AppLink />
             </div>
@@ -281,14 +282,14 @@ export default function Home() {
                 AKUN MASING-MASING, KELUARGA YANG SAMA
               </span>
               <h2>
-                Buka catatan keluarga
+                Orang tua dan anak
                 <br />
-                dari perangkatmu.
+                ikut berbagi tugas.
               </h2>
               <p>
-                Pasanganmu bisa membuka agenda di HP, sementara kamu mengecek
-                daftar belanja lewat laptop. Kalian memakai akun masing-masing
-                dalam keluarga yang sama.
+                Orang tua mencatat belanja, anak mengecek tugas merapikan
+                mainan, lalu menandainya selesai. Setiap anggota memakai akun
+                sendiri dengan akses sesuai perannya.
               </p>
               <div className="value-line">
                 <Icon name="phone" size={21} />
@@ -305,8 +306,9 @@ export default function Home() {
                 <div>
                   <h3>Atur peran anggota keluarga.</h3>
                   <p>
-                    Undang anggota dan tentukan perannya. Catatan anak dan
-                    keuangan tersedia untuk admin serta anggota dewasa.
+                    Admin dapat mengatur peran Anak melalui Pengaturan. Catatan
+                    tumbuh kembang dan keuangan tersedia untuk admin serta
+                    anggota dewasa.
                   </p>
                 </div>
               </div>
@@ -354,8 +356,8 @@ export default function Home() {
                 Keluarga lebih dekat.
               </h2>
               <p>
-                Buka Habit, ajak pasangan, lalu catat jadwal anak atau bagikan
-                tugas rumah pertama kalian.
+                Buka Habit, ajak anggota keluarga, lalu bagikan tugas rumah
+                pertama untuk dikerjakan bersama.
               </p>
               <AppLink className="button button-light">Buka Habit</AppLink>
               <span className="final-note">

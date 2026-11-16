@@ -12,7 +12,14 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-16 (Copywriting landing page)
+> **Last updated:** 2026-11-16 (Landing untuk seluruh keluarga)
+
+### Landing untuk seluruh keluarga — 2026-11-16
+- Pengguna meminta penjelasan bahwa Habit dipakai satu keluarga, termasuk anak, kemudian meminta skill copywriting dan pengecekan ulang. Diagnosis C/edit terarah: label hero, manfaat, contoh tugas, ajakan onboarding/penutup, panel akun, dua FAQ dan deskripsi metadata diperjelas untuk orang tua serta anak. Tidak mengganti tagline, judul hero, desain atau tab fitur; permintaan penambahan tab Liburan sebelumnya telah dibatalkan sebelum ada perubahan source.
+- Review source mengonfirmasi role child, tugas lihat/complete untuk anggota keluarga dan admin mengubah role. Join keluarga default member, sehingga copy menyebut setelah anak bergabung admin mengatur peran Anak melalui Pengaturan; tidak menjanjikan role child otomatis atau akses anak ke keuangan/catatan tumbuh kembang/unggah Kenangan.
+- File: landing/app/page.tsx, components/FeatureExplorer.tsx, lib/site.ts; docs/landing-copywriting.md dan docs/landing-page.md, docs/qa/landing-family-{390,1440}.png, landing-family-checks.json dan agents.md. Tidak mengubah aplikasi utama/backend/dependency/schema atau akun/data keluarga.
+- Verifikasi: typecheck/build Node 20.19.6 lulus; lima viewport 360/390/768/1440/1920 tanpa overflow/gambar gagal/error runtime/temuan axe yang diperiksa. Menu Escape, tab keyboard dan FAQ lulus; screenshot mobile direview. Assertion source membuktikan judul hero/tagline tetap, ajakan pasangan diganti audiens keluarga, langkah role Anak tercantum dan tab Liburan tidak ditambahkan. Pengujian ini lokal, bukan QA perangkat fisik/CI GitHub atau integrasi production.
+- Mempertahankan Site owner-private dan URL existing untuk publikasi ulang; commit/push biasa sesuai otorisasi sebelumnya. Hasil hosting/Git dilaporkan setelah perintah. Next steps: review kalimat pengguna; domain landing belum ditentukan. Tidak mulai TWA/monetisasi.
 
 ### Copywriting landing page — 2026-11-16
 - Pengguna meminta remake isi landing memakai skill copywriting dan seluruh konteks proyek, lalu menegaskan tagline tidak boleh diubah. Membaca skill/referensi ai-tells, memeriksa konteks marketing standar (tidak ditemukan) dan sumber fitur. Diagnosis B: mempertahankan suara keluarga yang hangat, mengganti abstraksi dengan tindakan/fungsi yang didukung source.
@@ -417,6 +424,10 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 | Fase 10 — Deployment | Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD | ✅ |
 
 ### 🔄 Perubahan Penting yang Sudah Dilakukan (sesi terakhir)
+
+#### Landing untuk seluruh keluarga — 2026-11-16
+- Copy memperjelas orang tua dan anak dapat ikut memakai Habit sesuai peran; tagline dan tab existing tetap. Source, panduan copy dan QA diperbarui, detail pada STATUS TERKINI.
+
 
 #### Copywriting landing page — 2026-11-16
 - Konten berfokus manfaat keluarga dan fungsi aktual, tagline existing tetap. Copy final/alternatif/dasar klaim di docs/landing-copywriting.md; source, dokumentasi dan bukti browser diperbarui.
