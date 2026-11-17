@@ -12,7 +12,31 @@ Dokumen ini adalah panduan kerja untuk agent/AI yang mengimplementasikan project
 
 ## 🚦 STATUS TERKINI & NEXT STEPS
 > Selalu update section ini setiap akhir sesi kerja.
-> **Last updated:** 2026-11-16 (Rekap pengiriman landing dan tindak lanjut)
+> **Last updated:** 2026-11-17 (Pengiriman arsip ide fitur)
+
+### Pengiriman arsip ide fitur — 2026-11-17
+- Pengguna meminta push. Paket hanya docs/feature-research.md dan agents.md, mencakup arsip delapan ide serta catatan sesi. Branch main sinkron dengan origin/main sebelum commit; diff whitespace diperiksa. Tidak ada perubahan aplikasi atau tes aplikasi baru.
+- Pengiriman memakai commit dan push biasa ke origin/main; hasil Git dilaporkan setelah perintah. Ide tetap ditunda sampai arahan baru pengguna; tidak memulai implementasi atau deployment.
+
+### Pengarsipan ide fitur — 2026-11-17
+- Pengguna meminta ide disimpan dahulu. Seluruh delapan kandidat pada docs/feature-research.md ditandai diarsipkan/ditunda, bukan roadmap aktif atau otorisasi implementasi; belum ada fitur dipilih.
+- File diubah: docs/feature-research.md dan agents.md. Tidak mengubah aplikasi/schema/dependency/data atau menjalankan tes aplikasi. Next steps: lanjutkan ide hanya atas arahan baru pengguna; tidak commit/push.
+
+### Riset fitur alternatif — 2026-11-17
+- Pengguna meminta ide lain. Referensi resmi Skylight, TimeTree, FamilyAlbum dan Sweepy diperiksa; empat adaptasi dan batasnya ditambahkan ke docs/feature-research.md. Kandidat utama putaran ini Tangkap Jadwal; belum ada fitur dipilih.
+- Hanya docs/feature-research.md dan agents.md diubah; tidak ada perubahan aplikasi/schema/dependency/data atau tes aplikasi. Next steps: menunggu pilihan arah pengguna sebelum perencanaan implementasi. Tidak commit/push.
+
+### Riset kandidat fitur menarik — 2026-11-17
+- Pengguna meminta riset aplikasi serupa dan penjabaran sebelum implementasi. Sumber resmi FamilyWall, Joon, Finch, Paired dan Greenlight diperiksa; temuan serta empat adaptasi tersimpan di docs/feature-research.md. Rekomendasi awal Cerita Hari Ini; Kebun Keluarga menjadi alternatif visual. Belum ada keputusan fitur.
+- File diubah: docs/feature-research.md dan agents.md. Tidak mengubah aplikasi/dependency/schema/data atau menjalankan tes aplikasi. Next steps: pilih satu fitur bersama pengguna, kemudian konkretkan scope; tidak otomatis implementasi/publish/commit/push.
+
+### Pemeriksaan akses landing — 2026-11-17
+- Sites get_site mengonfirmasi status active, versi terbaru 4 dan current_live_url https://habit-hadir-bersama.outerrhubarb1.chatgpt.site. Akses custom masih hanya pemilik, tanpa pengunjung eksternal; tidak mengubah akses atau deployment. Pemeriksa web tidak dapat membuka URL privat sehingga render langsung belum diverifikasi ulang.
+- Hanya agents.md diperbarui untuk mencatat hasil. Next steps tetap mengikuti arahan pengguna; tidak commit/push atau menjalankan tes aplikasi.
+
+### Pembacaan panduan agent — 2026-11-17
+- Membaca seluruh agents.md sesuai permintaan pengguna, termasuk status terbaru, riwayat, aturan kerja dan next steps. Hanya agents.md diperbarui untuk mencatat pembacaan; tidak mengubah kode atau menjalankan tes.
+- Status implementasi tetap mengikuti rekap 2026-11-16. Next steps: mengikuti arahan pengguna berikutnya; domain landing dan verifikasi CI/CD/production masih pending, Android baru rencana dan monetisasi tetap ditunda. Tidak commit/push.
 
 ### Rekap pengiriman landing dan tindak lanjut — 2026-11-16
 - Pengguna meminta pembaruan agents.md. Mencatat pengiriman yang telah terkonfirmasi: e8cee12 (warna/proporsi landing), 9c7701f (copywriting manfaat nyata), dan 5b501fd (audiens seluruh keluarga termasuk anak) berhasil di-push biasa ke origin/main. Working tree bersih sebelum pembaruan dokumentasi ini.
